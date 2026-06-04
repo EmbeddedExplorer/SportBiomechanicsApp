@@ -6,6 +6,8 @@ from ui.weightlifting_page import WeightliftingPage
 from ui.sprinting_page import SprintingPage
 from ui.results_page import ResultsPage
 
+from modules.result_manager import create_session_folder, generate_dummy_outputs
+
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -59,26 +61,58 @@ class MainWindow(QMainWindow):
             "Sport": "Previous Analysis",
             "Exercise": "Not selected",
             "Input Mode": "Not selected",
-            "File": "No file selected"
+            "File": "No file selected",
+            "Results Folder": "No folder created yet"
         })
+
         self.stack.setCurrentWidget(self.results_page)
 
     def start_weightlifting_analysis(self, exercise, input_mode, file_path):
+        session_path = create_session_folder(
+            sport="Weightlifting",
+            exercise=exercise,
+            input_mode=input_mode,
+            source_file=file_path
+        )
+
+        generate_dummy_outputs(
+            session_path=session_path,
+            sport="Weightlifting",
+            exercise=exercise
+        )
+
         self.results_page.set_summary({
             "Sport": "Weightlifting",
             "Exercise": exercise,
             "Input Mode": input_mode,
-            "File": file_path if file_path else "Live RealSense Camera"
+            "File": file_path if file_path else "Live RealSense Camera",
+            "Results Folder": str(session_path)
         })
+
         self.stack.setCurrentWidget(self.results_page)
 
     def start_sprinting_analysis(self, input_mode, file_path):
+        session_path = create_session_folder(
+            sport="Sprinting",
+            exercise="Sprinting",
+            input_mode=input_mode,
+            source_file=file_path
+        )
+
+        generate_dummy_outputs(
+            session_path=session_path,
+            sport="Sprinting",
+            exercise="Sprinting"
+        )
+
         self.results_page.set_summary({
             "Sport": "Sprinting Biomechanics",
             "Exercise": "Sprinting",
             "Input Mode": input_mode,
-            "File": file_path if file_path else "Live Camera"
+            "File": file_path if file_path else "Live Camera",
+            "Results Folder": str(session_path)
         })
+
         self.stack.setCurrentWidget(self.results_page)
 
 
