@@ -1,4 +1,5 @@
 import sys
+
 from PyQt6.QtWidgets import QApplication, QMainWindow, QStackedWidget
 
 from ui.home_page import HomePage
@@ -6,15 +7,24 @@ from ui.weightlifting_page import WeightliftingPage
 from ui.sprinting_page import SprintingPage
 from ui.results_page import ResultsPage
 from ui.history_page import HistoryPage
+from ui.about_page import AboutPage
 
 from modules.result_manager import create_session_folder, generate_dummy_outputs
+from modules.database_manager import (
+    init_database,
+    add_session,
+    get_recent_sessions,
+    get_session_count
+)
 
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        self.setWindowTitle("Sports Biomechanics Analysis Platform")
+        init_database()
+
+        self.setWindowTitle("BioMotion Studio")
         self.resize(1280, 720)
 
         self.stack = QStackedWidget()
@@ -25,6 +35,7 @@ class MainWindow(QMainWindow):
             on_sprinting=self.show_sprinting_page,
             on_results=self.show_results_page,
             on_history=self.show_history_page,
+            on_about=self.show_about_page,
             on_exit=self.close
         )
 
@@ -46,21 +57,79 @@ class MainWindow(QMainWindow):
             on_back=self.show_home_page
         )
 
+        self.about_page = AboutPage(
+            on_back=self.show_home_page
+        )
+
         self.stack.addWidget(self.home_page)
         self.stack.addWidget(self.weightlifting_page)
         self.stack.addWidget(self.sprinting_page)
         self.stack.addWidget(self.results_page)
         self.stack.addWidget(self.history_page)
+        self.stack.addWidget(self.about_page)
 
+        self.refresh_status_bar()
         self.show_home_page()
 
+    def get_system_status(self):
+        status_parts = []
+
+        # RealSense status
+        try:
+            import pyrealsense2 as rs
+
+            devices = rs.context().query_devices()
+
+            try:
+                device_count = len(devices)
+            except TypeError:
+                device_count = devices.size()
+
+            if device_count > 0:
+                status_parts.append(f"RealSense: Connected ({device_count} device)")
+            else:
+                status_parts.append("RealSense: SDK Ready / No Device Connected")
+
+        except Exception:
+            status_parts.append("RealSense: Not Ready")
+
+        # MediaPipe status
+        try:
+            import mediapipe
+            status_parts.append("MediaPipe: Ready")
+        except Exception:
+            status_parts.append("MediaPipe: Not Ready")
+
+        # Database status
+        try:
+            session_count = get_session_count()
+            status_parts.append(f"Database: Ready ({session_count} sessions)")
+        except Exception:
+            status_parts.append("Database: Not Ready")
+
+        return "   |   ".join(status_parts)
+
+    def refresh_status_bar(self):
+        self.statusBar().showMessage(self.get_system_status())
+
     def show_home_page(self):
+        self.home_page.set_recent_sessions(
+            get_recent_sessions(limit=5)
+        )
+
+        self.home_page.set_system_status(
+            self.get_system_status()
+        )
+
+        self.refresh_status_bar()
         self.stack.setCurrentWidget(self.home_page)
 
     def show_weightlifting_page(self):
+        self.refresh_status_bar()
         self.stack.setCurrentWidget(self.weightlifting_page)
 
     def show_sprinting_page(self):
+        self.refresh_status_bar()
         self.stack.setCurrentWidget(self.sprinting_page)
 
     def show_results_page(self):
@@ -72,11 +141,17 @@ class MainWindow(QMainWindow):
             "Results Folder": "No folder created yet"
         })
 
+        self.refresh_status_bar()
         self.stack.setCurrentWidget(self.results_page)
 
     def show_history_page(self):
         self.history_page.load_sessions()
+        self.refresh_status_bar()
         self.stack.setCurrentWidget(self.history_page)
+
+    def show_about_page(self):
+        self.refresh_status_bar()
+        self.stack.setCurrentWidget(self.about_page)
 
     def start_weightlifting_analysis(self, exercise, input_mode, file_path):
         session_path = create_session_folder(
@@ -92,6 +167,14 @@ class MainWindow(QMainWindow):
             exercise=exercise
         )
 
+        add_session({
+            "sport": "Weightlifting",
+            "exercise": exercise,
+            "input_mode": input_mode,
+            "source_file": file_path,
+            "results_folder": str(session_path)
+        })
+
         self.results_page.set_summary({
             "Sport": "Weightlifting",
             "Exercise": exercise,
@@ -100,6 +183,7 @@ class MainWindow(QMainWindow):
             "Results Folder": str(session_path)
         })
 
+        self.refresh_status_bar()
         self.stack.setCurrentWidget(self.results_page)
 
     def start_sprinting_analysis(self, input_mode, file_path):
@@ -116,6 +200,14 @@ class MainWindow(QMainWindow):
             exercise="Sprinting"
         )
 
+        add_session({
+            "sport": "Sprinting",
+            "exercise": "Sprinting",
+            "input_mode": input_mode,
+            "source_file": file_path,
+            "results_folder": str(session_path)
+        })
+
         self.results_page.set_summary({
             "Sport": "Sprinting Biomechanics",
             "Exercise": "Sprinting",
@@ -124,6 +216,7 @@ class MainWindow(QMainWindow):
             "Results Folder": str(session_path)
         })
 
+        self.refresh_status_bar()
         self.stack.setCurrentWidget(self.results_page)
 
 
