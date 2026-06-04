@@ -5,7 +5,14 @@ from PyQt6.QtCore import Qt
 
 
 class HomePage(QWidget):
-    def __init__(self, on_weightlifting, on_sprinting, on_results, on_exit):
+    def __init__(
+        self,
+        on_weightlifting,
+        on_sprinting,
+        on_results,
+        on_history,
+        on_exit
+    ):
         super().__init__()
 
         main_layout = QVBoxLayout()
@@ -27,22 +34,30 @@ class HomePage(QWidget):
 
         btn_weightlifting = QPushButton("Weightlifting Analysis")
         btn_sprinting = QPushButton("Sprinting Biomechanics Analysis")
-        btn_results = QPushButton("Analysis History / Results")
+        btn_history = QPushButton("Analysis History")
+        btn_results = QPushButton("Results Dashboard")
         btn_exit = QPushButton("Exit")
 
-        for btn in [btn_weightlifting, btn_sprinting, btn_results, btn_exit]:
+        buttons = [
+            btn_weightlifting,
+            btn_sprinting,
+            btn_history,
+            btn_results,
+            btn_exit
+        ]
+
+        for btn in buttons:
             btn.setMinimumHeight(50)
             btn.setObjectName("MainButton")
 
         btn_weightlifting.clicked.connect(on_weightlifting)
         btn_sprinting.clicked.connect(on_sprinting)
+        btn_history.clicked.connect(on_history)
         btn_results.clicked.connect(on_results)
         btn_exit.clicked.connect(on_exit)
 
-        card_layout.addWidget(btn_weightlifting)
-        card_layout.addWidget(btn_sprinting)
-        card_layout.addWidget(btn_results)
-        card_layout.addWidget(btn_exit)
+        for btn in buttons:
+            card_layout.addWidget(btn)
 
         card.setLayout(card_layout)
 

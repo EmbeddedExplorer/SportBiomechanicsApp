@@ -5,6 +5,7 @@ from ui.home_page import HomePage
 from ui.weightlifting_page import WeightliftingPage
 from ui.sprinting_page import SprintingPage
 from ui.results_page import ResultsPage
+from ui.history_page import HistoryPage
 
 from modules.result_manager import create_session_folder, generate_dummy_outputs
 
@@ -23,6 +24,7 @@ class MainWindow(QMainWindow):
             on_weightlifting=self.show_weightlifting_page,
             on_sprinting=self.show_sprinting_page,
             on_results=self.show_results_page,
+            on_history=self.show_history_page,
             on_exit=self.close
         )
 
@@ -40,10 +42,15 @@ class MainWindow(QMainWindow):
             on_back_home=self.show_home_page
         )
 
+        self.history_page = HistoryPage(
+            on_back=self.show_home_page
+        )
+
         self.stack.addWidget(self.home_page)
         self.stack.addWidget(self.weightlifting_page)
         self.stack.addWidget(self.sprinting_page)
         self.stack.addWidget(self.results_page)
+        self.stack.addWidget(self.history_page)
 
         self.show_home_page()
 
@@ -66,6 +73,10 @@ class MainWindow(QMainWindow):
         })
 
         self.stack.setCurrentWidget(self.results_page)
+
+    def show_history_page(self):
+        self.history_page.load_sessions()
+        self.stack.setCurrentWidget(self.history_page)
 
     def start_weightlifting_analysis(self, exercise, input_mode, file_path):
         session_path = create_session_folder(
