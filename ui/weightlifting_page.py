@@ -1,6 +1,6 @@
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton,
-    QRadioButton, QGroupBox, QFileDialog, QMessageBox
+    QRadioButton, QGroupBox, QFileDialog, QMessageBox, QGridLayout
 )
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QPixmap
@@ -16,9 +16,10 @@ class WeightliftingPage(QWidget):
         self.on_start_analysis = on_start_analysis
         self.selected_file = ""
         self.video_thread = None
+        self.metric_labels = {}
 
         main_layout = QVBoxLayout()
-        main_layout.setSpacing(15)
+        main_layout.setSpacing(12)
 
         title = QLabel("WEIGHTLIFTING BIOMECHANICS ANALYSIS")
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -59,6 +60,10 @@ class WeightliftingPage(QWidget):
 
         input_group.setLayout(input_layout)
 
+        controls_layout = QHBoxLayout()
+        controls_layout.addWidget(exercise_group)
+        controls_layout.addWidget(input_group)
+
         # ================= VIDEO PREVIEW =================
         preview_group = QGroupBox("Live Preview / Tracking View")
         preview_layout = QVBoxLayout()
@@ -88,6 +93,13 @@ class WeightliftingPage(QWidget):
 
         preview_group.setLayout(preview_layout)
 
+        # ================= METRICS PANEL =================
+        metrics_group = self.create_metrics_group()
+
+        content_layout = QHBoxLayout()
+        content_layout.addWidget(preview_group, 3)
+        content_layout.addWidget(metrics_group, 1)
+
         # ================= ACTION BUTTONS =================
         button_layout = QHBoxLayout()
 
@@ -100,80 +112,56 @@ class WeightliftingPage(QWidget):
         button_layout.addWidget(btn_back)
         button_layout.addWidget(btn_start)
 
-        top_layout = QHBoxLayout()
-        top_layout.addWidget(exercise_group)
-        top_layout.addWidget(input_group)
-
         main_layout.addWidget(title)
-        main_layout.addLayout(top_layout)
-        main_layout.addWidget(preview_group)
+        main_layout.addLayout(controls_layout)
+        main_layout.addLayout(content_layout)
         main_layout.addLayout(button_layout)
 
         self.setLayout(main_layout)
 
-        self.setStyleSheet("""
-            QWidget {
-                background-color: #101820;
-                color: white;
-                font-family: Segoe UI;
-                font-size: 16px;
-            }
+        self.apply_styles()
 
-            QLabel#PageTitle {
-                font-size: 28px;
-                font-weight: bold;
-                color: #00D4FF;
-                margin: 10px;
-            }
+    def create_metrics_group(self):
+        metrics_group = QGroupBox("Live Biomechanics Metrics")
+        metrics_layout = QGridLayout()
 
-            QGroupBox {
-                border: 2px solid #0078D7;
-                border-radius: 10px;
-                margin: 10px;
-                padding: 15px;
-                font-size: 17px;
-                font-weight: bold;
-            }
+        metric_names = [
+            "Pose",
+            "Left Hip Angle",
+            "Right Hip Angle",
+            "Left Knee Angle",
+            "Right Knee Angle",
+            "Left Ankle Angle",
+            "Right Ankle Angle",
+            "Left Shoulder Angle",
+            "Right Shoulder Angle",
+            "Left Elbow Angle",
+            "Right Elbow Angle",
+            "Trunk Lean Angle",
+            "Athlete Depth (m)",
+            "Center Depth (m)"
+        ]
 
-            QRadioButton {
-                font-size: 15px;
-                padding: 6px;
-            }
+        for row, name in enumerate(metric_names):
+            name_label = QLabel(name)
+            name_label.setObjectName("MetricName")
 
-            QLabel#VideoLabel {
-                background-color: #000000;
-                color: #AAAAAA;
-                border: 2px solid #0078D7;
-                border-radius: 8px;
-            }
+            value_label = QLabel("N/A")
+            value_label.setAlignment(Qt.AlignmentFlag.AlignRight)
+            value_label.setObjectName("MetricValue")
 
-            QLabel#StatusLabel {
-                color: #00D4FF;
-                font-size: 14px;
-            }
+            metrics_layout.addWidget(name_label, row, 0)
+            metrics_layout.addWidget(value_label, row, 1)
 
-            QPushButton {
-                background-color: #0078D7;
-                color: white;
-                border-radius: 8px;
-                padding: 10px;
-                font-size: 15px;
-                font-weight: bold;
-            }
+            self.metric_labels[name] = value_label
 
-            QPushButton:hover {
-                background-color: #0099FF;
-            }
+        metrics_group.setLayout(metrics_layout)
 
-            QLabel#FileLabel {
-                color: #CFCFCF;
-                font-size: 14px;
-            }
-        """)
+        return metrics_group
 
     def select_bag_file(self):
         file_path, _ = QFileDialog.getOpenFileName(
-            self,
+            None,
             "Select RealSense Bag File",
             "",
             "RealSense Bag Files (*.bag);;All Files (*)"
@@ -213,6 +201,8 @@ class WeightliftingPage(QWidget):
 
         self.video_thread.frame_ready.connect(self.update_video_frame)
         self.video_thread.status_ready.connect(self.update_status)
+        self.video_thread.metrics_ready.connect(self.update_metrics)
+
         self.video_thread.start()
 
     def stop_preview(self):
@@ -221,6 +211,7 @@ class WeightliftingPage(QWidget):
             self.video_thread = None
 
         self.status_label.setText("Status: Preview stopped.")
+        self.reset_metrics()
 
     def update_video_frame(self, q_img):
         pixmap = QPixmap.fromImage(q_img)
@@ -236,6 +227,33 @@ class WeightliftingPage(QWidget):
 
     def update_status(self, text):
         self.status_label.setText(f"Status: {text}")
+
+    def update_metrics(self, metrics):
+        for name, label in self.metric_labels.items():
+            value = metrics.get(name, None)
+            label.setText(self.format_metric_value(name, value))
+
+    def reset_metrics(self):
+        for label in self.metric_labels.values():
+            label.setText("N/A")
+
+    def format_metric_value(self, name, value):
+        if value is None:
+            return "N/A"
+
+        if name == "Pose":
+            return str(value)
+
+        if "(m)" in name:
+            try:
+                return f"{float(value):.2f} m"
+            except Exception:
+                return "N/A"
+
+        try:
+            return f"{float(value):.1f}°"
+        except Exception:
+            return str(value)
 
     def start_analysis(self):
         exercise = "Snatch" if self.radio_snatch.isChecked() else "Clean & Jerk"
@@ -266,3 +284,75 @@ class WeightliftingPage(QWidget):
     def closeEvent(self, event):
         self.stop_preview()
         event.accept()
+
+    def apply_styles(self):
+        self.setStyleSheet("""
+            QWidget {
+                background-color: #101820;
+                color: white;
+                font-family: Segoe UI;
+                font-size: 15px;
+            }
+
+            QLabel#PageTitle {
+                font-size: 28px;
+                font-weight: bold;
+                color: #00D4FF;
+                margin: 8px;
+            }
+
+            QGroupBox {
+                border: 2px solid #0078D7;
+                border-radius: 10px;
+                margin: 8px;
+                padding: 14px;
+                font-size: 16px;
+                font-weight: bold;
+            }
+
+            QRadioButton {
+                font-size: 14px;
+                padding: 5px;
+            }
+
+            QLabel#VideoLabel {
+                background-color: #000000;
+                color: #AAAAAA;
+                border: 2px solid #0078D7;
+                border-radius: 8px;
+            }
+
+            QLabel#StatusLabel {
+                color: #00D4FF;
+                font-size: 14px;
+            }
+
+            QLabel#MetricName {
+                color: #D0D0D0;
+                font-size: 13px;
+            }
+
+            QLabel#MetricValue {
+                color: #00D4FF;
+                font-size: 13px;
+                font-weight: bold;
+            }
+
+            QPushButton {
+                background-color: #0078D7;
+                color: white;
+                border-radius: 8px;
+                padding: 9px;
+                font-size: 14px;
+                font-weight: bold;
+            }
+
+            QPushButton:hover {
+                background-color: #0099FF;
+            }
+
+            QLabel#FileLabel {
+                color: #CFCFCF;
+                font-size: 13px;
+            }
+        """)
