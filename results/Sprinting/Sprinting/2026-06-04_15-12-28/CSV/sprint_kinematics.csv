@@ -1,7 +1,0 @@
-time_s,hip_angle_deg,knee_angle_deg,ankle_angle_deg,stride_length_m,phase
-0.0,150.2,130.1,90.5,0.0,Initial Contact
-0.03,155.4,120.5,95.1,0.45,Support
-0.06,162.3,105.2,100.4,0.95,Toe Off
-0.09,158.8,115.7,98.2,1.5,Flight
-0.12,152.0,135.4,92.8,2.05,Swing
-0.15,149.5,148.9,88.7,2.55,Next Contact

@@ -1,0 +1,10 @@
+{
+    "app_name": "BioMotion Studio",
+    "sport": "Sprinting",
+    "exercise": "Sprinting",
+    "input_mode": "Side-view Video File",
+    "source_file": "E:/Pose estimation tool/Usain Bolt/bolt_sideview.mp4",
+    "record_count": 172,
+    "created_at": "2026-06-10 13:48:12",
+    "note": "V7 2D pose-based analysis recording. Depth values are saved when available."
+}

@@ -1,7 +1,0 @@
-time_s,hip_angle_deg,knee_angle_deg,elbow_angle_deg,barbell_velocity_mps,phase
-0.0,145.2,132.4,168.5,0.0,Setup
-0.03,148.1,136.2,169.2,0.35,First Pull
-0.06,152.8,140.7,170.1,0.72,Second Pull
-0.09,160.3,148.9,172.3,1.15,Catch
-0.12,168.5,155.2,174.0,1.3,Recovery
-0.15,172.1,160.0,175.5,1.1,Finish

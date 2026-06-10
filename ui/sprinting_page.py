@@ -6,6 +6,8 @@ from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QPixmap
 
 from modules.video_thread import VideoThread
+from modules.result_manager import create_session_folder
+from modules.analysis_recorder import AnalysisRecorder
 
 
 class SprintingPage(QWidget):
@@ -14,9 +16,15 @@ class SprintingPage(QWidget):
 
         self.on_back = on_back
         self.on_start_analysis = on_start_analysis
+
         self.selected_file = ""
         self.video_thread = None
+
         self.metric_labels = {}
+
+        self.is_recording = False
+        self.recorder = None
+        self.current_session_path = None
 
         main_layout = QVBoxLayout()
         main_layout.setSpacing(12)
@@ -25,7 +33,6 @@ class SprintingPage(QWidget):
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         title.setObjectName("PageTitle")
 
-        # ================= INPUT SOURCE =================
         input_group = QGroupBox("Select Input Source")
         input_layout = QVBoxLayout()
 
@@ -51,7 +58,6 @@ class SprintingPage(QWidget):
 
         input_group.setLayout(input_layout)
 
-        # ================= VIDEO PREVIEW =================
         preview_group = QGroupBox("Live Preview / Tracking View")
         preview_layout = QVBoxLayout()
 
@@ -80,24 +86,27 @@ class SprintingPage(QWidget):
 
         preview_group.setLayout(preview_layout)
 
-        # ================= METRICS PANEL =================
         metrics_group = self.create_metrics_group()
 
         content_layout = QHBoxLayout()
         content_layout.addWidget(preview_group, 3)
         content_layout.addWidget(metrics_group, 1)
 
-        # ================= ACTION BUTTONS =================
         button_layout = QHBoxLayout()
 
         btn_back = QPushButton("Back")
-        btn_start = QPushButton("Start Analysis")
+        self.btn_start_recording = QPushButton("Start Analysis Recording")
+        self.btn_stop_recording = QPushButton("Stop & Save Analysis")
+
+        self.btn_stop_recording.setEnabled(False)
 
         btn_back.clicked.connect(self.go_back)
-        btn_start.clicked.connect(self.start_analysis)
+        self.btn_start_recording.clicked.connect(self.start_analysis_recording)
+        self.btn_stop_recording.clicked.connect(self.stop_and_save_analysis)
 
         button_layout.addWidget(btn_back)
-        button_layout.addWidget(btn_start)
+        button_layout.addWidget(self.btn_start_recording)
+        button_layout.addWidget(self.btn_stop_recording)
 
         main_layout.addWidget(title)
         main_layout.addWidget(input_group)
@@ -182,8 +191,30 @@ class SprintingPage(QWidget):
 
         return "webcam"
 
+    def get_input_mode(self):
+        source_type = self.get_source_type()
+
+        if source_type == "realsense_live":
+            return "Live RealSense RGB-D Camera"
+
+        if source_type == "realsense_bag":
+            return "RealSense Bag File"
+
+        if source_type == "video_file":
+            return "Side-view Video File"
+
+        return "Webcam Fallback"
+
     def start_preview(self):
-        self.stop_preview()
+        if self.is_recording:
+            QMessageBox.warning(
+                self,
+                "Recording Active",
+                "Please stop and save the analysis before restarting preview."
+            )
+            return
+
+        self._stop_preview_internal(reset_metrics=False)
 
         source_type = self.get_source_type()
 
@@ -207,12 +238,25 @@ class SprintingPage(QWidget):
         self.video_thread.start()
 
     def stop_preview(self):
+        if self.is_recording:
+            QMessageBox.warning(
+                self,
+                "Recording Active",
+                "Please use Stop & Save Analysis before stopping preview."
+            )
+            return
+
+        self._stop_preview_internal(reset_metrics=True)
+
+    def _stop_preview_internal(self, reset_metrics=True):
         if self.video_thread is not None:
             self.video_thread.stop()
             self.video_thread = None
 
         self.status_label.setText("Status: Preview stopped.")
-        self.reset_metrics()
+
+        if reset_metrics:
+            self.reset_metrics()
 
     def update_video_frame(self, q_img):
         pixmap = QPixmap.fromImage(q_img)
@@ -233,6 +277,13 @@ class SprintingPage(QWidget):
         for name, label in self.metric_labels.items():
             value = metrics.get(name, None)
             label.setText(self.format_metric_value(name, value))
+
+        if self.is_recording and self.recorder is not None:
+            self.recorder.add_metrics(metrics)
+
+            self.status_label.setText(
+                f"Status: Recording analysis... Samples: {self.recorder.record_count()}"
+            )
 
     def reset_metrics(self):
         for label in self.metric_labels.values():
@@ -256,17 +307,8 @@ class SprintingPage(QWidget):
         except Exception:
             return str(value)
 
-    def start_analysis(self):
+    def start_analysis_recording(self):
         source_type = self.get_source_type()
-
-        if source_type == "realsense_live":
-            input_mode = "Live RealSense RGB-D Camera"
-        elif source_type == "realsense_bag":
-            input_mode = "RealSense Bag File"
-        elif source_type == "video_file":
-            input_mode = "Side-view Video File"
-        else:
-            input_mode = "Webcam Fallback"
 
         if source_type in ["realsense_bag", "video_file"] and not self.selected_file:
             QMessageBox.warning(
@@ -276,14 +318,88 @@ class SprintingPage(QWidget):
             )
             return
 
-        self.on_start_analysis(input_mode, self.selected_file)
+        if self.video_thread is None:
+            self.start_preview()
+
+        input_mode = self.get_input_mode()
+
+        self.current_session_path = create_session_folder(
+            sport="Sprinting",
+            exercise="Sprinting",
+            input_mode=input_mode,
+            source_file=self.selected_file
+        )
+
+        self.recorder = AnalysisRecorder(
+            session_path=self.current_session_path,
+            sport="Sprinting",
+            exercise="Sprinting",
+            input_mode=input_mode,
+            source_file=self.selected_file
+        )
+
+        self.recorder.start()
+        self.is_recording = True
+
+        self.btn_start_recording.setEnabled(False)
+        self.btn_stop_recording.setEnabled(True)
+
+        self.status_label.setText("Status: Recording analysis started.")
+
+    def stop_and_save_analysis(self):
+        if not self.is_recording or self.recorder is None:
+            QMessageBox.warning(
+                self,
+                "No Active Recording",
+                "There is no active analysis recording to save."
+            )
+            return
+
+        self.is_recording = False
+
+        if self.recorder.record_count() == 0:
+            QMessageBox.warning(
+                self,
+                "No Data Recorded",
+                "No metrics were recorded. Please make sure pose detection is working."
+            )
+
+            self.btn_start_recording.setEnabled(True)
+            self.btn_stop_recording.setEnabled(False)
+            return
+
+        output_info = self.recorder.save_outputs()
+
+        self.btn_start_recording.setEnabled(True)
+        self.btn_stop_recording.setEnabled(False)
+
+        self._stop_preview_internal(reset_metrics=False)
+
+        session_info = {
+            "sport": "Sprinting",
+            "exercise": "Sprinting",
+            "input_mode": self.get_input_mode(),
+            "source_file": self.selected_file,
+            "results_folder": str(self.current_session_path),
+            "record_count": output_info.get("record_count", 0)
+        }
+
+        self.on_start_analysis(session_info)
 
     def go_back(self):
-        self.stop_preview()
+        if self.is_recording:
+            QMessageBox.warning(
+                self,
+                "Recording Active",
+                "Please stop and save the analysis before going back."
+            )
+            return
+
+        self._stop_preview_internal(reset_metrics=True)
         self.on_back()
 
     def closeEvent(self, event):
-        self.stop_preview()
+        self._stop_preview_internal(reset_metrics=True)
         event.accept()
 
     def apply_styles(self):
@@ -350,6 +466,11 @@ class SprintingPage(QWidget):
 
             QPushButton:hover {
                 background-color: #0099FF;
+            }
+
+            QPushButton:disabled {
+                background-color: #555555;
+                color: #AAAAAA;
             }
 
             QLabel#FileLabel {

@@ -1,6 +1,13 @@
 import sys
 
-from PyQt6.QtWidgets import QApplication, QMainWindow, QStackedWidget
+from PyQt6.QtWidgets import (
+    QApplication,
+    QMainWindow,
+    QStackedWidget,
+    QScrollArea,
+    QFrame
+)
+from PyQt6.QtCore import Qt
 
 from ui.home_page import HomePage
 from ui.weightlifting_page import WeightliftingPage
@@ -9,7 +16,6 @@ from ui.results_page import ResultsPage
 from ui.history_page import HistoryPage
 from ui.about_page import AboutPage
 
-from modules.result_manager import create_session_folder, generate_dummy_outputs
 from modules.database_manager import (
     init_database,
     add_session,
@@ -25,10 +31,20 @@ class MainWindow(QMainWindow):
         init_database()
 
         self.setWindowTitle("BioMotion Studio")
-        self.resize(1280, 720)
 
+        # Minimum size keeps layout usable, but scroll area helps if screen is smaller.
+        self.setMinimumSize(1100, 650)
+
+        # Main page stack
         self.stack = QStackedWidget()
-        self.setCentralWidget(self.stack)
+
+        # Scroll area prevents bottom controls from being hidden on smaller screens.
+        self.scroll_area = QScrollArea()
+        self.scroll_area.setWidgetResizable(True)
+        self.scroll_area.setFrameShape(QFrame.Shape.NoFrame)
+        self.scroll_area.setWidget(self.stack)
+
+        self.setCentralWidget(self.scroll_area)
 
         self.home_page = HomePage(
             on_weightlifting=self.show_weightlifting_page,
@@ -41,12 +57,12 @@ class MainWindow(QMainWindow):
 
         self.weightlifting_page = WeightliftingPage(
             on_back=self.show_home_page,
-            on_start_analysis=self.start_weightlifting_analysis
+            on_start_analysis=self.complete_analysis_session
         )
 
         self.sprinting_page = SprintingPage(
             on_back=self.show_home_page,
-            on_start_analysis=self.start_sprinting_analysis
+            on_start_analysis=self.complete_analysis_session
         )
 
         self.results_page = ResultsPage(
@@ -74,7 +90,6 @@ class MainWindow(QMainWindow):
     def get_system_status(self):
         status_parts = []
 
-        # RealSense status
         try:
             import pyrealsense2 as rs
 
@@ -93,14 +108,12 @@ class MainWindow(QMainWindow):
         except Exception:
             status_parts.append("RealSense: Not Ready")
 
-        # MediaPipe status
         try:
             import mediapipe
             status_parts.append("MediaPipe: Ready")
         except Exception:
             status_parts.append("MediaPipe: Not Ready")
 
-        # Database status
         try:
             session_count = get_session_count()
             status_parts.append(f"Database: Ready ({session_count} sessions)")
@@ -153,67 +166,22 @@ class MainWindow(QMainWindow):
         self.refresh_status_bar()
         self.stack.setCurrentWidget(self.about_page)
 
-    def start_weightlifting_analysis(self, exercise, input_mode, file_path):
-        session_path = create_session_folder(
-            sport="Weightlifting",
-            exercise=exercise,
-            input_mode=input_mode,
-            source_file=file_path
-        )
-
-        generate_dummy_outputs(
-            session_path=session_path,
-            sport="Weightlifting",
-            exercise=exercise
-        )
-
+    def complete_analysis_session(self, session_info):
         add_session({
-            "sport": "Weightlifting",
-            "exercise": exercise,
-            "input_mode": input_mode,
-            "source_file": file_path,
-            "results_folder": str(session_path)
+            "sport": session_info.get("sport", ""),
+            "exercise": session_info.get("exercise", ""),
+            "input_mode": session_info.get("input_mode", ""),
+            "source_file": session_info.get("source_file", ""),
+            "results_folder": session_info.get("results_folder", "")
         })
 
         self.results_page.set_summary({
-            "Sport": "Weightlifting",
-            "Exercise": exercise,
-            "Input Mode": input_mode,
-            "File": file_path if file_path else "Live RealSense Camera",
-            "Results Folder": str(session_path)
-        })
-
-        self.refresh_status_bar()
-        self.stack.setCurrentWidget(self.results_page)
-
-    def start_sprinting_analysis(self, input_mode, file_path):
-        session_path = create_session_folder(
-            sport="Sprinting",
-            exercise="Sprinting",
-            input_mode=input_mode,
-            source_file=file_path
-        )
-
-        generate_dummy_outputs(
-            session_path=session_path,
-            sport="Sprinting",
-            exercise="Sprinting"
-        )
-
-        add_session({
-            "sport": "Sprinting",
-            "exercise": "Sprinting",
-            "input_mode": input_mode,
-            "source_file": file_path,
-            "results_folder": str(session_path)
-        })
-
-        self.results_page.set_summary({
-            "Sport": "Sprinting Biomechanics",
-            "Exercise": "Sprinting",
-            "Input Mode": input_mode,
-            "File": file_path if file_path else "Live Camera",
-            "Results Folder": str(session_path)
+            "Sport": session_info.get("sport", ""),
+            "Exercise": session_info.get("exercise", ""),
+            "Input Mode": session_info.get("input_mode", ""),
+            "File": session_info.get("source_file", "") if session_info.get("source_file", "") else "Live / Webcam Source",
+            "Results Folder": session_info.get("results_folder", ""),
+            "Recorded Samples": str(session_info.get("record_count", 0))
         })
 
         self.refresh_status_bar()
@@ -224,6 +192,10 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
 
     window = MainWindow()
-    window.show()
+
+    # Important:
+    # showMaximized() respects the Windows taskbar.
+    # Do not use showFullScreen(), because that can cover the taskbar.
+    window.showMaximized()
 
     sys.exit(app.exec())

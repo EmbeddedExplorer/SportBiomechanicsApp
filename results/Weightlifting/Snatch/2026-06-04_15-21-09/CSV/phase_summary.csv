@@ -1,6 +1,0 @@
-phase,start_time_s,end_time_s
-Setup,0.0,0.03
-First Pull,0.03,0.06
-Second Pull,0.06,0.09
-Catch,0.09,0.12
-Recovery,0.12,0.15
