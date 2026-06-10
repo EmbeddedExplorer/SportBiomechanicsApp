@@ -1,6 +1,7 @@
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton,
-    QRadioButton, QGroupBox, QFileDialog, QMessageBox, QGridLayout
+    QRadioButton, QGroupBox, QFileDialog, QMessageBox, QGridLayout,
+    QSizePolicy
 )
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QPixmap
@@ -27,14 +28,17 @@ class WeightliftingPage(QWidget):
         self.current_session_path = None
 
         main_layout = QVBoxLayout()
-        main_layout.setSpacing(12)
+        main_layout.setContentsMargins(12, 8, 12, 8)
+        main_layout.setSpacing(6)
 
         title = QLabel("WEIGHTLIFTING BIOMECHANICS ANALYSIS")
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         title.setObjectName("PageTitle")
 
+        # ================= EXERCISE SELECTION =================
         exercise_group = QGroupBox("Select Exercise")
         exercise_layout = QVBoxLayout()
+        exercise_layout.setSpacing(4)
 
         self.radio_snatch = QRadioButton("Snatch")
         self.radio_clean_jerk = QRadioButton("Clean & Jerk")
@@ -44,44 +48,78 @@ class WeightliftingPage(QWidget):
         exercise_layout.addWidget(self.radio_clean_jerk)
         exercise_group.setLayout(exercise_layout)
 
+        # ================= CAMERA VIEW SELECTION =================
+        view_group = QGroupBox("Select Camera View")
+        view_layout = QVBoxLayout()
+        view_layout.setSpacing(4)
+
+        self.radio_side_view = QRadioButton("Side View")
+        self.radio_front_view = QRadioButton("Front View")
+        self.radio_side_view.setChecked(True)
+
+        view_layout.addWidget(self.radio_side_view)
+        view_layout.addWidget(self.radio_front_view)
+        view_group.setLayout(view_layout)
+
+        # ================= INPUT SOURCE SELECTION =================
         input_group = QGroupBox("Select Input Source")
         input_layout = QVBoxLayout()
+        input_layout.setSpacing(4)
 
         self.radio_realsense_live = QRadioButton("Live RealSense RGB-D Camera")
         self.radio_bag = QRadioButton("Pre-recorded RealSense .bag File")
-        self.radio_webcam = QRadioButton("Webcam Fallback")
         self.radio_realsense_live.setChecked(True)
 
         self.file_label = QLabel("No .bag file selected")
         self.file_label.setObjectName("FileLabel")
+        self.file_label.setWordWrap(True)
 
         btn_select_file = QPushButton("Select .bag File")
         btn_select_file.clicked.connect(self.select_bag_file)
 
         input_layout.addWidget(self.radio_realsense_live)
         input_layout.addWidget(self.radio_bag)
-        input_layout.addWidget(self.radio_webcam)
         input_layout.addWidget(btn_select_file)
         input_layout.addWidget(self.file_label)
 
         input_group.setLayout(input_layout)
 
         controls_layout = QHBoxLayout()
+        controls_layout.setSpacing(8)
         controls_layout.addWidget(exercise_group)
+        controls_layout.addWidget(view_group)
         controls_layout.addWidget(input_group)
 
+        # ================= PREVIEW AREA =================
         preview_group = QGroupBox("Live Preview / Tracking View")
+        preview_group.setSizePolicy(
+            QSizePolicy.Policy.Expanding,
+            QSizePolicy.Policy.Expanding
+        )
+
         preview_layout = QVBoxLayout()
+        preview_layout.setSpacing(6)
 
         self.video_label = QLabel("Video preview will appear here.")
         self.video_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.video_label.setMinimumSize(640, 360)
+
+        # Important:
+        # Do not allow incoming video pixmap size to resize the whole UI.
+        self.video_label.setMinimumSize(640, 300)
+        self.video_label.setMaximumHeight(430)
+        self.video_label.setSizePolicy(
+            QSizePolicy.Policy.Ignored,
+            QSizePolicy.Policy.Ignored
+        )
+        self.video_label.setScaledContents(False)
         self.video_label.setObjectName("VideoLabel")
 
         self.status_label = QLabel("Status: Ready")
         self.status_label.setObjectName("StatusLabel")
+        self.status_label.setWordWrap(True)
 
         preview_buttons = QHBoxLayout()
+        preview_buttons.setSpacing(8)
 
         btn_start_preview = QPushButton("Start Preview")
         btn_stop_preview = QPushButton("Stop Preview")
@@ -92,19 +130,26 @@ class WeightliftingPage(QWidget):
         preview_buttons.addWidget(btn_start_preview)
         preview_buttons.addWidget(btn_stop_preview)
 
-        preview_layout.addWidget(self.video_label)
+        preview_layout.addWidget(self.video_label, 1)
         preview_layout.addWidget(self.status_label)
         preview_layout.addLayout(preview_buttons)
 
         preview_group.setLayout(preview_layout)
 
+        # ================= METRICS PANEL =================
         metrics_group = self.create_metrics_group()
+        metrics_group.setMinimumWidth(300)
+        metrics_group.setMaximumWidth(360)
 
         content_layout = QHBoxLayout()
-        content_layout.addWidget(preview_group, 3)
+        content_layout.setSpacing(8)
+        content_layout.addWidget(preview_group, 4)
         content_layout.addWidget(metrics_group, 1)
 
+        # ================= BOTTOM BUTTONS =================
         button_layout = QHBoxLayout()
+        button_layout.setContentsMargins(0, 0, 0, 0)
+        button_layout.setSpacing(10)
 
         btn_back = QPushButton("Back")
         self.btn_start_recording = QPushButton("Start Analysis Recording")
@@ -122,7 +167,7 @@ class WeightliftingPage(QWidget):
 
         main_layout.addWidget(title)
         main_layout.addLayout(controls_layout)
-        main_layout.addLayout(content_layout)
+        main_layout.addLayout(content_layout, 1)
         main_layout.addLayout(button_layout)
 
         self.setLayout(main_layout)
@@ -131,10 +176,19 @@ class WeightliftingPage(QWidget):
 
     def create_metrics_group(self):
         metrics_group = QGroupBox("Live Biomechanics Metrics")
+        metrics_group.setSizePolicy(
+            QSizePolicy.Policy.Fixed,
+            QSizePolicy.Policy.Expanding
+        )
+
         metrics_layout = QGridLayout()
+        metrics_layout.setContentsMargins(8, 8, 8, 8)
+        metrics_layout.setHorizontalSpacing(8)
+        metrics_layout.setVerticalSpacing(4)
 
         metric_names = [
             "Pose",
+            "Phase",
             "Left Hip Angle",
             "Right Hip Angle",
             "Left Knee Angle",
@@ -184,13 +238,13 @@ class WeightliftingPage(QWidget):
         if self.radio_realsense_live.isChecked():
             return "realsense_live"
 
-        if self.radio_bag.isChecked():
-            return "realsense_bag"
-
-        return "webcam"
+        return "realsense_bag"
 
     def get_exercise(self):
         return "Snatch" if self.radio_snatch.isChecked() else "Clean & Jerk"
+
+    def get_camera_view(self):
+        return "Side View" if self.radio_side_view.isChecked() else "Front View"
 
     def get_input_mode(self):
         source_type = self.get_source_type()
@@ -198,10 +252,7 @@ class WeightliftingPage(QWidget):
         if source_type == "realsense_live":
             return "Live RealSense RGB-D Camera"
 
-        if source_type == "realsense_bag":
-            return "RealSense Bag File"
-
-        return "Webcam Fallback"
+        return "RealSense Bag File"
 
     def start_preview(self):
         if self.is_recording:
@@ -226,7 +277,10 @@ class WeightliftingPage(QWidget):
 
         self.video_thread = VideoThread(
             source_type=source_type,
-            file_path=self.selected_file
+            file_path=self.selected_file,
+            sport="Weightlifting",
+            exercise=self.get_exercise(),
+            camera_view=self.get_camera_view()
         )
 
         self.video_thread.frame_ready.connect(self.update_video_frame)
@@ -251,6 +305,9 @@ class WeightliftingPage(QWidget):
             self.video_thread.stop()
             self.video_thread = None
 
+        self.video_label.clear()
+        self.video_label.setText("Video preview will appear here.")
+
         self.status_label.setText("Status: Preview stopped.")
 
         if reset_metrics:
@@ -259,14 +316,21 @@ class WeightliftingPage(QWidget):
     def update_video_frame(self, q_img):
         pixmap = QPixmap.fromImage(q_img)
 
-        self.video_label.setPixmap(
-            pixmap.scaled(
-                self.video_label.width(),
-                self.video_label.height(),
-                Qt.AspectRatioMode.KeepAspectRatio,
-                Qt.TransformationMode.SmoothTransformation
-            )
+        label_width = self.video_label.width()
+        label_height = self.video_label.height()
+
+        if label_width <= 0 or label_height <= 0:
+            label_width = 640
+            label_height = 360
+
+        scaled_pixmap = pixmap.scaled(
+            label_width,
+            label_height,
+            Qt.AspectRatioMode.KeepAspectRatio,
+            Qt.TransformationMode.SmoothTransformation
         )
+
+        self.video_label.setPixmap(scaled_pixmap)
 
     def update_status(self, text):
         self.status_label.setText(f"Status: {text}")
@@ -291,7 +355,7 @@ class WeightliftingPage(QWidget):
         if value is None:
             return "N/A"
 
-        if name == "Pose":
+        if name in ["Pose", "Phase"]:
             return str(value)
 
         if "(m)" in name:
@@ -320,11 +384,13 @@ class WeightliftingPage(QWidget):
             self.start_preview()
 
         exercise = self.get_exercise()
+        camera_view = self.get_camera_view()
         input_mode = self.get_input_mode()
 
         self.current_session_path = create_session_folder(
             sport="Weightlifting",
             exercise=exercise,
+            camera_view=camera_view,
             input_mode=input_mode,
             source_file=self.selected_file
         )
@@ -333,6 +399,7 @@ class WeightliftingPage(QWidget):
             session_path=self.current_session_path,
             sport="Weightlifting",
             exercise=exercise,
+            camera_view=camera_view,
             input_mode=input_mode,
             source_file=self.selected_file
         )
@@ -377,6 +444,7 @@ class WeightliftingPage(QWidget):
         session_info = {
             "sport": "Weightlifting",
             "exercise": self.get_exercise(),
+            "camera_view": self.get_camera_view(),
             "input_mode": self.get_input_mode(),
             "source_file": self.selected_file,
             "results_folder": str(self.current_session_path),
@@ -411,24 +479,24 @@ class WeightliftingPage(QWidget):
             }
 
             QLabel#PageTitle {
-                font-size: 28px;
+                font-size: 27px;
                 font-weight: bold;
                 color: #00D4FF;
-                margin: 8px;
+                margin: 4px;
             }
 
             QGroupBox {
                 border: 2px solid #0078D7;
                 border-radius: 10px;
-                margin: 8px;
-                padding: 14px;
-                font-size: 16px;
+                margin: 5px;
+                padding: 10px;
+                font-size: 15px;
                 font-weight: bold;
             }
 
             QRadioButton {
                 font-size: 14px;
-                padding: 5px;
+                padding: 3px;
             }
 
             QLabel#VideoLabel {
@@ -440,17 +508,17 @@ class WeightliftingPage(QWidget):
 
             QLabel#StatusLabel {
                 color: #00D4FF;
-                font-size: 14px;
+                font-size: 13px;
             }
 
             QLabel#MetricName {
                 color: #D0D0D0;
-                font-size: 13px;
+                font-size: 12px;
             }
 
             QLabel#MetricValue {
                 color: #00D4FF;
-                font-size: 13px;
+                font-size: 12px;
                 font-weight: bold;
             }
 
@@ -458,7 +526,7 @@ class WeightliftingPage(QWidget):
                 background-color: #0078D7;
                 color: white;
                 border-radius: 8px;
-                padding: 9px;
+                padding: 7px;
                 font-size: 14px;
                 font-weight: bold;
             }
@@ -474,6 +542,6 @@ class WeightliftingPage(QWidget):
 
             QLabel#FileLabel {
                 color: #CFCFCF;
-                font-size: 13px;
+                font-size: 12px;
             }
         """)

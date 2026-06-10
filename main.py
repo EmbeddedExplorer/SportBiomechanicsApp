@@ -31,17 +31,19 @@ class MainWindow(QMainWindow):
         init_database()
 
         self.setWindowTitle("BioMotion Studio")
-
-        # Minimum size keeps layout usable, but scroll area helps if screen is smaller.
         self.setMinimumSize(1100, 650)
 
-        # Main page stack
         self.stack = QStackedWidget()
 
-        # Scroll area prevents bottom controls from being hidden on smaller screens.
         self.scroll_area = QScrollArea()
         self.scroll_area.setWidgetResizable(True)
         self.scroll_area.setFrameShape(QFrame.Shape.NoFrame)
+        self.scroll_area.setVerticalScrollBarPolicy(
+            Qt.ScrollBarPolicy.ScrollBarAsNeeded
+        )
+        self.scroll_area.setHorizontalScrollBarPolicy(
+            Qt.ScrollBarPolicy.ScrollBarAlwaysOff
+        )
         self.scroll_area.setWidget(self.stack)
 
         self.setCentralWidget(self.scroll_area)
@@ -149,6 +151,7 @@ class MainWindow(QMainWindow):
         self.results_page.set_summary({
             "Sport": "Previous Analysis",
             "Exercise": "Not selected",
+            "Camera View": "N/A",
             "Input Mode": "Not selected",
             "File": "No file selected",
             "Results Folder": "No folder created yet"
@@ -170,6 +173,7 @@ class MainWindow(QMainWindow):
         add_session({
             "sport": session_info.get("sport", ""),
             "exercise": session_info.get("exercise", ""),
+            "camera_view": session_info.get("camera_view", "N/A"),
             "input_mode": session_info.get("input_mode", ""),
             "source_file": session_info.get("source_file", ""),
             "results_folder": session_info.get("results_folder", "")
@@ -178,8 +182,9 @@ class MainWindow(QMainWindow):
         self.results_page.set_summary({
             "Sport": session_info.get("sport", ""),
             "Exercise": session_info.get("exercise", ""),
+            "Camera View": session_info.get("camera_view", "N/A"),
             "Input Mode": session_info.get("input_mode", ""),
-            "File": session_info.get("source_file", "") if session_info.get("source_file", "") else "Live / Webcam Source",
+            "File": session_info.get("source_file", "") if session_info.get("source_file", "") else "Live Source",
             "Results Folder": session_info.get("results_folder", ""),
             "Recorded Samples": str(session_info.get("record_count", 0))
         })
@@ -192,10 +197,6 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
 
     window = MainWindow()
-
-    # Important:
-    # showMaximized() respects the Windows taskbar.
-    # Do not use showFullScreen(), because that can cover the taskbar.
     window.showMaximized()
 
     sys.exit(app.exec())

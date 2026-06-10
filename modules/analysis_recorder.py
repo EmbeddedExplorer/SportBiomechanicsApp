@@ -17,13 +17,15 @@ class AnalysisRecorder:
         sport: str,
         exercise: str,
         input_mode: str,
-        source_file: str = ""
+        source_file: str = "",
+        camera_view: str = "N/A"
     ):
         self.session_path = Path(session_path)
         self.sport = sport
         self.exercise = exercise
         self.input_mode = input_mode
         self.source_file = source_file
+        self.camera_view = camera_view
 
         self.records = []
         self.start_time = None
@@ -40,6 +42,10 @@ class AnalysisRecorder:
 
         record = {
             "time_s": elapsed_time,
+            "sport": self.sport,
+            "exercise": self.exercise,
+            "camera_view": self.camera_view,
+            "phase": metrics.get("Phase", "Not Detected"),
             "pose_status": metrics.get("Pose", "Not Detected"),
 
             "left_hip_angle_deg": metrics.get("Left Hip Angle"),
@@ -83,6 +89,7 @@ class AnalysisRecorder:
         df.to_csv(csv_file, index=False)
 
         self.save_depth_csv(df, csv_folder)
+        self.save_phase_summary_csv(df, csv_folder)
         self.save_summary_csv(df, csv_folder)
         self.save_plots(df, plots_folder)
         self.save_recording_metadata()
@@ -103,6 +110,23 @@ class AnalysisRecorder:
 
         if depth_df[["athlete_depth_m", "center_depth_m"]].notna().sum().sum() > 0:
             depth_df.to_csv(csv_folder / "depth_data.csv", index=False)
+
+    def save_phase_summary_csv(self, df, csv_folder):
+        if df.empty or "phase" not in df.columns:
+            return
+
+        phase_rows = []
+
+        for phase_name, group in df.groupby("phase"):
+            phase_rows.append({
+                "phase": phase_name,
+                "start_time_s": round(group["time_s"].min(), 3),
+                "end_time_s": round(group["time_s"].max(), 3),
+                "sample_count": len(group)
+            })
+
+        phase_df = pd.DataFrame(phase_rows)
+        phase_df.to_csv(csv_folder / "phase_summary.csv", index=False)
 
     def save_summary_csv(self, df, csv_folder):
         numeric_columns = [
@@ -152,7 +176,7 @@ class AnalysisRecorder:
                 "left_knee_angle_deg",
                 "right_knee_angle_deg"
             ],
-            title=f"{self.exercise} Hip and Knee Angles",
+            title=f"{self.exercise} Hip and Knee Angles ({self.camera_view})",
             ylabel="Angle (degrees)",
             filename="hip_knee_angles.png"
         )
@@ -166,7 +190,7 @@ class AnalysisRecorder:
                 "left_shoulder_angle_deg",
                 "right_shoulder_angle_deg"
             ],
-            title=f"{self.exercise} Shoulder and Elbow Angles",
+            title=f"{self.exercise} Shoulder and Elbow Angles ({self.camera_view})",
             ylabel="Angle (degrees)",
             filename="upper_limb_angles.png"
         )
@@ -177,7 +201,7 @@ class AnalysisRecorder:
             columns=[
                 "trunk_lean_angle_deg"
             ],
-            title=f"{self.exercise} Trunk Lean Angle",
+            title=f"{self.exercise} Trunk Lean Angle ({self.camera_view})",
             ylabel="Angle (degrees)",
             filename="trunk_lean_angle.png"
         )
@@ -189,7 +213,7 @@ class AnalysisRecorder:
                 "athlete_depth_m",
                 "center_depth_m"
             ],
-            title=f"{self.exercise} Depth Measurements",
+            title=f"{self.exercise} Depth Measurements ({self.camera_view})",
             ylabel="Depth (m)",
             filename="depth_measurements.png"
         )
@@ -226,11 +250,12 @@ class AnalysisRecorder:
             "app_name": "BioMotion Studio",
             "sport": self.sport,
             "exercise": self.exercise,
+            "camera_view": self.camera_view,
             "input_mode": self.input_mode,
             "source_file": self.source_file,
             "record_count": self.record_count(),
             "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            "note": "V7 2D pose-based analysis recording. Depth values are saved when available."
+            "note": "V8 2D pose-based analysis recording. Phase labels are placeholders until automatic phase detection is implemented."
         }
 
         with open(self.session_path / "recording_metadata.json", "w", encoding="utf-8") as file:

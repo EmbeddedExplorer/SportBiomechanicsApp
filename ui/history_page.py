@@ -1,4 +1,4 @@
-from pathlib import Path
+import shutil
 
 from PyQt6.QtWidgets import (
     QWidget,
@@ -19,7 +19,6 @@ from modules.history_manager import get_analysis_sessions
 class HistoryPage(QWidget):
 
     def __init__(self, on_back):
-
         super().__init__()
 
         self.on_back = on_back
@@ -28,6 +27,7 @@ class HistoryPage(QWidget):
 
         title = QLabel("ANALYSIS HISTORY")
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        title.setObjectName("PageTitle")
 
         self.session_list = QListWidget()
 
@@ -56,29 +56,32 @@ class HistoryPage(QWidget):
 
         self.sessions = []
 
+        self.apply_styles()
         self.load_sessions()
 
     def load_sessions(self):
-
         self.session_list.clear()
 
         self.sessions = get_analysis_sessions()
 
-        for session in self.sessions:
+        if not self.sessions:
+            self.session_list.addItem("No analysis sessions found.")
+            return
 
+        for session in self.sessions:
             text = (
                 f"{session['sport']} | "
                 f"{session['exercise']} | "
+                f"{session.get('camera_view', 'N/A')} | "
                 f"{session['session']}"
             )
 
             self.session_list.addItem(text)
 
     def open_selected_folder(self):
-
         row = self.session_list.currentRow()
 
-        if row < 0:
+        if row < 0 or row >= len(self.sessions):
             return
 
         session = self.sessions[row]
@@ -88,10 +91,9 @@ class HistoryPage(QWidget):
         )
 
     def delete_selected_session(self):
-
         row = self.session_list.currentRow()
 
-        if row < 0:
+        if row < 0 or row >= len(self.sessions):
             return
 
         session = self.sessions[row]
@@ -103,9 +105,43 @@ class HistoryPage(QWidget):
         )
 
         if reply == QMessageBox.StandardButton.Yes:
-
-            import shutil
-
             shutil.rmtree(session["path"])
-
             self.load_sessions()
+
+    def apply_styles(self):
+        self.setStyleSheet("""
+            QWidget {
+                background-color: #101820;
+                color: white;
+                font-family: Segoe UI;
+                font-size: 15px;
+            }
+
+            QLabel#PageTitle {
+                font-size: 28px;
+                font-weight: bold;
+                color: #00D4FF;
+                margin: 20px;
+            }
+
+            QListWidget {
+                background-color: #1E2A35;
+                color: white;
+                border: 1px solid #0078D7;
+                border-radius: 8px;
+                padding: 8px;
+            }
+
+            QPushButton {
+                background-color: #0078D7;
+                color: white;
+                border-radius: 8px;
+                padding: 12px;
+                font-size: 15px;
+                font-weight: bold;
+            }
+
+            QPushButton:hover {
+                background-color: #0099FF;
+            }
+        """)

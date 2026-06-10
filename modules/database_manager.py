@@ -13,6 +13,18 @@ def get_connection():
     return connection
 
 
+def column_exists(conn, table_name, column_name):
+    cursor = conn.cursor()
+    cursor.execute(f"PRAGMA table_info({table_name})")
+    columns = cursor.fetchall()
+
+    for col in columns:
+        if col["name"] == column_name:
+            return True
+
+    return False
+
+
 def init_database():
     with get_connection() as conn:
         cursor = conn.cursor()
@@ -31,6 +43,15 @@ def init_database():
 
         conn.commit()
 
+        # Safe migration for V8
+        if not column_exists(conn, "analysis_sessions", "camera_view"):
+            cursor.execute("""
+                ALTER TABLE analysis_sessions
+                ADD COLUMN camera_view TEXT DEFAULT 'N/A'
+            """)
+
+        conn.commit()
+
 
 def add_session(session_data):
     created_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -42,15 +63,17 @@ def add_session(session_data):
             INSERT INTO analysis_sessions (
                 sport,
                 exercise,
+                camera_view,
                 input_mode,
                 source_file,
                 results_folder,
                 created_at
             )
-            VALUES (?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
         """, (
             session_data.get("sport", ""),
             session_data.get("exercise", ""),
+            session_data.get("camera_view", "N/A"),
             session_data.get("input_mode", ""),
             session_data.get("source_file", ""),
             session_data.get("results_folder", ""),

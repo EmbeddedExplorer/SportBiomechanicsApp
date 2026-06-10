@@ -12,14 +12,27 @@ class VideoThread(QThread):
     status_ready = pyqtSignal(str)
     metrics_ready = pyqtSignal(dict)
 
-    def __init__(self, source_type="webcam", file_path="", camera_index=0):
+    def __init__(
+        self,
+        source_type="video_file",
+        file_path="",
+        camera_index=0,
+        sport="",
+        exercise="",
+        camera_view=""
+    ):
         super().__init__()
 
         self.source_type = source_type
         self.file_path = file_path
         self.camera_index = camera_index
-        self.running = False
 
+        self.sport = sport
+        self.exercise = exercise
+        self.camera_view = camera_view
+        self.current_phase = "Not Detected"
+
+        self.running = False
         self.use_pose = True
 
         self.mp_pose = None
@@ -64,10 +77,10 @@ class VideoThread(QThread):
         cap = cv2.VideoCapture(source)
 
         if not cap.isOpened():
-            self.status_ready.emit("Could not open webcam/video source.")
+            self.status_ready.emit("Could not open video source.")
             return
 
-        self.status_ready.emit("OpenCV video feed started. Depth: Not available.")
+        self.status_ready.emit("Video feed started. Depth: Not available.")
 
         while self.running:
             ret, frame = cap.read()
@@ -104,7 +117,6 @@ class VideoThread(QThread):
             pipeline = rs.pipeline()
             config = rs.config()
 
-            # ================= BAG FILE MODE =================
             if self.source_type == "realsense_bag":
                 if not self.file_path:
                     self.status_ready.emit("No .bag file selected.")
@@ -116,10 +128,8 @@ class VideoThread(QThread):
                     repeat_playback=False
                 )
 
-                # Use recorded stream settings from the bag file.
                 config.enable_all_streams()
 
-            # ================= LIVE REALSENSE MODE =================
             else:
                 config.enable_stream(
                     rs.stream.color,
@@ -169,8 +179,6 @@ class VideoThread(QThread):
 
                 color_image = np.asanyarray(color_frame.get_data())
 
-                # Some .bag files store color as RGB instead of BGR.
-                # This fixes blue/red swapped preview for recorded bags.
                 if self.source_type == "realsense_bag":
                     color_image = cv2.cvtColor(color_image, cv2.COLOR_RGB2BGR)
 
@@ -185,9 +193,7 @@ class VideoThread(QThread):
 
                 if depth_frame:
                     h, w, _ = color_image.shape
-                    center_x = w // 2
-                    center_y = h // 2
-                    center_depth = self.get_depth_value(depth_frame, center_x, center_y)
+                    center_depth = self.get_depth_value(depth_frame, w // 2, h // 2)
 
                     if center_depth is not None:
                         self.status_ready.emit(
@@ -196,9 +202,7 @@ class VideoThread(QThread):
                     else:
                         self.status_ready.emit("RealSense RGB-D running | Center depth: N/A")
                 else:
-                    self.status_ready.emit(
-                        "RealSense color running | Depth frame not available."
-                    )
+                    self.status_ready.emit("RealSense color running | Depth frame not available.")
 
                 self.msleep(30)
 
@@ -229,6 +233,8 @@ class VideoThread(QThread):
         center_depth = None
         athlete_depth = None
 
+        self.draw_context_overlay(display_frame)
+
         if depth_available and depth_frame is not None:
             center_depth = self.get_depth_value(depth_frame, center_x, center_y)
 
@@ -238,9 +244,9 @@ class VideoThread(QThread):
                 cv2.putText(
                     display_frame,
                     f"Center Depth: {center_depth:.2f} m",
-                    (20, 35),
+                    (20, 100),
                     cv2.FONT_HERSHEY_SIMPLEX,
-                    0.8,
+                    0.7,
                     (0, 255, 255),
                     2
                 )
@@ -248,20 +254,19 @@ class VideoThread(QThread):
                 cv2.putText(
                     display_frame,
                     "Center Depth: N/A",
-                    (20, 35),
+                    (20, 100),
                     cv2.FONT_HERSHEY_SIMPLEX,
-                    0.8,
+                    0.7,
                     (0, 255, 255),
                     2
                 )
-
         else:
             cv2.putText(
                 display_frame,
                 "Depth: Not available",
-                (20, 35),
+                (20, 100),
                 cv2.FONT_HERSHEY_SIMPLEX,
-                0.8,
+                0.7,
                 (0, 255, 255),
                 2
             )
@@ -280,7 +285,6 @@ class VideoThread(QThread):
 
                 landmarks = results.pose_landmarks.landmark
 
-                # Approximate athlete center using shoulders and hips
                 ids = [
                     self.mp_pose.PoseLandmark.LEFT_SHOULDER.value,
                     self.mp_pose.PoseLandmark.RIGHT_SHOULDER.value,
@@ -309,7 +313,7 @@ class VideoThread(QThread):
                         "Athlete COM",
                         (athlete_x + 10, athlete_y),
                         cv2.FONT_HERSHEY_SIMPLEX,
-                        0.6,
+                        0.55,
                         (0, 165, 255),
                         2
                     )
@@ -325,9 +329,9 @@ class VideoThread(QThread):
                             cv2.putText(
                                 display_frame,
                                 f"Athlete Depth: {athlete_depth:.2f} m",
-                                (20, 70),
+                                (20, 130),
                                 cv2.FONT_HERSHEY_SIMPLEX,
-                                0.8,
+                                0.7,
                                 (0, 165, 255),
                                 2
                             )
@@ -341,6 +345,10 @@ class VideoThread(QThread):
                     center_depth=center_depth
                 )
 
+                metrics["Phase"] = self.current_phase
+                metrics["Exercise"] = self.exercise
+                metrics["Camera View"] = self.camera_view
+
                 self.metrics_ready.emit(metrics)
 
             else:
@@ -350,6 +358,30 @@ class VideoThread(QThread):
                 self.metrics_ready.emit(metrics)
 
         return display_frame
+
+    def draw_context_overlay(self, frame):
+        if self.sport != "Weightlifting":
+            return
+
+        overlay_lines = [
+            f"Exercise: {self.exercise if self.exercise else 'N/A'}",
+            f"View: {self.camera_view if self.camera_view else 'N/A'}",
+            f"Phase: {self.current_phase}"
+        ]
+
+        y = 30
+
+        for line in overlay_lines:
+            cv2.putText(
+                frame,
+                line,
+                (20, y),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                0.65,
+                (0, 255, 255),
+                2
+            )
+            y += 28
 
     def get_depth_value(self, depth_frame, x, y):
         try:
@@ -372,6 +404,7 @@ class VideoThread(QThread):
     def empty_metrics(self):
         return {
             "Pose": "Not Detected",
+            "Phase": self.current_phase,
 
             "Left Hip Angle": None,
             "Right Hip Angle": None,
