@@ -1,0 +1,11 @@
+{
+    "app_name": "BioMotion Studio",
+    "sport": "Weightlifting",
+    "exercise": "Snatch",
+    "camera_view": "Side View",
+    "input_mode": "RealSense Bag File",
+    "source_file": "E:/Pose estimation tool/Recording_bagFiles/SideView_Snatch/20240405_132144.bag",
+    "record_count": 861,
+    "created_at": "2026-06-10 21:03:39",
+    "note": "V9 2D pose-based joint angles, wrist-based estimated barbell tracking, and rule-based phase detection."
+}

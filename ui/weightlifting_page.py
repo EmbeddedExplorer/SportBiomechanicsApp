@@ -1,6 +1,17 @@
+import time
+
 from PyQt6.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton,
-    QRadioButton, QGroupBox, QFileDialog, QMessageBox, QGridLayout,
+    QApplication,
+    QWidget,
+    QVBoxLayout,
+    QHBoxLayout,
+    QLabel,
+    QPushButton,
+    QRadioButton,
+    QGroupBox,
+    QFileDialog,
+    QMessageBox,
+    QGridLayout,
     QSizePolicy
 )
 from PyQt6.QtCore import Qt
@@ -9,6 +20,11 @@ from PyQt6.QtGui import QPixmap
 from modules.video_thread import VideoThread
 from modules.result_manager import create_session_folder
 from modules.analysis_recorder import AnalysisRecorder
+from modules.roi_selector import (
+    get_first_frame_from_bag,
+    get_first_frame_from_realsense_live,
+    select_roi_from_frame
+)
 
 
 class WeightliftingPage(QWidget):
@@ -26,6 +42,9 @@ class WeightliftingPage(QWidget):
         self.is_recording = False
         self.recorder = None
         self.current_session_path = None
+
+        self.barbell_roi = None
+        self.last_roi_key = None
 
         main_layout = QVBoxLayout()
         main_layout.setContentsMargins(12, 8, 12, 8)
@@ -77,9 +96,13 @@ class WeightliftingPage(QWidget):
         btn_select_file = QPushButton("Select .bag File")
         btn_select_file.clicked.connect(self.select_bag_file)
 
+        btn_select_roi = QPushButton("Select Barbell ROI")
+        btn_select_roi.clicked.connect(self.select_barbell_roi)
+
         input_layout.addWidget(self.radio_realsense_live)
         input_layout.addWidget(self.radio_bag)
         input_layout.addWidget(btn_select_file)
+        input_layout.addWidget(btn_select_roi)
         input_layout.addWidget(self.file_label)
 
         input_group.setLayout(input_layout)
@@ -102,9 +125,6 @@ class WeightliftingPage(QWidget):
 
         self.video_label = QLabel("Video preview will appear here.")
         self.video_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-
-        # Important:
-        # Do not allow incoming video pixmap size to resize the whole UI.
         self.video_label.setMinimumSize(640, 300)
         self.video_label.setMaximumHeight(430)
         self.video_label.setSizePolicy(
@@ -139,7 +159,7 @@ class WeightliftingPage(QWidget):
         # ================= METRICS PANEL =================
         metrics_group = self.create_metrics_group()
         metrics_group.setMinimumWidth(300)
-        metrics_group.setMaximumWidth(360)
+        metrics_group.setMaximumWidth(390)
 
         content_layout = QHBoxLayout()
         content_layout.setSpacing(8)
@@ -174,6 +194,32 @@ class WeightliftingPage(QWidget):
 
         self.apply_styles()
 
+    # ==========================================================
+    # FILE DIALOG
+    # ==========================================================
+    def open_file_dialog_non_native(self, title, file_filter):
+        """
+        Uses Qt non-native file dialog.
+        This helps avoid Windows native Explorer freezing with large .bag folders.
+        """
+
+        dialog = QFileDialog(self)
+        dialog.setWindowTitle(title)
+        dialog.setNameFilter(file_filter)
+        dialog.setFileMode(QFileDialog.FileMode.ExistingFile)
+        dialog.setOption(QFileDialog.Option.DontUseNativeDialog, True)
+
+        if dialog.exec() == QFileDialog.DialogCode.Accepted:
+            selected_files = dialog.selectedFiles()
+
+            if selected_files:
+                return selected_files[0]
+
+        return ""
+
+    # ==========================================================
+    # UI METRICS
+    # ==========================================================
     def create_metrics_group(self):
         metrics_group = QGroupBox("Live Biomechanics Metrics")
         metrics_group.setSizePolicy(
@@ -189,6 +235,7 @@ class WeightliftingPage(QWidget):
         metric_names = [
             "Pose",
             "Phase",
+
             "Left Hip Angle",
             "Right Hip Angle",
             "Left Knee Angle",
@@ -200,6 +247,13 @@ class WeightliftingPage(QWidget):
             "Left Elbow Angle",
             "Right Elbow Angle",
             "Trunk Lean Angle",
+
+            "Barbell X (px)",
+            "Barbell Y (px)",
+            "Barbell Horizontal Displacement (px)",
+            "Barbell Vertical Displacement (px)",
+            "Barbell Vertical Velocity (px/s)",
+
             "Athlete Depth (m)",
             "Center Depth (m)"
         ]
@@ -221,18 +275,11 @@ class WeightliftingPage(QWidget):
 
         return metrics_group
 
-    def select_bag_file(self):
-        file_path, _ = QFileDialog.getOpenFileName(
-            None,
-            "Select RealSense Bag File",
-            "",
-            "RealSense Bag Files (*.bag);;All Files (*)"
-        )
-
-        if file_path:
-            self.selected_file = file_path
-            self.file_label.setText(file_path)
-            self.radio_bag.setChecked(True)
+    # ==========================================================
+    # SELECTION HELPERS
+    # ==========================================================
+    def is_side_view(self):
+        return self.get_camera_view() == "Side View"
 
     def get_source_type(self):
         if self.radio_realsense_live.isChecked():
@@ -254,6 +301,143 @@ class WeightliftingPage(QWidget):
 
         return "RealSense Bag File"
 
+    def roi_matches_current_selection(self):
+        roi_key = (
+            self.get_exercise(),
+            self.get_camera_view(),
+            self.get_source_type(),
+            self.selected_file
+        )
+
+        return self.barbell_roi is not None and self.last_roi_key == roi_key
+
+    # ==========================================================
+    # FILE SELECTION
+    # ==========================================================
+    def select_bag_file(self):
+        if self.is_recording:
+            QMessageBox.warning(
+                self,
+                "Recording Active",
+                "Please stop and save the analysis before changing the input file."
+            )
+            return
+
+        if self.video_thread is not None:
+            if not self._stop_preview_internal(reset_metrics=True):
+                QMessageBox.warning(
+                    self,
+                    "Preview Still Closing",
+                    "Please wait until the current preview fully stops before changing the file."
+                )
+                return
+
+        file_path = self.open_file_dialog_non_native(
+            title="Select RealSense Bag File",
+            file_filter="RealSense Bag Files (*.bag);;All Files (*)"
+        )
+
+        if file_path:
+            self.selected_file = file_path
+            self.file_label.setText(file_path)
+            self.radio_bag.setChecked(True)
+
+            # New file means old ROI is no longer valid.
+            self.barbell_roi = None
+            self.last_roi_key = None
+
+            if self.is_side_view():
+                self.status_label.setText(
+                    "Status: .bag file selected. Side View requires Barbell ROI before trajectory tracking."
+                )
+            else:
+                self.status_label.setText(
+                    "Status: .bag file selected. Front View does not require Barbell ROI."
+                )
+
+    # ==========================================================
+    # ROI SELECTION
+    # ==========================================================
+    def select_barbell_roi(self):
+        if self.is_recording:
+            QMessageBox.warning(
+                self,
+                "Recording Active",
+                "Please stop and save analysis before selecting ROI."
+            )
+            return
+
+        # ROI only needed for side-view barbell trajectory tracking.
+        if not self.is_side_view():
+            QMessageBox.information(
+                self,
+                "ROI Not Required",
+                "Barbell ROI selection is only required for Side View.\n\n"
+                "Front View analysis does not use barbell trajectory tracking."
+            )
+            return
+
+        if self.video_thread is not None:
+            if not self._stop_preview_internal(reset_metrics=True):
+                QMessageBox.warning(
+                    self,
+                    "Preview Still Closing",
+                    "Please wait until the current preview fully stops."
+                )
+                return
+
+        source_type = self.get_source_type()
+
+        if source_type == "realsense_bag" and not self.selected_file:
+            QMessageBox.warning(
+                self,
+                "File Required",
+                "Please select a .bag file before selecting ROI."
+            )
+            return
+
+        if source_type == "realsense_bag":
+            self.status_label.setText("Status: Reading first frame from .bag for ROI selection...")
+            QApplication.processEvents()
+            first_frame = get_first_frame_from_bag(self.selected_file)
+        else:
+            self.status_label.setText("Status: Reading first frame from live RealSense for ROI selection...")
+            QApplication.processEvents()
+            first_frame = get_first_frame_from_realsense_live()
+
+        if first_frame is None:
+            QMessageBox.warning(
+                self,
+                "ROI Selection Failed",
+                "Could not read a frame for ROI selection."
+            )
+            self.status_label.setText("Status: ROI selection failed.")
+            return
+
+        roi = select_roi_from_frame(first_frame, "Select Barbell ROI")
+
+        if roi is None:
+            QMessageBox.information(
+                self,
+                "No ROI Selected",
+                "No ROI was selected."
+            )
+            self.status_label.setText("Status: No ROI selected.")
+            return
+
+        self.barbell_roi = roi
+        self.last_roi_key = (
+            self.get_exercise(),
+            self.get_camera_view(),
+            self.get_source_type(),
+            self.selected_file
+        )
+
+        self.status_label.setText(f"Status: Barbell ROI selected: {roi}")
+
+    # ==========================================================
+    # PREVIEW CONTROL
+    # ==========================================================
     def start_preview(self):
         if self.is_recording:
             QMessageBox.warning(
@@ -263,7 +447,14 @@ class WeightliftingPage(QWidget):
             )
             return
 
-        self._stop_preview_internal(reset_metrics=False)
+        if self.video_thread is not None:
+            if not self._stop_preview_internal(reset_metrics=False):
+                QMessageBox.warning(
+                    self,
+                    "Preview Still Closing",
+                    "Please wait until the current preview fully stops before starting again."
+                )
+                return
 
         source_type = self.get_source_type()
 
@@ -275,12 +466,45 @@ class WeightliftingPage(QWidget):
             )
             return
 
+        # ROI prompt only for Side View.
+        if self.is_side_view():
+            if self.barbell_roi is None:
+                reply = QMessageBox.question(
+                    self,
+                    "No Barbell ROI",
+                    "No barbell ROI selected for Side View.\n\n"
+                    "Side View uses ROI for barbell trajectory tracking.\n\n"
+                    "Continue preview without barbell tracking?"
+                )
+
+                if reply != QMessageBox.StandardButton.Yes:
+                    return
+
+            elif not self.roi_matches_current_selection():
+                reply = QMessageBox.question(
+                    self,
+                    "ROI May Not Match",
+                    "The selected ROI may not match the current exercise/view/file.\n\n"
+                    "Continue anyway?"
+                )
+
+                if reply != QMessageBox.StandardButton.Yes:
+                    return
+
+            barbell_roi_for_thread = self.barbell_roi
+
+        else:
+            # Front View does not use barbell trajectory tracking.
+            # So no ROI prompt, no ROI passed to VideoThread.
+            barbell_roi_for_thread = None
+
         self.video_thread = VideoThread(
             source_type=source_type,
             file_path=self.selected_file,
             sport="Weightlifting",
             exercise=self.get_exercise(),
-            camera_view=self.get_camera_view()
+            camera_view=self.get_camera_view(),
+            barbell_roi=barbell_roi_for_thread
         )
 
         self.video_thread.frame_ready.connect(self.update_video_frame)
@@ -302,17 +526,34 @@ class WeightliftingPage(QWidget):
 
     def _stop_preview_internal(self, reset_metrics=True):
         if self.video_thread is not None:
-            self.video_thread.stop()
+            thread = self.video_thread
+            thread.stop()
+
+            deadline = time.time() + 3.0
+
+            while thread.isRunning() and time.time() < deadline:
+                QApplication.processEvents()
+                thread.wait(100)
+
+            if thread.isRunning():
+                self.status_label.setText("Status: Previous preview is still closing. Please wait.")
+                return False
+
             self.video_thread = None
 
         self.video_label.clear()
         self.video_label.setText("Video preview will appear here.")
 
-        self.status_label.setText("Status: Preview stopped.")
-
         if reset_metrics:
             self.reset_metrics()
 
+        self.status_label.setText("Status: Preview stopped.")
+
+        return True
+
+    # ==========================================================
+    # FRAME + METRICS UPDATE
+    # ==========================================================
     def update_video_frame(self, q_img):
         pixmap = QPixmap.fromImage(q_img)
 
@@ -364,11 +605,26 @@ class WeightliftingPage(QWidget):
             except Exception:
                 return "N/A"
 
+        if "Velocity" in name:
+            try:
+                return f"{float(value):.1f} px/s"
+            except Exception:
+                return "N/A"
+
+        if "(px)" in name:
+            try:
+                return f"{float(value):.1f} px"
+            except Exception:
+                return "N/A"
+
         try:
             return f"{float(value):.1f}°"
         except Exception:
             return str(value)
 
+    # ==========================================================
+    # RECORDING
+    # ==========================================================
     def start_analysis_recording(self):
         source_type = self.get_source_type()
 
@@ -382,6 +638,9 @@ class WeightliftingPage(QWidget):
 
         if self.video_thread is None:
             self.start_preview()
+
+        if self.video_thread is None:
+            return
 
         exercise = self.get_exercise()
         camera_view = self.get_camera_view()
@@ -453,6 +712,9 @@ class WeightliftingPage(QWidget):
 
         self.on_start_analysis(session_info)
 
+    # ==========================================================
+    # NAVIGATION
+    # ==========================================================
     def go_back(self):
         if self.is_recording:
             QMessageBox.warning(
@@ -469,6 +731,9 @@ class WeightliftingPage(QWidget):
         self._stop_preview_internal(reset_metrics=True)
         event.accept()
 
+    # ==========================================================
+    # STYLES
+    # ==========================================================
     def apply_styles(self):
         self.setStyleSheet("""
             QWidget {

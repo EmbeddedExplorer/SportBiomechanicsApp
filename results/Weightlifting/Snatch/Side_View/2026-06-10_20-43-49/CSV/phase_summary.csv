@@ -1,0 +1,7 @@
+phase,start_time_s,end_time_s,sample_count
+Catch,16.735,34.318,22
+First Pull,0.018,14.667,236
+Not Detected,14.73,34.506,62
+Second Pull,15.793,34.381,25
+Transition,34.568,50.368,251
+Turnover,15.857,58.995,265

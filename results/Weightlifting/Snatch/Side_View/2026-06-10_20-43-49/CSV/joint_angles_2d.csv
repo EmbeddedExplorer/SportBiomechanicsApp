@@ -1,0 +1,862 @@
+time_s,sport,exercise,camera_view,phase,pose_status,left_hip_angle_deg,right_hip_angle_deg,left_knee_angle_deg,right_knee_angle_deg,left_ankle_angle_deg,right_ankle_angle_deg,left_shoulder_angle_deg,right_shoulder_angle_deg,left_elbow_angle_deg,right_elbow_angle_deg,trunk_lean_angle_deg,athlete_depth_m,center_depth_m,barbell_detected,barbell_x_px,barbell_y_px,barbell_horizontal_displacement_px,barbell_vertical_displacement_px,barbell_vertical_velocity_px_s,barbell_horizontal_velocity_px_s,barbell_max_height_px
+0.018,Weightlifting,Snatch,Side View,First Pull,Detected,,38.98,,47.0,,116.75,,41.22,,104.04,54.23,3.733,7.652,True,255.0,372.0,30.0,12.0,16.1,16.1,28.0
+0.08,Weightlifting,Snatch,Side View,First Pull,Detected,,43.21,,57.11,,123.85,,37.87,,152.02,53.91,3.733,7.652,True,238.0,390.0,13.0,-6.0,-291.39,-275.2,28.0
+0.142,Weightlifting,Snatch,Side View,First Pull,Detected,,44.11,,59.13,,122.71,,36.31,,154.81,53.91,3.756,7.951,True,235.0,392.0,10.0,-8.0,-32.27,-48.41,28.0
+0.204,Weightlifting,Snatch,Side View,First Pull,Detected,,43.82,,54.0,,119.23,,36.06,,155.41,53.05,3.756,7.951,True,236.0,394.0,11.0,-10.0,-32.16,16.08,28.0
+0.268,Weightlifting,Snatch,Side View,First Pull,Detected,,41.34,,53.37,,122.96,,37.02,,155.98,53.29,3.756,7.652,True,236.0,397.0,11.0,-13.0,-46.96,0.0,28.0
+0.332,Weightlifting,Snatch,Side View,First Pull,Detected,,41.34,,52.19,,111.16,,37.98,,144.07,52.74,3.756,7.652,True,241.0,394.0,16.0,-10.0,46.67,77.79,28.0
+0.394,Weightlifting,Snatch,Side View,First Pull,Detected,,42.31,,51.84,,107.34,,37.18,,137.49,52.43,3.733,7.288,True,242.0,393.0,17.0,-9.0,16.29,16.29,28.0
+0.456,Weightlifting,Snatch,Side View,First Pull,Detected,,41.41,,58.44,,116.14,,37.98,,141.65,52.43,3.733,7.288,True,242.0,394.0,17.0,-10.0,-15.97,0.0,28.0
+0.519,Weightlifting,Snatch,Side View,First Pull,Detected,,40.5,,58.1,,120.23,,38.81,,146.02,52.43,3.756,7.951,True,241.0,393.0,16.0,-9.0,15.94,-15.94,28.0
+0.588,Weightlifting,Snatch,Side View,First Pull,Detected,,40.2,,56.97,,118.9,,37.9,,160.87,51.89,3.756,7.951,True,234.0,401.0,9.0,-17.0,-117.48,-102.8,28.0
+0.642,Weightlifting,Snatch,Side View,First Pull,Detected,,39.89,,54.95,,116.57,,37.31,,162.44,51.89,3.733,7.558,True,233.0,401.0,8.0,-17.0,0.0,-18.29,28.0
+0.706,Weightlifting,Snatch,Side View,First Pull,Detected,,38.98,,59.43,,117.09,,35.81,,159.7,51.58,3.733,7.558,True,233.0,402.0,8.0,-18.0,-15.47,0.0,28.0
+0.77,Weightlifting,Snatch,Side View,First Pull,Detected,,38.98,,58.29,,117.31,,35.81,,161.02,51.58,3.733,7.849,True,232.0,401.0,7.0,-17.0,15.84,-15.84,28.0
+0.834,Weightlifting,Snatch,Side View,First Pull,Detected,,39.47,,55.93,,118.44,,35.35,,159.25,51.4,3.733,7.849,True,233.0,398.0,8.0,-14.0,47.16,15.72,28.0
+0.894,Weightlifting,Snatch,Side View,First Pull,Detected,,39.94,,55.17,,117.68,,36.05,,158.55,51.22,3.756,8.055,True,234.0,396.0,9.0,-12.0,32.87,16.43,28.0
+0.957,Weightlifting,Snatch,Side View,First Pull,Detected,,40.84,,54.76,,117.6,,36.05,,158.73,50.91,3.756,8.055,True,234.0,397.0,9.0,-13.0,-15.91,0.0,28.0
+1.018,Weightlifting,Snatch,Side View,First Pull,Detected,,40.53,,54.05,,117.78,,35.46,,159.06,50.85,3.733,7.558,True,234.0,399.0,9.0,-15.0,-32.74,0.0,28.0
+1.083,Weightlifting,Snatch,Side View,First Pull,Detected,,43.56,,56.91,,119.18,,37.53,,160.21,50.85,3.733,7.558,True,235.0,399.0,10.0,-15.0,0.0,15.33,28.0
+1.148,Weightlifting,Snatch,Side View,First Pull,Detected,,43.9,,56.4,,119.24,,37.42,,155.96,50.85,3.733,7.652,True,237.0,399.0,12.0,-15.0,0.0,31.24,28.0
+1.208,Weightlifting,Snatch,Side View,First Pull,Detected,,40.05,,54.96,,119.81,,36.55,,157.77,50.49,3.733,7.652,True,236.0,400.0,11.0,-16.0,-16.4,-16.4,28.0
+1.271,Weightlifting,Snatch,Side View,First Pull,Detected,,38.21,,54.16,,120.85,,36.55,,159.34,50.49,3.71,7.652,True,235.0,400.0,10.0,-16.0,0.0,-16.04,28.0
+1.336,Weightlifting,Snatch,Side View,First Pull,Detected,,38.8,,54.17,,118.52,,35.14,,158.99,49.95,3.71,7.652,True,234.0,403.0,9.0,-19.0,-45.81,-15.27,28.0
+1.394,Weightlifting,Snatch,Side View,First Pull,Detected,,39.71,,54.36,,119.92,,35.14,,158.99,49.95,3.733,7.376,True,234.0,403.0,9.0,-19.0,0.0,0.0,28.0
+1.456,Weightlifting,Snatch,Side View,First Pull,Detected,,38.49,,56.6,,108.92,,34.26,,158.83,49.36,3.733,7.376,True,234.0,403.0,9.0,-19.0,0.0,0.0,28.0
+1.519,Weightlifting,Snatch,Side View,First Pull,Detected,,39.19,,56.18,,102.01,,34.09,,158.27,48.24,3.756,8.055,True,235.0,400.0,10.0,-16.0,47.61,15.87,28.0
+1.58,Weightlifting,Snatch,Side View,First Pull,Detected,,40.0,,57.04,,111.99,,33.25,,157.57,48.3,3.756,8.055,True,235.0,398.0,10.0,-14.0,32.76,0.0,28.0
+1.642,Weightlifting,Snatch,Side View,First Pull,Detected,,40.0,,55.63,,114.54,,32.92,,157.25,48.04,3.733,7.376,True,235.0,397.0,10.0,-13.0,16.03,0.0,28.0
+1.705,Weightlifting,Snatch,Side View,First Pull,Detected,,40.56,,56.18,,117.53,,32.37,,157.44,48.01,3.733,7.376,True,235.0,397.0,10.0,-13.0,0.0,0.0,28.0
+1.772,Weightlifting,Snatch,Side View,First Pull,Detected,,39.65,,56.66,,118.92,,32.37,,157.44,48.01,3.733,7.466,True,235.0,397.0,10.0,-13.0,0.0,0.0,28.0
+1.828,Weightlifting,Snatch,Side View,First Pull,Detected,,40.58,,57.25,,123.57,,32.69,,159.21,47.75,3.733,7.466,True,234.0,398.0,9.0,-14.0,-16.48,-16.48,28.0
+1.892,Weightlifting,Snatch,Side View,First Pull,Detected,,40.58,,57.7,,124.03,,34.18,,162.15,48.01,3.733,7.288,True,234.0,399.0,9.0,-15.0,-15.86,0.0,28.0
+1.955,Weightlifting,Snatch,Side View,First Pull,Detected,,39.09,,56.15,,121.12,,35.01,,158.7,48.01,3.733,7.288,True,236.0,397.0,11.0,-13.0,31.31,31.31,28.0
+2.02,Weightlifting,Snatch,Side View,First Pull,Detected,,38.19,,54.46,,118.02,,35.27,,156.79,48.01,3.756,7.849,True,237.0,396.0,12.0,-12.0,15.32,15.32,28.0
+2.084,Weightlifting,Snatch,Side View,First Pull,Detected,,40.53,,54.77,,117.75,,34.77,,158.96,47.49,3.756,7.849,True,236.0,398.0,11.0,-14.0,-31.86,-15.93,28.0
+2.144,Weightlifting,Snatch,Side View,First Pull,Detected,,45.34,,58.58,,114.94,,35.33,,158.96,47.51,3.733,7.376,True,236.0,399.0,11.0,-15.0,-16.5,0.0,28.0
+2.206,Weightlifting,Snatch,Side View,First Pull,Detected,,43.05,,60.36,,119.76,,32.96,,158.05,47.78,3.733,7.376,True,234.0,399.0,9.0,-15.0,0.0,-31.45,28.0
+2.27,Weightlifting,Snatch,Side View,First Pull,Detected,,41.82,,59.04,,121.39,,31.72,,157.68,47.2,3.756,7.466,True,234.0,399.0,9.0,-15.0,0.0,0.0,28.0
+2.334,Weightlifting,Snatch,Side View,First Pull,Detected,,41.82,,54.34,,101.47,,35.27,,157.93,47.47,3.756,7.466,True,236.0,395.0,11.0,-11.0,64.12,32.06,28.0
+2.393,Weightlifting,Snatch,Side View,First Pull,Detected,,40.94,,52.46,,93.95,,35.27,,147.29,47.73,3.779,7.652,True,240.0,390.0,15.0,-6.0,84.65,67.72,28.0
+2.455,Weightlifting,Snatch,Side View,First Pull,Detected,,40.2,,53.63,,101.31,,34.21,,153.85,47.18,3.779,7.652,True,238.0,398.0,13.0,-14.0,-127.18,-31.79,28.0
+2.517,Weightlifting,Snatch,Side View,First Pull,Detected,,39.3,,54.75,,105.45,,34.21,,156.38,47.18,3.733,7.749,True,237.0,401.0,12.0,-17.0,-47.89,-15.96,28.0
+2.582,Weightlifting,Snatch,Side View,First Pull,Detected,,40.71,,56.51,,118.23,,34.84,,157.23,46.94,3.733,7.749,True,237.0,399.0,12.0,-15.0,30.77,0.0,28.0
+2.644,Weightlifting,Snatch,Side View,First Pull,Detected,,40.71,,56.67,,119.6,,34.84,,156.92,46.67,3.71,7.652,True,237.0,398.0,12.0,-14.0,16.27,0.0,28.0
+2.708,Weightlifting,Snatch,Side View,First Pull,Detected,,42.15,,53.75,,115.47,,34.29,,155.89,46.65,3.71,7.652,True,237.0,395.0,12.0,-11.0,46.65,0.0,28.0
+2.773,Weightlifting,Snatch,Side View,First Pull,Detected,,43.04,,53.35,,114.18,,34.05,,153.95,46.92,3.756,7.749,True,238.0,394.0,13.0,-10.0,15.51,15.51,28.0
+2.834,Weightlifting,Snatch,Side View,First Pull,Detected,,40.9,,52.73,,118.66,,33.76,,160.1,46.64,3.756,7.749,True,235.0,397.0,10.0,-13.0,-48.8,-48.8,28.0
+2.894,Weightlifting,Snatch,Side View,First Pull,Detected,,40.01,,52.8,,119.62,,33.76,,160.1,46.36,3.71,8.055,True,235.0,397.0,10.0,-13.0,0.0,0.0,28.0
+2.956,Weightlifting,Snatch,Side View,First Pull,Detected,,39.94,,53.46,,120.35,,33.51,,160.29,46.37,3.71,8.055,True,235.0,398.0,10.0,-14.0,-16.28,0.0,28.0
+3.019,Weightlifting,Snatch,Side View,First Pull,Detected,,39.42,,53.46,,119.18,,32.59,,160.54,46.36,3.71,7.558,True,234.0,398.0,9.0,-14.0,0.0,-15.77,28.0
+3.088,Weightlifting,Snatch,Side View,First Pull,Detected,,40.7,,52.28,,110.5,,32.84,,158.36,46.64,3.71,7.558,True,235.0,396.0,10.0,-12.0,29.33,14.66,28.0
+3.158,Weightlifting,Snatch,Side View,First Pull,Detected,,41.61,,51.51,,108.82,,33.13,,156.54,46.64,3.733,7.652,True,236.0,395.0,11.0,-11.0,14.2,14.2,28.0
+3.219,Weightlifting,Snatch,Side View,First Pull,Detected,,41.27,,64.7,,105.67,,33.51,,157.74,46.36,3.733,7.652,True,236.0,394.0,11.0,-10.0,16.21,0.0,28.0
+3.282,Weightlifting,Snatch,Side View,First Pull,Detected,,40.33,,66.57,,110.01,,33.24,,155.22,46.36,3.733,7.376,True,237.0,391.0,12.0,-7.0,47.82,15.94,28.0
+3.345,Weightlifting,Snatch,Side View,First Pull,Detected,,39.95,,63.47,,113.01,,32.99,,157.74,45.81,3.733,7.376,True,236.0,393.0,11.0,-9.0,-31.86,-15.93,28.0
+3.407,Weightlifting,Snatch,Side View,First Pull,Detected,,40.46,,62.0,,116.44,,32.74,,158.27,45.27,3.756,8.055,True,236.0,394.0,11.0,-10.0,-16.05,0.0,28.0
+3.472,Weightlifting,Snatch,Side View,First Pull,Detected,,43.15,,65.82,,120.8,,32.99,,158.78,45.27,3.733,8.055,True,236.0,397.0,11.0,-13.0,-46.13,0.0,28.0
+3.534,Weightlifting,Snatch,Side View,First Pull,Detected,,43.56,,65.03,,119.07,,33.51,,159.02,45.28,3.733,7.037,True,236.0,399.0,11.0,-15.0,-32.53,0.0,28.0
+3.598,Weightlifting,Snatch,Side View,First Pull,Detected,,42.66,,59.41,,117.54,,33.76,,140.76,45.55,3.733,7.037,True,243.0,387.0,18.0,-3.0,185.96,108.48,28.0
+3.663,Weightlifting,Snatch,Side View,First Pull,Detected,,42.32,,55.52,,116.77,,34.38,,138.05,45.27,3.71,7.749,True,245.0,385.0,20.0,-1.0,30.55,30.55,28.0
+3.723,Weightlifting,Snatch,Side View,First Pull,Detected,,40.02,,62.2,,106.47,,34.45,,148.16,45.81,3.71,7.749,True,242.0,389.0,17.0,-5.0,-66.34,-49.75,28.0
+3.789,Weightlifting,Snatch,Side View,First Pull,Detected,,39.95,,64.05,,106.46,,33.25,,147.6,45.81,3.756,7.652,True,241.0,390.0,16.0,-6.0,-15.6,-15.6,28.0
+3.847,Weightlifting,Snatch,Side View,First Pull,Detected,,40.33,,61.59,,110.22,,34.73,,146.52,46.08,3.756,7.652,True,242.0,387.0,17.0,-3.0,51.91,17.3,28.0
+3.907,Weightlifting,Snatch,Side View,First Pull,Detected,,41.23,,60.71,,112.01,,34.73,,145.76,45.81,3.733,7.849,True,242.0,386.0,17.0,-2.0,16.39,0.0,28.0
+3.97,Weightlifting,Snatch,Side View,First Pull,Detected,,46.3,,55.14,,112.36,,32.99,,149.59,45.81,3.733,7.849,True,240.0,390.0,15.0,-6.0,-64.07,-32.03,28.0
+4.032,Weightlifting,Snatch,Side View,First Pull,Detected,,48.63,,54.82,,110.22,,33.69,,151.34,45.27,3.71,7.558,True,240.0,391.0,15.0,-7.0,-16.15,0.0,28.0
+4.091,Weightlifting,Snatch,Side View,First Pull,Detected,,44.08,,54.62,,114.58,,33.69,,154.65,45.27,3.71,7.558,True,238.0,391.0,13.0,-7.0,0.0,-33.35,28.0
+4.153,Weightlifting,Snatch,Side View,First Pull,Detected,,42.23,,54.55,,115.04,,33.69,,154.65,45.0,3.756,7.652,True,238.0,391.0,13.0,-7.0,0.0,0.0,28.0
+4.218,Weightlifting,Snatch,Side View,First Pull,Detected,,41.31,,54.88,,112.19,,33.44,,138.46,45.27,3.756,7.652,True,245.0,384.0,20.0,0.0,107.57,107.57,28.0
+4.279,Weightlifting,Snatch,Side View,First Pull,Detected,,40.85,,56.18,,111.52,,33.96,,135.82,45.27,3.756,8.055,True,246.0,383.0,21.0,1.0,16.58,16.58,28.0
+4.343,Weightlifting,Snatch,Side View,First Pull,Detected,,39.56,,61.73,,117.36,,33.69,,154.65,45.0,3.756,8.055,True,238.0,391.0,13.0,-7.0,-125.1,-125.1,28.0
+4.405,Weightlifting,Snatch,Side View,First Pull,Detected,,40.46,,63.49,,118.22,,34.92,,159.91,45.0,3.71,7.749,True,236.0,393.0,11.0,-9.0,-32.13,-32.13,28.0
+4.472,Weightlifting,Snatch,Side View,First Pull,Detected,,39.86,,60.8,,120.42,,34.22,,157.06,45.27,3.71,7.749,True,237.0,393.0,12.0,-9.0,0.0,14.97,28.0
+4.534,Weightlifting,Snatch,Side View,First Pull,Detected,,40.39,,59.59,,120.51,,33.93,,157.3,45.27,3.71,7.466,True,237.0,393.0,12.0,-9.0,0.0,0.0,28.0
+4.595,Weightlifting,Snatch,Side View,First Pull,Detected,,39.94,,66.74,,114.64,,33.51,,158.26,45.55,3.71,7.466,True,235.0,396.0,10.0,-12.0,-49.5,-33.0,28.0
+4.658,Weightlifting,Snatch,Side View,First Pull,Detected,,39.94,,70.29,,112.7,,33.51,,160.08,45.55,3.756,7.749,True,234.0,397.0,9.0,-13.0,-16.06,-16.06,28.0
+4.723,Weightlifting,Snatch,Side View,First Pull,Detected,,40.46,,69.89,,119.43,,32.2,,155.22,45.27,3.756,7.749,True,236.0,390.0,11.0,-6.0,107.76,30.79,28.0
+4.784,Weightlifting,Snatch,Side View,First Pull,Detected,,40.91,,68.35,,119.51,,31.08,,151.35,45.0,3.756,7.749,True,238.0,388.0,13.0,-4.0,32.62,32.62,28.0
+4.845,Weightlifting,Snatch,Side View,First Pull,Detected,,40.31,,66.56,,108.65,,31.61,,152.98,45.54,3.756,7.749,True,237.0,388.0,12.0,-4.0,0.0,-16.28,28.0
+4.908,Weightlifting,Snatch,Side View,First Pull,Detected,,38.77,,65.2,,108.31,,30.84,,151.7,46.08,3.756,8.055,True,237.0,388.0,12.0,-4.0,0.0,0.0,28.0
+4.971,Weightlifting,Snatch,Side View,First Pull,Detected,,37.81,,63.48,,104.94,,34.17,,156.28,46.37,3.756,8.055,True,235.0,395.0,10.0,-11.0,-111.12,-31.75,28.0
+5.032,Weightlifting,Snatch,Side View,First Pull,Detected,,37.81,,62.58,,104.04,,34.63,,158.59,46.36,3.733,7.652,True,234.0,397.0,9.0,-13.0,-33.03,-16.51,28.0
+5.096,Weightlifting,Snatch,Side View,First Pull,Detected,,38.89,,60.94,,119.64,,33.92,,153.72,46.36,3.733,7.652,True,237.0,397.0,12.0,-13.0,0.0,46.44,28.0
+5.16,Weightlifting,Snatch,Side View,First Pull,Detected,,38.96,,59.76,,123.27,,34.57,,154.75,46.36,3.71,7.376,True,238.0,396.0,13.0,-12.0,15.65,15.65,28.0
+5.221,Weightlifting,Snatch,Side View,First Pull,Detected,,41.61,,58.77,,118.83,,35.04,,157.16,46.36,3.71,7.376,True,237.0,399.0,12.0,-15.0,-49.1,-16.37,28.0
+5.283,Weightlifting,Snatch,Side View,First Pull,Detected,,43.02,,58.43,,115.66,,35.65,,158.28,45.82,3.756,7.951,True,237.0,399.0,12.0,-15.0,0.0,0.0,28.0
+5.346,Weightlifting,Snatch,Side View,First Pull,Detected,,42.11,,61.59,,115.14,,33.78,,156.73,46.08,3.756,7.951,True,237.0,396.0,12.0,-12.0,47.62,0.0,28.0
+5.409,Weightlifting,Snatch,Side View,First Pull,Detected,,40.73,,62.75,,117.19,,33.74,,156.19,46.34,3.71,7.849,True,237.0,394.0,12.0,-10.0,32.11,0.0,28.0
+5.471,Weightlifting,Snatch,Side View,First Pull,Detected,,41.71,,62.21,,121.29,,32.99,,153.43,45.81,3.71,7.849,True,237.0,390.0,12.0,-6.0,63.54,0.0,28.0
+5.533,Weightlifting,Snatch,Side View,First Pull,Detected,,41.71,,61.43,,123.62,,32.99,,150.77,45.81,3.756,7.376,True,238.0,388.0,13.0,-4.0,32.65,16.32,28.0
+5.597,Weightlifting,Snatch,Side View,First Pull,Detected,,41.63,,60.74,,103.75,,36.47,,142.37,46.07,3.756,7.376,True,243.0,382.0,18.0,2.0,93.62,78.02,28.0
+5.658,Weightlifting,Snatch,Side View,First Pull,Detected,,41.63,,61.17,,104.17,,37.9,,142.74,46.34,3.733,7.849,True,244.0,382.0,19.0,2.0,0.0,16.36,28.0
+5.72,Weightlifting,Snatch,Side View,First Pull,Detected,,44.33,,61.73,,117.16,,36.89,,157.47,46.08,3.756,7.849,True,239.0,396.0,14.0,-12.0,-224.1,-80.03,28.0
+5.788,Weightlifting,Snatch,Side View,First Pull,Detected,,46.24,,62.25,,119.91,,36.06,,159.53,45.27,3.733,7.749,True,237.0,398.0,12.0,-14.0,-29.79,-29.79,28.0
+5.844,Weightlifting,Snatch,Side View,First Pull,Detected,,43.08,,62.55,,119.74,,35.2,,158.16,45.81,3.733,7.749,True,237.0,397.0,12.0,-13.0,17.64,0.0,28.0
+5.906,Weightlifting,Snatch,Side View,First Pull,Detected,,42.2,,62.08,,116.97,,35.2,,157.85,45.81,3.756,7.466,True,237.0,396.0,12.0,-12.0,15.9,0.0,28.0
+5.97,Weightlifting,Snatch,Side View,First Pull,Detected,,43.42,,60.95,,109.13,,36.71,,120.24,46.09,3.756,7.466,True,250.0,377.0,25.0,7.0,301.72,206.44,28.0
+6.033,Weightlifting,Snatch,Side View,First Pull,Detected,,44.81,,60.54,,108.04,,37.41,,113.11,46.1,3.733,7.749,True,252.0,374.0,27.0,10.0,48.1,32.06,28.0
+6.094,Weightlifting,Snatch,Side View,First Pull,Detected,,42.56,,60.08,,109.31,,37.11,,117.41,46.36,3.733,7.749,True,251.0,379.0,26.0,5.0,-80.94,-16.19,28.0
+6.157,Weightlifting,Snatch,Side View,First Pull,Detected,,42.2,,60.03,,105.03,,37.93,,124.75,46.09,3.756,7.466,True,245.0,379.0,20.0,5.0,0.0,-95.6,28.0
+6.222,Weightlifting,Snatch,Side View,First Pull,Detected,,38.96,,62.57,,113.77,,38.28,,154.46,46.36,3.756,7.466,True,240.0,393.0,15.0,-9.0,-213.37,-76.2,28.0
+6.285,Weightlifting,Snatch,Side View,First Pull,Detected,,38.89,,63.33,,116.23,,36.92,,156.71,46.08,3.756,7.652,True,238.0,396.0,13.0,-12.0,-48.5,-32.34,28.0
+6.346,Weightlifting,Snatch,Side View,First Pull,Detected,,38.89,,59.69,,117.85,,37.3,,157.1,45.81,3.756,7.652,True,238.0,398.0,13.0,-14.0,-32.45,0.0,28.0
+6.409,Weightlifting,Snatch,Side View,First Pull,Detected,,38.41,,57.12,,116.27,,36.79,,157.49,45.82,3.756,7.466,True,238.0,399.0,13.0,-15.0,-15.83,0.0,28.0
+6.474,Weightlifting,Snatch,Side View,First Pull,Detected,,38.41,,58.3,,118.83,,36.79,,157.1,46.09,3.756,7.466,True,238.0,398.0,13.0,-14.0,15.45,0.0,28.0
+6.534,Weightlifting,Snatch,Side View,First Pull,Detected,,38.41,,58.3,,118.29,,36.79,,157.1,46.09,3.756,7.466,True,238.0,398.0,13.0,-14.0,0.0,0.0,28.0
+6.6,Weightlifting,Snatch,Side View,First Pull,Detected,,37.62,,63.76,,111.73,,36.18,,141.52,46.34,3.756,7.466,True,242.0,383.0,17.0,1.0,227.38,60.64,28.0
+6.666,Weightlifting,Snatch,Side View,First Pull,Detected,,38.04,,65.42,,111.67,,36.86,,140.38,46.07,3.733,7.558,True,243.0,380.0,18.0,4.0,44.69,14.9,28.0
+6.722,Weightlifting,Snatch,Side View,First Pull,Detected,,35.72,,63.31,,113.2,,34.95,,147.89,46.33,3.733,7.558,True,240.0,386.0,15.0,-2.0,-108.45,-54.22,28.0
+6.785,Weightlifting,Snatch,Side View,First Pull,Detected,,35.72,,63.59,,113.48,,34.95,,153.51,46.33,3.733,7.376,True,238.0,389.0,13.0,-5.0,-47.69,-31.79,28.0
+6.846,Weightlifting,Snatch,Side View,First Pull,Detected,,41.63,,64.22,,104.7,,36.68,,107.78,46.61,3.733,7.376,True,252.0,372.0,27.0,12.0,276.79,227.94,28.0
+6.91,Weightlifting,Snatch,Side View,First Pull,Detected,,43.45,,63.43,,102.09,,39.27,,103.58,46.33,3.756,7.849,True,254.0,370.0,29.0,14.0,31.41,31.41,28.0
+6.974,Weightlifting,Snatch,Side View,First Pull,Detected,,46.09,,62.53,,106.43,,38.42,,153.99,46.34,3.756,7.849,True,242.0,395.0,17.0,-11.0,-391.59,-187.96,28.0
+7.036,Weightlifting,Snatch,Side View,First Pull,Detected,,46.09,,62.18,,107.71,,38.42,,162.14,46.34,3.756,8.503,True,238.0,399.0,13.0,-15.0,-64.42,-64.42,28.0
+7.102,Weightlifting,Snatch,Side View,First Pull,Detected,,40.81,,59.18,,114.95,,36.89,,158.71,46.34,3.733,8.503,True,238.0,396.0,13.0,-12.0,45.48,0.0,28.0
+7.161,Weightlifting,Snatch,Side View,First Pull,Detected,,39.58,,58.25,,117.11,,36.36,,159.03,46.07,3.733,7.849,True,238.0,396.0,13.0,-12.0,0.0,0.0,28.0
+7.226,Weightlifting,Snatch,Side View,First Pull,Detected,,39.05,,59.04,,113.33,,35.71,,157.18,46.34,3.733,7.849,True,237.0,395.0,12.0,-11.0,15.36,-15.36,28.0
+7.289,Weightlifting,Snatch,Side View,First Pull,Detected,,38.98,,60.57,,114.94,,34.78,,153.76,46.34,3.756,6.957,True,237.0,394.0,12.0,-10.0,15.93,0.0,28.0
+7.351,Weightlifting,Snatch,Side View,First Pull,Detected,,39.34,,60.65,,115.94,,35.07,,151.29,46.9,3.756,6.957,True,238.0,392.0,13.0,-8.0,32.22,16.11,28.0
+7.412,Weightlifting,Snatch,Side View,First Pull,Detected,,39.34,,60.65,,115.94,,34.82,,148.71,46.9,3.71,7.376,True,239.0,390.0,14.0,-6.0,32.5,16.25,28.0
+7.473,Weightlifting,Snatch,Side View,First Pull,Detected,,39.88,,58.58,,117.16,,34.02,,149.59,46.88,3.71,7.376,True,239.0,390.0,14.0,-6.0,0.0,0.0,28.0
+7.536,Weightlifting,Snatch,Side View,First Pull,Detected,,37.9,,58.33,,119.47,,34.05,,149.59,46.9,3.733,8.163,True,239.0,390.0,14.0,-6.0,0.0,0.0,28.0
+7.604,Weightlifting,Snatch,Side View,First Pull,Detected,,39.34,,61.9,,116.01,,36.46,,153.96,47.16,3.733,8.163,True,238.0,391.0,13.0,-7.0,-14.77,-14.77,28.0
+7.663,Weightlifting,Snatch,Side View,First Pull,Detected,,39.34,,62.64,,116.75,,36.67,,154.17,47.42,3.756,7.466,True,238.0,392.0,13.0,-8.0,-16.8,0.0,28.0
+7.724,Weightlifting,Snatch,Side View,First Pull,Detected,,40.19,,63.13,,116.38,,36.67,,154.17,47.16,3.756,7.466,True,238.0,392.0,13.0,-8.0,0.0,0.0,28.0
+7.791,Weightlifting,Snatch,Side View,First Pull,Detected,,40.73,,62.75,,116.01,,36.14,,156.02,46.88,3.756,7.558,True,237.0,392.0,12.0,-8.0,0.0,-15.0,28.0
+7.854,Weightlifting,Snatch,Side View,First Pull,Detected,,40.19,,60.71,,120.41,,36.24,,154.23,47.44,3.756,7.558,True,238.0,391.0,13.0,-7.0,15.82,15.82,28.0
+7.915,Weightlifting,Snatch,Side View,First Pull,Detected,,39.28,,59.41,,123.3,,36.24,,152.46,47.44,3.756,7.849,True,239.0,391.0,14.0,-7.0,0.0,16.44,28.0
+7.972,Weightlifting,Snatch,Side View,First Pull,Detected,,42.92,,60.59,,118.83,,35.07,,154.36,47.18,3.756,7.849,True,238.0,394.0,13.0,-10.0,-52.2,-17.4,28.0
+8.036,Weightlifting,Snatch,Side View,First Pull,Detected,,43.84,,61.07,,119.56,,35.07,,154.75,46.9,3.756,7.652,True,238.0,395.0,13.0,-11.0,-15.74,0.0,28.0
+8.1,Weightlifting,Snatch,Side View,First Pull,Detected,,42.01,,62.04,,100.35,,36.24,,157.18,46.9,3.756,7.652,True,238.0,394.0,13.0,-10.0,15.58,0.0,28.0
+8.162,Weightlifting,Snatch,Side View,First Pull,Detected,,39.69,,61.71,,99.66,,35.57,,155.65,47.42,3.733,8.273,True,238.0,394.0,13.0,-10.0,0.0,0.0,28.0
+8.223,Weightlifting,Snatch,Side View,First Pull,Detected,,38.79,,59.8,,122.86,,35.57,,156.01,47.42,3.733,8.273,True,238.0,395.0,13.0,-11.0,-16.5,0.0,28.0
+8.283,Weightlifting,Snatch,Side View,First Pull,Detected,,38.79,,60.21,,126.29,,35.81,,156.26,47.16,3.71,7.951,True,238.0,396.0,13.0,-12.0,-16.48,0.0,28.0
+8.35,Weightlifting,Snatch,Side View,First Pull,Detected,,41.88,,61.46,,118.99,,36.11,,155.65,47.7,3.71,7.951,True,238.0,394.0,13.0,-10.0,30.36,0.0,28.0
+8.411,Weightlifting,Snatch,Side View,First Pull,Detected,,42.77,,60.38,,115.2,,36.11,,155.65,47.7,3.756,7.558,True,238.0,394.0,13.0,-10.0,0.0,0.0,28.0
+8.474,Weightlifting,Snatch,Side View,First Pull,Detected,,42.69,,58.86,,116.24,,36.17,,137.02,47.47,3.733,7.558,True,246.0,388.0,21.0,-4.0,96.3,128.41,28.0
+8.535,Weightlifting,Snatch,Side View,First Pull,Detected,,43.19,,58.13,,115.51,,35.91,,136.23,46.92,3.71,8.055,True,246.0,388.0,21.0,-4.0,0.0,0.0,28.0
+8.597,Weightlifting,Snatch,Side View,First Pull,Detected,,44.11,,60.01,,116.52,,35.61,,153.95,46.9,3.71,8.055,True,240.0,398.0,15.0,-14.0,-161.11,-96.66,28.0
+8.661,Weightlifting,Snatch,Side View,First Pull,Detected,,45.52,,60.41,,116.04,,35.07,,157.81,46.62,3.733,6.957,True,238.0,400.0,13.0,-16.0,-31.37,-31.37,28.0
+8.731,Weightlifting,Snatch,Side View,First Pull,Detected,,41.13,,59.74,,118.5,,35.07,,156.98,46.62,3.733,6.957,True,238.0,397.0,13.0,-13.0,43.45,0.0,28.0
+8.79,Weightlifting,Snatch,Side View,First Pull,Detected,,41.13,,59.74,,118.5,,35.07,,156.35,46.62,3.733,8.055,True,238.0,395.0,13.0,-11.0,33.17,0.0,28.0
+8.854,Weightlifting,Snatch,Side View,First Pull,Detected,,41.13,,59.32,,118.09,,35.31,,156.26,47.42,3.733,8.055,True,238.0,395.0,13.0,-11.0,0.0,0.0,28.0
+8.914,Weightlifting,Snatch,Side View,First Pull,Detected,,41.13,,58.9,,117.67,,35.31,,158.22,47.42,3.733,7.466,True,237.0,396.0,12.0,-12.0,-16.62,-16.62,28.0
+8.973,Weightlifting,Snatch,Side View,First Pull,Detected,,36.93,,57.24,,119.65,,35.86,,154.2,47.42,3.733,7.466,True,239.0,395.0,14.0,-11.0,16.57,33.15,28.0
+9.032,Weightlifting,Snatch,Side View,First Pull,Detected,,36.03,,56.72,,118.07,,37.01,,154.91,47.7,3.71,7.376,True,240.0,394.0,15.0,-10.0,16.99,16.99,28.0
+9.095,Weightlifting,Snatch,Side View,First Pull,Detected,,41.88,,60.26,,118.5,,36.35,,153.76,47.96,3.71,7.376,True,240.0,394.0,15.0,-10.0,0.0,0.0,28.0
+9.158,Weightlifting,Snatch,Side View,First Pull,Detected,,42.79,,61.16,,118.5,,36.35,,153.76,48.24,3.756,7.466,True,240.0,394.0,15.0,-10.0,0.0,0.0,28.0
+9.22,Weightlifting,Snatch,Side View,First Pull,Detected,,41.88,,60.69,,120.11,,36.59,,154.84,47.96,3.756,7.466,True,240.0,397.0,15.0,-13.0,-48.49,0.0,28.0
+9.283,Weightlifting,Snatch,Side View,First Pull,Detected,,41.88,,60.69,,118.22,,36.59,,155.22,47.96,3.71,7.652,True,240.0,398.0,15.0,-14.0,-15.82,0.0,28.0
+9.346,Weightlifting,Snatch,Side View,First Pull,Detected,,44.24,,62.51,,117.0,,36.27,,151.45,47.68,3.71,7.652,True,241.0,393.0,16.0,-9.0,79.19,15.84,28.0
+9.407,Weightlifting,Snatch,Side View,First Pull,Detected,,45.15,,63.42,,117.0,,36.04,,148.81,47.68,3.733,7.202,True,242.0,391.0,17.0,-7.0,33.55,16.78,28.0
+9.469,Weightlifting,Snatch,Side View,First Pull,Detected,,45.1,,59.51,,111.83,,36.27,,157.0,47.4,3.733,7.202,True,238.0,393.0,13.0,-9.0,-31.89,-63.77,28.0
+9.532,Weightlifting,Snatch,Side View,First Pull,Detected,,45.1,,58.47,,110.79,,36.27,,161.1,47.4,3.756,7.376,True,236.0,394.0,11.0,-10.0,-15.61,-31.21,28.0
+9.594,Weightlifting,Snatch,Side View,First Pull,Detected,,43.33,,59.0,,109.8,,36.04,,161.11,47.4,3.756,7.376,True,236.0,394.0,11.0,-10.0,0.0,0.0,28.0
+9.657,Weightlifting,Snatch,Side View,First Pull,Detected,,42.84,,59.48,,108.47,,35.16,,159.97,47.68,3.688,7.951,True,236.0,394.0,11.0,-10.0,0.0,0.0,28.0
+9.721,Weightlifting,Snatch,Side View,First Pull,Detected,,43.67,,62.15,,114.82,,35.21,,161.9,48.21,3.688,7.951,True,235.0,396.0,10.0,-12.0,-31.12,-15.56,28.0
+9.781,Weightlifting,Snatch,Side View,First Pull,Detected,,43.15,,62.22,,113.59,,34.85,,162.77,48.74,3.71,7.951,True,234.0,397.0,9.0,-13.0,-16.27,-16.27,28.0
+9.845,Weightlifting,Snatch,Side View,First Pull,Detected,,41.39,,57.8,,114.78,,33.99,,155.07,48.18,3.71,7.951,True,238.0,394.0,13.0,-10.0,47.9,63.87,28.0
+9.905,Weightlifting,Snatch,Side View,First Pull,Detected,,40.51,,55.94,,115.86,,33.99,,151.34,48.46,3.71,7.202,True,240.0,393.0,15.0,-9.0,16.69,33.38,28.0
+9.971,Weightlifting,Snatch,Side View,First Pull,Detected,,44.03,,56.54,,117.34,,33.99,,153.04,48.21,3.71,7.202,True,239.0,393.0,14.0,-9.0,0.0,-15.15,28.0
+10.03,Weightlifting,Snatch,Side View,First Pull,Detected,,44.91,,57.42,,118.34,,33.99,,153.04,48.21,3.71,7.037,True,239.0,393.0,14.0,-9.0,0.0,0.0,28.0
+10.093,Weightlifting,Snatch,Side View,First Pull,Detected,,44.86,,58.77,,120.68,,33.99,,155.65,48.21,3.71,7.037,True,238.0,396.0,13.0,-12.0,-47.65,-15.88,28.0
+10.155,Weightlifting,Snatch,Side View,First Pull,Detected,,44.86,,59.78,,121.69,,33.99,,155.92,48.21,3.71,7.376,True,238.0,397.0,13.0,-13.0,-16.12,0.0,28.0
+10.219,Weightlifting,Snatch,Side View,First Pull,Detected,,44.86,,58.55,,116.47,,33.68,,151.03,48.46,3.71,7.376,True,240.0,392.0,15.0,-8.0,77.21,30.88,28.0
+10.279,Weightlifting,Snatch,Side View,First Pull,Detected,,45.45,,58.09,,113.99,,33.14,,151.03,48.18,3.733,7.951,True,240.0,391.0,15.0,-7.0,17.07,0.0,28.0
+10.344,Weightlifting,Snatch,Side View,First Pull,Detected,,43.64,,59.29,,113.84,,34.95,,151.41,47.96,3.733,7.951,True,240.0,391.0,15.0,-7.0,0.0,0.0,28.0
+10.407,Weightlifting,Snatch,Side View,First Pull,Detected,,42.21,,59.62,,113.2,,35.77,,151.15,48.24,3.733,7.652,True,240.0,392.0,15.0,-8.0,-15.68,0.0,28.0
+10.469,Weightlifting,Snatch,Side View,First Pull,Detected,,44.03,,59.69,,114.58,,34.57,,158.06,48.46,3.733,7.652,True,237.0,399.0,12.0,-15.0,-114.5,-49.07,28.0
+10.531,Weightlifting,Snatch,Side View,First Pull,Detected,,43.56,,59.69,,119.5,,33.93,,158.84,48.71,3.71,7.849,True,236.0,401.0,11.0,-17.0,-31.96,-15.98,28.0
+10.592,Weightlifting,Snatch,Side View,First Pull,Detected,,44.03,,59.91,,119.71,,33.15,,158.53,47.96,3.71,7.849,True,236.0,400.0,11.0,-16.0,16.45,0.0,28.0
+10.655,Weightlifting,Snatch,Side View,First Pull,Detected,,41.39,,60.46,,123.9,,33.15,,158.37,47.7,3.756,7.849,True,236.0,399.0,11.0,-15.0,15.77,0.0,28.0
+10.718,Weightlifting,Snatch,Side View,First Pull,Detected,,41.82,,60.09,,120.57,,32.16,,155.77,48.71,3.756,7.849,True,237.0,400.0,12.0,-16.0,-16.0,16.0,28.0
+10.779,Weightlifting,Snatch,Side View,First Pull,Detected,,42.26,,60.09,,119.67,,32.97,,157.4,48.95,3.756,7.118,True,237.0,400.0,12.0,-16.0,0.0,0.0,28.0
+10.846,Weightlifting,Snatch,Side View,First Pull,Detected,,43.97,,60.57,,122.43,,32.97,,162.05,48.71,3.756,7.118,True,234.0,404.0,9.0,-20.0,-59.1,-44.33,28.0
+10.907,Weightlifting,Snatch,Side View,First Pull,Detected,,44.44,,59.83,,119.74,,32.5,,163.41,48.46,3.71,7.202,True,233.0,405.0,8.0,-21.0,-16.53,-16.53,28.0
+10.969,Weightlifting,Snatch,Side View,First Pull,Detected,,39.12,,57.56,,117.07,,32.5,,160.69,48.99,3.71,7.202,True,235.0,404.0,10.0,-20.0,15.99,31.99,28.0
+11.029,Weightlifting,Snatch,Side View,First Pull,Detected,,38.55,,58.67,,114.65,,33.05,,160.69,49.28,3.733,7.466,True,235.0,404.0,10.0,-20.0,0.0,0.0,28.0
+11.092,Weightlifting,Snatch,Side View,First Pull,Detected,,43.57,,58.77,,110.2,,33.38,,157.7,49.07,3.71,7.466,True,237.0,396.0,12.0,-12.0,126.87,31.72,28.0
+11.154,Weightlifting,Snatch,Side View,First Pull,Detected,,44.42,,58.04,,107.06,,33.05,,155.27,49.07,3.71,7.849,True,238.0,393.0,13.0,-9.0,48.56,16.19,28.0
+11.221,Weightlifting,Snatch,Side View,First Pull,Detected,,45.07,,62.45,,114.07,,34.83,,164.54,49.65,3.71,7.849,True,233.0,402.0,8.0,-18.0,-134.77,-74.87,28.0
+11.28,Weightlifting,Snatch,Side View,First Pull,Detected,,45.64,,62.96,,117.02,,34.57,,164.85,49.36,3.756,7.951,True,233.0,402.0,8.0,-18.0,0.0,0.0,28.0
+11.342,Weightlifting,Snatch,Side View,First Pull,Detected,,47.4,,64.44,,113.63,,34.57,,156.94,49.61,3.756,7.951,True,238.0,399.0,13.0,-15.0,48.37,80.61,28.0
+11.405,Weightlifting,Snatch,Side View,First Pull,Detected,,48.28,,65.32,,113.63,,34.57,,155.38,49.61,3.733,7.466,True,239.0,399.0,14.0,-15.0,0.0,15.97,28.0
+11.469,Weightlifting,Snatch,Side View,First Pull,Detected,,50.1,,63.6,,116.14,,35.49,,156.47,49.4,3.733,7.466,True,239.0,400.0,14.0,-16.0,-15.58,0.0,28.0
+11.528,Weightlifting,Snatch,Side View,First Pull,Detected,,49.94,,62.7,,117.38,,36.64,,157.62,49.11,3.71,7.376,True,239.0,400.0,14.0,-16.0,0.0,0.0,28.0
+11.591,Weightlifting,Snatch,Side View,First Pull,Detected,,49.07,,58.82,,100.47,,36.9,,153.96,49.4,3.71,7.376,True,241.0,394.0,16.0,-10.0,95.41,31.8,28.0
+11.653,Weightlifting,Snatch,Side View,First Pull,Detected,,49.07,,58.82,,102.06,,36.9,,153.96,49.4,3.733,7.652,True,241.0,394.0,16.0,-10.0,0.0,0.0,28.0
+11.716,Weightlifting,Snatch,Side View,First Pull,Detected,,48.77,,58.86,,105.02,,37.7,,158.16,49.11,3.733,7.652,True,241.0,397.0,16.0,-13.0,-47.66,0.0,28.0
+11.778,Weightlifting,Snatch,Side View,First Pull,Detected,,47.89,,58.3,,105.95,,37.7,,160.34,49.11,3.733,8.055,True,240.0,399.0,15.0,-15.0,-31.93,-15.96,28.0
+11.841,Weightlifting,Snatch,Side View,First Pull,Detected,,46.83,,57.98,,109.89,,37.38,,159.19,49.9,3.733,8.055,True,240.0,399.0,15.0,-15.0,0.0,0.0,28.0
+11.91,Weightlifting,Snatch,Side View,First Pull,Detected,,46.83,,58.62,,112.69,,37.12,,158.7,49.61,3.756,7.652,True,240.0,397.0,15.0,-13.0,29.19,0.0,28.0
+11.97,Weightlifting,Snatch,Side View,First Pull,Detected,,46.43,,58.37,,115.56,,36.9,,164.3,49.4,3.756,7.652,True,237.0,403.0,12.0,-19.0,-100.0,-50.0,28.0
+12.034,Weightlifting,Snatch,Side View,First Pull,Detected,,45.55,,59.7,,117.78,,35.77,,164.6,49.65,3.71,7.652,True,235.0,404.0,10.0,-20.0,-15.71,-31.43,28.0
+12.095,Weightlifting,Snatch,Side View,First Pull,Detected,,44.66,,53.28,,93.81,,36.64,,156.52,49.95,3.71,7.652,True,241.0,392.0,16.0,-8.0,194.39,97.2,28.0
+12.155,Weightlifting,Snatch,Side View,First Pull,Detected,,42.88,,52.08,,79.14,,36.64,,156.21,49.65,3.733,7.466,True,241.0,391.0,16.0,-7.0,16.73,0.0,28.0
+12.218,Weightlifting,Snatch,Side View,First Pull,Detected,,45.76,,60.75,,109.07,,36.94,,158.19,49.99,3.733,7.466,True,240.0,392.0,15.0,-8.0,-16.01,-16.01,28.0
+12.277,Weightlifting,Snatch,Side View,First Pull,Detected,,47.49,,63.26,,119.82,,36.07,,156.21,49.74,3.733,7.558,True,240.0,394.0,15.0,-10.0,-33.65,0.0,28.0
+12.34,Weightlifting,Snatch,Side View,First Pull,Detected,,46.04,,59.45,,107.92,,36.66,,156.21,50.6,3.733,7.558,True,240.0,394.0,15.0,-10.0,0.0,0.0,28.0
+12.401,Weightlifting,Snatch,Side View,First Pull,Detected,,42.87,,58.79,,109.95,,38.29,,156.82,51.4,3.756,8.055,True,241.0,392.0,16.0,-8.0,31.88,15.94,28.0
+12.463,Weightlifting,Snatch,Side View,First Pull,Detected,,43.14,,59.92,,99.73,,38.61,,156.25,52.19,3.756,8.055,True,241.0,390.0,16.0,-6.0,33.05,0.0,28.0
+12.523,Weightlifting,Snatch,Side View,First Pull,Detected,,42.94,,59.77,,102.67,,37.72,,156.26,51.58,3.756,7.558,True,241.0,389.0,16.0,-5.0,16.77,0.0,28.0
+12.583,Weightlifting,Snatch,Side View,First Pull,Detected,,41.52,,64.86,,107.5,,40.29,,161.13,53.45,3.779,7.558,True,238.0,391.0,13.0,-7.0,-33.33,-50.0,28.0
+12.642,Weightlifting,Snatch,Side View,First Pull,Detected,,42.77,,64.92,,112.48,,41.02,,161.4,54.0,3.779,7.652,True,238.0,391.0,13.0,-7.0,0.0,0.0,28.0
+12.703,Weightlifting,Snatch,Side View,First Pull,Detected,,44.35,,65.01,,108.19,,40.66,,154.42,53.83,3.802,7.652,True,241.0,383.0,16.0,1.0,133.31,49.99,28.0
+12.765,Weightlifting,Snatch,Side View,First Pull,Detected,,42.81,,63.69,,110.04,,40.9,,146.02,54.11,3.756,7.749,True,247.0,379.0,22.0,5.0,63.94,95.91,28.0
+12.828,Weightlifting,Snatch,Side View,First Pull,Detected,,43.32,,67.1,,112.34,,41.5,,150.61,54.42,3.756,7.749,True,246.0,383.0,21.0,1.0,-63.17,-15.79,28.0
+12.887,Weightlifting,Snatch,Side View,First Pull,Detected,,41.98,,75.63,,105.58,,40.11,,148.66,54.95,3.756,7.288,True,247.0,383.0,22.0,1.0,0.0,16.9,28.0
+12.95,Weightlifting,Snatch,Side View,First Pull,Detected,,43.8,,78.1,,109.38,,41.09,,149.86,56.94,3.779,7.288,True,246.0,381.0,21.0,3.0,31.83,-15.92,28.0
+13.011,Weightlifting,Snatch,Side View,First Pull,Detected,,43.34,,80.62,,111.75,,41.71,,149.46,57.26,3.733,7.288,True,246.0,381.0,21.0,3.0,0.0,0.0,28.0
+13.072,Weightlifting,Snatch,Side View,First Pull,Detected,,47.93,,76.28,,121.66,,39.79,,160.82,56.42,3.733,7.288,True,237.0,382.0,12.0,2.0,-16.17,-145.51,28.0
+13.135,Weightlifting,Snatch,Side View,First Pull,Detected,,50.19,,77.5,,116.28,,37.49,,159.27,56.31,3.779,7.202,True,236.0,382.0,11.0,2.0,0.0,-15.94,28.0
+13.195,Weightlifting,Snatch,Side View,First Pull,Detected,,48.81,,79.38,,122.47,,41.19,,159.97,57.79,3.779,7.202,True,237.0,382.0,12.0,2.0,0.0,16.91,28.0
+13.258,Weightlifting,Snatch,Side View,First Pull,Detected,,48.59,,75.14,,122.63,,43.01,,161.47,57.91,3.756,7.376,True,237.0,382.0,12.0,2.0,0.0,0.0,28.0
+13.321,Weightlifting,Snatch,Side View,First Pull,Detected,,48.88,,76.56,,119.56,,42.7,,158.2,58.9,3.756,7.376,True,237.0,380.0,12.0,4.0,32.12,0.0,28.0
+13.384,Weightlifting,Snatch,Side View,First Pull,Detected,,49.18,,78.85,,114.16,,42.7,,158.05,59.57,3.802,7.849,True,237.0,377.0,12.0,7.0,46.4,0.0,28.0
+13.446,Weightlifting,Snatch,Side View,First Pull,Detected,,52.68,,80.42,,104.74,,40.89,,146.2,58.9,3.802,7.849,True,242.0,363.0,17.0,21.0,229.95,82.13,28.0
+13.509,Weightlifting,Snatch,Side View,First Pull,Detected,,51.59,,71.15,,102.08,,43.37,,146.55,59.1,3.756,7.558,True,243.0,361.0,18.0,23.0,31.72,15.86,28.0
+13.566,Weightlifting,Snatch,Side View,First Pull,Detected,,49.48,,83.58,,93.91,,39.46,,150.33,59.24,3.756,7.558,True,234.0,367.0,9.0,17.0,-104.19,-156.28,28.0
+13.624,Weightlifting,Snatch,Side View,First Pull,Detected,,46.92,,86.42,,100.78,,43.19,,151.36,59.37,3.779,7.466,True,238.0,367.0,13.0,17.0,0.0,69.63,28.0
+13.689,Weightlifting,Snatch,Side View,First Pull,Detected,,47.6,,86.62,,104.44,,40.77,,146.67,59.66,3.779,7.466,True,235.0,367.0,10.0,17.0,0.0,-45.91,28.0
+13.747,Weightlifting,Snatch,Side View,First Pull,Detected,,48.1,,87.93,,105.58,,43.29,,150.12,60.91,3.779,7.288,True,235.0,367.0,10.0,17.0,0.0,0.0,28.0
+13.812,Weightlifting,Snatch,Side View,First Pull,Detected,,47.56,,90.25,,107.97,,42.19,,155.82,60.0,3.802,7.288,True,231.0,365.0,6.0,19.0,31.31,-62.62,28.0
+13.874,Weightlifting,Snatch,Side View,First Pull,Detected,,47.49,,89.71,,106.81,,42.51,,151.44,60.36,3.779,7.376,True,233.0,365.0,8.0,19.0,0.0,33.04,28.0
+13.935,Weightlifting,Snatch,Side View,First Pull,Detected,,54.83,,99.79,,113.59,,40.5,,158.44,57.87,3.779,7.376,True,229.0,363.0,4.0,21.0,32.24,-64.49,28.0
+13.995,Weightlifting,Snatch,Side View,First Pull,Detected,,53.12,,96.3,,110.08,,39.69,,154.4,58.9,3.779,7.466,True,230.0,362.0,5.0,22.0,16.58,16.58,28.0
+14.056,Weightlifting,Snatch,Side View,First Pull,Detected,,52.46,,91.12,,109.01,,36.2,,159.4,58.97,3.802,7.466,True,225.0,361.0,0.0,23.0,16.05,-80.24,28.0
+14.115,Weightlifting,Snatch,Side View,First Pull,Detected,,52.78,,86.9,,115.52,,34.03,,161.08,59.04,3.802,7.376,True,223.0,362.0,-2.0,22.0,-17.33,-34.66,28.0
+14.178,Weightlifting,Snatch,Side View,First Pull,Detected,,58.32,,95.06,,112.1,,32.73,,,59.17,3.802,7.376,True,224.0,352.0,-1.0,32.0,159.88,15.99,32.0
+14.239,Weightlifting,Snatch,Side View,First Pull,Detected,,61.07,,96.19,,115.9,,31.15,,,55.99,3.826,7.749,True,225.0,348.0,0.0,36.0,65.02,16.26,36.0
+14.301,Weightlifting,Snatch,Side View,First Pull,Detected,,63.77,,99.85,,114.45,,33.86,,,55.23,3.826,7.749,True,226.0,352.0,1.0,32.0,-64.38,16.1,36.0
+14.363,Weightlifting,Snatch,Side View,First Pull,Detected,,65.85,,100.5,,107.56,,31.03,,,54.06,3.802,7.558,True,226.0,351.0,1.0,33.0,16.22,0.0,36.0
+14.429,Weightlifting,Snatch,Side View,First Pull,Detected,,70.41,,106.92,,103.21,,32.72,,,53.44,3.802,7.558,True,227.0,351.0,2.0,33.0,0.0,15.45,36.0
+14.483,Weightlifting,Snatch,Side View,First Pull,Detected,,70.71,,107.72,,109.83,,32.11,,,53.66,3.826,7.288,True,227.0,351.0,2.0,33.0,0.0,0.0,36.0
+14.545,Weightlifting,Snatch,Side View,First Pull,Detected,,72.21,,107.87,,107.44,,32.55,,,50.76,3.85,7.288,True,235.0,341.0,10.0,43.0,162.94,130.36,43.0
+14.605,Weightlifting,Snatch,Side View,First Pull,Detected,,70.94,,104.56,,109.52,,32.52,,,49.68,3.85,7.376,True,240.0,327.0,15.0,57.0,231.77,82.78,57.0
+14.667,Weightlifting,Snatch,Side View,First Pull,Detected,,77.85,,110.52,,102.66,,25.29,,,47.77,3.826,7.376,True,241.0,321.0,16.0,63.0,96.52,16.09,63.0
+14.73,Weightlifting,Snatch,Side View,Not Detected,Detected,,78.93,,112.41,,97.09,,28.47,,,48.58,3.826,7.652,False,,,,,,,
+14.795,Weightlifting,Snatch,Side View,Not Detected,Detected,,79.59,,110.85,,91.88,,29.38,,,46.99,3.826,7.652,False,,,,,,,
+14.862,Weightlifting,Snatch,Side View,Not Detected,Detected,,88.09,,120.96,,90.0,,28.87,,,46.01,3.802,7.951,False,,,,,,,
+14.921,Weightlifting,Snatch,Side View,Not Detected,Detected,,93.99,,124.95,,88.06,,24.78,,,43.96,3.802,7.951,False,,,,,,,
+14.991,Weightlifting,Snatch,Side View,Not Detected,Detected,,89.66,,132.48,,92.4,,31.26,,,48.47,3.802,7.951,False,,,,,,,
+15.043,Weightlifting,Snatch,Side View,Not Detected,Detected,,93.08,,139.14,,99.25,,,,,48.22,3.802,7.951,False,,,,,,,
+15.104,Weightlifting,Snatch,Side View,Not Detected,Detected,,86.91,,137.7,,98.56,,,,,50.51,3.756,7.288,False,,,,,,,
+15.167,Weightlifting,Snatch,Side View,Not Detected,Detected,,75.23,,135.02,,98.82,,,,,54.01,3.666,7.288,False,,,,,,,
+15.234,Weightlifting,Snatch,Side View,Not Detected,Detected,,80.99,,139.96,,103.16,,75.55,,,52.27,3.601,7.466,False,,,,,,,
+15.296,Weightlifting,Snatch,Side View,Not Detected,Detected,,88.0,,144.59,,101.84,,85.82,,,48.52,3.58,7.466,False,,,,,,,
+15.358,Weightlifting,Snatch,Side View,Not Detected,Detected,,65.96,,123.52,,90.03,,145.58,,,52.79,3.382,7.652,False,,,,,,,
+15.42,Weightlifting,Snatch,Side View,Not Detected,Detected,,79.85,,113.46,,97.33,,79.44,,,47.58,3.58,7.652,False,,,,,,,
+15.481,Weightlifting,Snatch,Side View,Not Detected,Detected,,83.74,,120.59,,105.15,,58.49,,,48.21,3.459,7.951,False,,,,,,,
+15.541,Weightlifting,Snatch,Side View,Not Detected,Detected,,92.0,,134.51,,111.37,,51.48,,,46.82,3.401,7.951,False,,,,,,,
+15.604,Weightlifting,Snatch,Side View,Not Detected,Detected,,94.39,,140.72,,115.06,,47.04,,,47.19,3.309,7.288,False,,,,,,,
+15.667,Weightlifting,Snatch,Side View,Not Detected,Detected,,87.64,,137.27,,118.02,,43.99,,,46.49,3.291,7.288,False,,,,,,,
+15.728,Weightlifting,Snatch,Side View,Not Detected,Detected,,89.47,,136.08,,116.83,,44.08,,,47.53,3.256,7.558,False,,,,,,,
+15.793,Weightlifting,Snatch,Side View,Second Pull,Detected,,89.37,,143.13,,121.44,,,,,47.95,3.239,7.558,True,247.0,197.0,22.0,187.0,110.21,5.33,187.0
+15.857,Weightlifting,Snatch,Side View,Turnover,Detected,,96.09,,145.83,,122.15,,,,,46.22,3.108,7.558,True,247.0,198.0,22.0,186.0,-15.46,0.0,187.0
+15.921,Weightlifting,Snatch,Side View,Turnover,Detected,,97.49,,151.03,,120.45,,,,,47.66,3.156,7.558,True,244.0,196.0,19.0,188.0,31.48,-47.22,188.0
+15.983,Weightlifting,Snatch,Side View,Turnover,Detected,,94.13,,152.57,,115.86,,,,,51.34,3.076,7.558,True,243.0,195.0,18.0,189.0,16.07,-16.07,189.0
+16.045,Weightlifting,Snatch,Side View,Turnover,Detected,,105.72,,152.74,,117.64,,,,,44.29,3.123,7.558,True,237.0,190.0,12.0,194.0,81.23,-97.48,194.0
+16.106,Weightlifting,Snatch,Side View,Turnover,Detected,,111.78,,156.12,,116.97,,,,,40.6,3.076,7.466,True,236.0,187.0,11.0,197.0,49.03,-16.34,197.0
+16.168,Weightlifting,Snatch,Side View,Turnover,Detected,,120.28,,159.05,,115.16,,,,,39.21,3.123,7.466,True,232.0,184.0,7.0,200.0,48.46,-64.61,200.0
+16.231,Weightlifting,Snatch,Side View,Turnover,Detected,,118.04,,157.74,,116.77,,,,,39.69,3.076,7.558,True,233.0,184.0,8.0,200.0,0.0,15.91,200.0
+16.292,Weightlifting,Snatch,Side View,Turnover,Detected,,121.03,,159.61,,115.5,,,,,39.9,3.061,7.558,True,228.0,182.0,3.0,202.0,32.27,-80.67,202.0
+16.355,Weightlifting,Snatch,Side View,Turnover,Detected,,123.34,,160.58,,117.99,,,,,39.06,3.156,7.288,True,228.0,181.0,3.0,203.0,16.08,0.0,203.0
+16.418,Weightlifting,Snatch,Side View,Turnover,Detected,,118.62,,162.13,,125.67,,,,,41.89,3.123,7.288,True,225.0,177.0,0.0,207.0,63.35,-47.51,207.0
+16.481,Weightlifting,Snatch,Side View,Turnover,Detected,,115.83,,167.63,,128.4,,,,,41.99,3.061,7.652,True,222.0,181.0,-3.0,203.0,-62.88,-47.16,207.0
+16.546,Weightlifting,Snatch,Side View,Second Pull,Detected,,111.49,,164.23,,129.22,,,,,41.58,3.076,7.652,True,225.0,172.0,0.0,212.0,139.76,46.59,212.0
+16.61,Weightlifting,Snatch,Side View,Second Pull,Detected,,120.35,,166.48,,130.73,,,,,38.0,3.156,7.951,True,224.0,166.0,-1.0,218.0,93.54,-15.59,218.0
+16.672,Weightlifting,Snatch,Side View,Turnover,Detected,,112.69,,165.15,,131.4,,,,,38.99,3.156,7.951,True,226.0,166.0,1.0,218.0,0.0,32.25,218.0
+16.735,Weightlifting,Snatch,Side View,Catch,Detected,,117.01,,165.79,,135.26,,,,,38.77,3.256,7.652,True,239.0,173.0,14.0,211.0,-111.67,207.39,218.0
+16.8,Weightlifting,Snatch,Side View,Turnover,Detected,,120.32,,157.21,,132.84,,,,,37.43,3.205,7.652,True,237.0,175.0,12.0,209.0,-30.72,-30.72,218.0
+16.859,Weightlifting,Snatch,Side View,Second Pull,Detected,,119.64,,155.57,,133.38,,,,,38.66,3.291,7.466,True,229.0,165.0,4.0,219.0,167.39,-133.92,219.0
+16.923,Weightlifting,Snatch,Side View,Second Pull,Detected,,110.26,,150.18,,133.23,,,,,38.93,3.291,7.466,True,224.0,157.0,-1.0,227.0,126.17,-78.86,227.0
+16.985,Weightlifting,Snatch,Side View,Catch,Detected,,108.19,,147.01,,131.57,,,,,41.5,3.291,7.202,True,234.0,184.0,9.0,200.0,-435.67,161.36,227.0
+17.046,Weightlifting,Snatch,Side View,Catch,Detected,,116.97,,141.2,,131.06,,,,,39.98,3.291,7.202,True,234.0,197.0,9.0,187.0,-212.32,0.0,227.0
+17.109,Weightlifting,Snatch,Side View,Turnover,Detected,,114.88,,139.78,,126.98,,,,,39.75,3.274,7.749,True,234.0,198.0,9.0,186.0,-15.87,0.0,227.0
+17.173,Weightlifting,Snatch,Side View,Not Detected,Detected,,115.24,,135.16,,127.1,,,,,37.52,3.274,7.749,False,,,,,,,
+17.235,Weightlifting,Snatch,Side View,Not Detected,Detected,,115.93,,133.94,,128.66,,,,,36.95,3.291,7.118,False,,,,,,,
+17.296,Weightlifting,Snatch,Side View,Not Detected,Detected,,109.04,,132.27,,126.51,,,,,39.38,3.291,7.118,False,,,,,,,
+17.357,Weightlifting,Snatch,Side View,Not Detected,Detected,,115.13,,131.79,,127.89,,,,,37.52,3.42,7.558,False,,,,,,,
+17.421,Weightlifting,Snatch,Side View,Not Detected,Detected,,114.57,,124.41,,122.17,,,,,38.28,3.401,7.558,False,,,,,,,
+17.482,Weightlifting,Snatch,Side View,Not Detected,Detected,,112.56,,123.18,,121.0,,,,,37.19,3.309,7.202,False,,,,,,,
+17.544,Weightlifting,Snatch,Side View,Not Detected,Detected,,120.09,,124.27,,115.25,,,,,32.64,4.281,7.202,False,,,,,,,
+17.61,Weightlifting,Snatch,Side View,Not Detected,Detected,,121.0,,126.22,,118.07,,,,,30.28,3.924,8.055,False,,,,,,,
+17.67,Weightlifting,Snatch,Side View,Not Detected,Detected,,123.57,,127.13,,117.41,,,,,28.97,4.081,8.055,False,,,,,,,
+17.731,Weightlifting,Snatch,Side View,Not Detected,Not Detected,,,,,,,,,,,,,7.466,False,,,,,,,
+17.806,Weightlifting,Snatch,Side View,Not Detected,Detected,,147.46,,104.36,,108.24,,,,,3.54,3.899,7.466,False,,,,,,,
+17.873,Weightlifting,Snatch,Side View,Not Detected,Detected,,146.14,,103.67,,106.79,,1.31,,,1.95,3.924,7.558,False,,,,,,,
+17.933,Weightlifting,Snatch,Side View,Not Detected,Detected,,137.54,,102.92,,103.4,,61.7,,,0.68,3.95,7.558,False,,,,,,,
+17.997,Weightlifting,Snatch,Side View,Not Detected,Detected,,136.85,,101.64,,103.19,,51.56,,,0.7,3.924,7.558,False,,,,,,,
+18.061,Weightlifting,Snatch,Side View,Not Detected,Detected,,135.63,,105.62,,108.61,,33.35,,,2.44,3.924,7.558,False,,,,,,,
+18.125,Weightlifting,Snatch,Side View,Turnover,Detected,,134.24,,105.37,,106.64,,61.84,,,1.78,3.875,7.849,True,243.0,209.0,18.0,175.0,-10.83,8.86,227.0
+18.188,Weightlifting,Snatch,Side View,Turnover,Detected,,130.27,,107.75,,100.27,,76.67,,,3.12,3.875,7.849,True,243.0,210.0,18.0,174.0,-15.65,0.0,227.0
+18.252,Weightlifting,Snatch,Side View,Turnover,Detected,,131.0,,108.48,,103.5,,83.17,,,3.03,3.875,7.652,True,243.0,207.0,18.0,177.0,47.17,0.0,227.0
+18.315,Weightlifting,Snatch,Side View,Second Pull,Detected,,125.7,,115.12,,105.2,,119.63,,,8.89,3.875,7.652,True,247.0,190.0,22.0,194.0,271.19,63.81,227.0
+18.379,Weightlifting,Snatch,Side View,Turnover,Detected,,126.19,,117.21,,106.19,,105.34,,,9.16,3.899,7.288,True,259.0,189.0,34.0,195.0,15.58,186.94,227.0
+18.437,Weightlifting,Snatch,Side View,Turnover,Detected,,123.44,,116.54,,105.1,,114.1,,,11.66,3.924,7.288,True,259.0,185.0,34.0,199.0,68.72,0.0,227.0
+18.503,Weightlifting,Snatch,Side View,Turnover,Detected,,123.55,,115.6,,108.32,,102.09,,,13.41,3.875,7.376,True,264.0,186.0,39.0,198.0,-15.24,76.18,227.0
+18.565,Weightlifting,Snatch,Side View,Turnover,Detected,,119.51,,111.52,,110.19,,112.29,,,14.91,3.875,7.376,True,262.0,189.0,37.0,195.0,-47.38,-31.59,227.0
+18.628,Weightlifting,Snatch,Side View,Second Pull,Detected,,118.5,,111.18,,109.92,,132.07,,,15.11,3.899,7.749,True,260.0,181.0,35.0,203.0,129.03,-32.26,227.0
+18.689,Weightlifting,Snatch,Side View,Turnover,Detected,,116.32,,107.47,,108.92,,131.54,,,14.64,3.899,7.749,True,253.0,184.0,28.0,200.0,-49.12,-114.62,227.0
+18.755,Weightlifting,Snatch,Side View,Turnover,Detected,,113.76,,106.56,,112.01,,131.02,,118.77,15.7,3.924,7.749,True,251.0,188.0,26.0,196.0,-60.94,-30.47,227.0
+18.815,Weightlifting,Snatch,Side View,Turnover,Detected,,112.85,,107.3,,110.62,,155.86,,133.75,17.34,3.924,7.749,True,250.0,188.0,25.0,196.0,0.0,-16.52,227.0
+18.878,Weightlifting,Snatch,Side View,Turnover,Detected,,113.53,,110.26,,110.68,,161.95,,138.96,17.98,3.899,7.037,True,250.0,188.0,25.0,196.0,0.0,0.0,227.0
+18.941,Weightlifting,Snatch,Side View,Turnover,Detected,,112.12,,109.99,,110.42,,167.48,,125.79,19.19,3.899,7.037,True,250.0,188.0,25.0,196.0,0.0,0.0,227.0
+19.004,Weightlifting,Snatch,Side View,Catch,Detected,,110.93,,108.91,,109.95,,163.42,,134.0,20.48,3.875,7.466,True,251.0,195.0,26.0,189.0,-111.72,15.96,227.0
+19.064,Weightlifting,Snatch,Side View,Turnover,Detected,,108.86,,109.18,,107.32,,151.3,,119.29,22.43,3.875,7.466,True,258.0,197.0,33.0,187.0,-33.03,115.61,227.0
+19.128,Weightlifting,Snatch,Side View,Turnover,Detected,,109.74,,109.65,,107.05,,145.77,,112.95,22.2,3.924,7.652,True,259.0,196.0,34.0,188.0,15.77,15.77,227.0
+19.192,Weightlifting,Snatch,Side View,Turnover,Detected,,104.64,,103.96,,104.6,,161.81,,103.56,24.23,3.95,7.652,True,258.0,196.0,33.0,188.0,0.0,-15.57,227.0
+19.252,Weightlifting,Snatch,Side View,Turnover,Detected,,102.56,,102.66,,106.46,,168.69,,117.73,25.18,3.875,7.652,True,258.0,195.0,33.0,189.0,16.51,0.0,227.0
+19.313,Weightlifting,Snatch,Side View,Second Pull,Detected,,103.39,,103.1,,106.15,,166.24,,122.09,25.42,3.875,7.652,True,259.0,187.0,34.0,197.0,133.27,16.66,227.0
+19.38,Weightlifting,Snatch,Side View,Turnover,Detected,,102.94,,103.62,,108.33,,168.15,,113.02,26.13,3.875,7.037,True,259.0,188.0,34.0,196.0,-14.92,0.0,227.0
+19.44,Weightlifting,Snatch,Side View,Turnover,Detected,,101.03,,102.0,,109.28,,168.12,,110.47,26.71,3.875,7.037,True,259.0,184.0,34.0,200.0,67.0,0.0,227.0
+19.498,Weightlifting,Snatch,Side View,Turnover,Detected,,99.73,,99.97,,111.28,,172.78,,118.24,26.57,3.875,7.749,True,259.0,185.0,34.0,199.0,-17.08,0.0,227.0
+19.564,Weightlifting,Snatch,Side View,Turnover,Detected,,98.56,,99.65,,110.96,,176.74,,125.04,26.71,3.875,7.749,True,259.0,184.0,34.0,200.0,15.21,0.0,227.0
+19.626,Weightlifting,Snatch,Side View,Turnover,Detected,,97.05,,99.07,,109.89,,176.42,,126.97,28.17,3.875,7.202,True,257.0,183.0,32.0,201.0,16.09,-32.17,227.0
+19.687,Weightlifting,Snatch,Side View,Turnover,Detected,,94.88,,97.13,,108.43,,162.78,,153.15,29.18,3.85,7.202,True,259.0,184.0,34.0,200.0,-16.36,32.71,227.0
+19.75,Weightlifting,Snatch,Side View,Turnover,Detected,,95.18,,97.6,,110.55,,161.67,,158.19,28.9,3.875,7.951,True,260.0,187.0,35.0,197.0,-47.13,15.71,227.0
+19.815,Weightlifting,Snatch,Side View,Turnover,Detected,,95.18,,97.6,,110.55,,160.27,,171.47,29.5,3.875,7.951,True,263.0,188.0,38.0,196.0,-15.73,47.19,227.0
+19.876,Weightlifting,Snatch,Side View,Turnover,Detected,,94.57,,97.85,,113.55,,158.01,,174.6,29.66,3.95,7.118,True,266.0,188.0,41.0,196.0,0.0,48.29,227.0
+19.938,Weightlifting,Snatch,Side View,Turnover,Detected,,96.44,,98.5,,113.2,,157.45,,172.91,29.05,3.95,7.118,True,267.0,184.0,42.0,200.0,64.83,16.21,227.0
+20.002,Weightlifting,Snatch,Side View,Turnover,Detected,,96.66,,97.62,,110.71,,156.03,,171.48,29.05,3.875,7.288,True,266.0,184.0,41.0,200.0,0.0,-15.62,227.0
+20.066,Weightlifting,Snatch,Side View,Turnover,Detected,,96.11,,97.99,,115.03,,154.12,,167.68,29.34,3.875,7.288,True,267.0,185.0,42.0,199.0,-15.7,15.7,227.0
+20.131,Weightlifting,Snatch,Side View,Turnover,Detected,,96.11,,97.27,,113.99,,155.59,,169.14,29.5,3.924,7.652,True,268.0,185.0,43.0,199.0,0.0,15.34,227.0
+20.19,Weightlifting,Snatch,Side View,Turnover,Detected,,97.9,,98.88,,113.16,,156.14,,163.15,29.09,3.924,7.652,True,269.0,188.0,44.0,196.0,-50.51,16.84,227.0
+20.252,Weightlifting,Snatch,Side View,Turnover,Detected,,97.9,,99.24,,110.95,,156.14,,164.17,29.09,3.899,7.037,True,269.0,187.0,44.0,197.0,16.2,0.0,227.0
+20.318,Weightlifting,Snatch,Side View,Turnover,Detected,,99.54,,100.32,,110.95,,155.24,,165.41,28.96,3.899,7.037,True,268.0,187.0,43.0,197.0,0.0,-15.13,227.0
+20.378,Weightlifting,Snatch,Side View,Turnover,Detected,,99.54,,100.32,,109.55,,155.24,,165.41,28.8,3.924,7.288,True,268.0,187.0,43.0,197.0,0.0,0.0,227.0
+20.445,Weightlifting,Snatch,Side View,Turnover,Detected,,101.11,,101.24,,109.19,,165.59,,155.7,28.48,3.924,7.288,True,266.0,185.0,41.0,199.0,29.92,-29.92,227.0
+20.506,Weightlifting,Snatch,Side View,Turnover,Detected,,100.83,,99.97,,107.02,,165.87,,149.48,28.61,3.875,7.466,True,264.0,185.0,39.0,199.0,0.0,-32.17,227.0
+20.567,Weightlifting,Snatch,Side View,Turnover,Detected,,101.4,,100.9,,104.21,,161.41,,161.46,28.61,3.875,7.466,True,265.0,185.0,40.0,199.0,0.0,16.66,227.0
+20.632,Weightlifting,Snatch,Side View,Turnover,Detected,99.86,101.68,101.2,100.16,106.71,103.92,,168.54,,140.99,28.74,3.826,7.652,True,266.0,185.0,41.0,199.0,0.0,15.43,227.0
+20.695,Weightlifting,Snatch,Side View,Catch,Detected,98.3,101.97,101.7,101.48,111.75,103.2,,164.19,,142.13,28.9,3.826,7.652,True,267.0,193.0,42.0,191.0,-127.5,15.94,227.0
+20.757,Weightlifting,Snatch,Side View,Turnover,Detected,99.23,101.97,101.7,101.48,113.27,103.2,,161.41,,163.34,28.45,3.924,8.273,True,268.0,194.0,43.0,190.0,-16.2,16.2,227.0
+20.82,Weightlifting,Snatch,Side View,Turnover,Detected,101.02,105.55,104.04,103.4,111.3,104.52,,156.01,,163.03,27.43,3.924,8.273,True,266.0,193.0,41.0,191.0,15.79,-31.58,227.0
+20.882,Weightlifting,Snatch,Side View,Turnover,Detected,,105.55,,104.44,,106.97,,154.54,,149.04,27.43,3.924,8.055,True,266.0,193.0,41.0,191.0,0.0,0.0,227.0
+20.944,Weightlifting,Snatch,Side View,Second Pull,Detected,104.54,106.67,108.19,105.83,112.38,106.97,,154.27,,147.53,27.29,3.924,8.055,True,270.0,185.0,45.0,199.0,128.61,64.31,227.0
+21.008,Weightlifting,Snatch,Side View,Turnover,Detected,,107.56,,106.46,,105.57,,153.03,,146.02,27.0,3.875,7.558,True,270.0,186.0,45.0,198.0,-15.61,0.0,227.0
+21.07,Weightlifting,Snatch,Side View,Turnover,Detected,,106.87,,105.42,,108.08,,153.07,,147.57,26.57,3.875,7.558,True,269.0,186.0,44.0,198.0,0.0,-16.28,227.0
+21.135,Weightlifting,Snatch,Side View,Turnover,Detected,,105.69,,104.79,,106.61,,152.48,,149.44,26.71,3.924,7.558,True,268.0,188.0,43.0,196.0,-30.49,-15.24,227.0
+21.201,Weightlifting,Snatch,Side View,Second Pull,Detected,,107.56,,105.73,,110.56,,151.74,,173.39,26.0,3.924,7.558,True,263.0,177.0,38.0,207.0,174.43,-79.29,227.0
+21.257,Weightlifting,Snatch,Side View,Turnover,Detected,,109.44,,107.4,,109.53,,153.76,,177.52,25.71,3.875,7.558,True,261.0,175.0,36.0,209.0,33.62,-33.62,227.0
+21.32,Weightlifting,Snatch,Side View,Turnover,Detected,,110.66,,107.32,,107.32,,154.29,,177.28,25.27,3.875,7.558,True,261.0,177.0,36.0,207.0,-32.0,0.0,227.0
+21.381,Weightlifting,Snatch,Side View,Catch,Detected,,110.77,,108.37,,104.84,,152.08,,143.3,25.42,3.924,7.652,True,265.0,192.0,40.0,192.0,-245.48,65.46,227.0
+21.441,Weightlifting,Snatch,Side View,Second Pull,Detected,,113.12,,112.09,,107.4,,151.74,,170.57,25.84,3.924,7.652,True,265.0,176.0,40.0,208.0,265.85,0.0,227.0
+21.505,Weightlifting,Snatch,Side View,Second Pull,Detected,,113.69,,111.36,,106.74,,153.85,,173.26,25.55,3.924,8.163,True,265.0,172.0,40.0,212.0,62.97,0.0,227.0
+21.566,Weightlifting,Snatch,Side View,Second Pull,Detected,,113.69,,112.08,,106.06,,153.97,,173.8,25.11,3.924,8.163,True,265.0,166.0,40.0,218.0,98.0,0.0,227.0
+21.63,Weightlifting,Snatch,Side View,Turnover,Detected,,114.39,,113.83,,107.24,,153.97,,179.05,24.84,3.899,7.466,True,262.0,165.0,37.0,219.0,15.57,-46.72,227.0
+21.693,Weightlifting,Snatch,Side View,Turnover,Detected,,116.79,,114.82,,109.5,,152.49,,176.01,24.29,3.899,7.466,True,261.0,160.0,36.0,224.0,80.2,-16.04,227.0
+21.755,Weightlifting,Snatch,Side View,Turnover,Detected,,118.35,,117.19,,108.35,,149.77,,170.03,24.16,3.95,7.466,True,260.0,164.0,35.0,220.0,-64.09,-16.02,227.0
+21.818,Weightlifting,Snatch,Side View,Turnover,Detected,,119.66,,117.93,,111.73,,161.02,,143.36,23.87,3.95,7.466,True,256.0,161.0,31.0,223.0,47.5,-63.34,227.0
+21.882,Weightlifting,Snatch,Side View,Turnover,Detected,,118.83,,117.67,,114.53,,157.05,,157.62,23.99,3.899,7.288,True,257.0,164.0,32.0,220.0,-46.88,15.63,227.0
+21.944,Weightlifting,Snatch,Side View,Second Pull,Detected,,122.32,,121.37,,111.9,,153.77,,175.66,23.57,3.899,7.288,True,257.0,153.0,32.0,231.0,179.02,0.0,231.0
+22.004,Weightlifting,Snatch,Side View,Turnover,Detected,,122.86,,121.91,,111.9,,152.28,,172.38,23.16,3.924,7.849,True,261.0,152.0,36.0,232.0,16.44,65.77,232.0
+22.072,Weightlifting,Snatch,Side View,Turnover,Detected,,124.81,,122.96,,111.9,,152.04,,164.54,22.36,3.924,7.849,True,264.0,155.0,39.0,229.0,-45.0,45.0,232.0
+22.131,Weightlifting,Snatch,Side View,Catch,Detected,,124.07,,121.82,,111.28,,152.01,,141.47,22.2,3.899,7.749,True,265.0,173.0,40.0,211.0,-300.2,16.68,232.0
+22.191,Weightlifting,Snatch,Side View,Catch,Detected,,126.05,,123.42,,111.6,,153.37,,145.53,21.92,3.899,7.749,True,265.0,167.0,40.0,217.0,99.72,0.0,232.0
+22.255,Weightlifting,Snatch,Side View,Second Pull,Detected,,124.71,,122.96,,110.51,,152.94,,151.91,22.33,3.924,7.376,True,266.0,160.0,41.0,224.0,109.45,15.64,232.0
+22.317,Weightlifting,Snatch,Side View,Catch,Detected,,129.88,,128.15,,111.95,,169.53,,99.46,21.06,3.924,7.376,True,272.0,174.0,47.0,210.0,-225.54,96.66,232.0
+22.379,Weightlifting,Snatch,Side View,Turnover,Detected,,131.41,,129.5,,111.05,,176.57,,17.94,19.98,3.899,7.376,True,272.0,172.0,47.0,212.0,32.28,0.0,232.0
+22.441,Weightlifting,Snatch,Side View,Second Pull,Detected,,132.21,,131.28,,110.49,,163.61,,132.6,20.38,3.899,7.376,True,271.0,162.0,46.0,222.0,160.91,-16.09,232.0
+22.502,Weightlifting,Snatch,Side View,Second Pull,Detected,,133.05,,132.51,,109.18,,159.09,,133.67,20.7,3.924,7.466,True,271.0,157.0,46.0,227.0,82.89,0.0,232.0
+22.565,Weightlifting,Snatch,Side View,Second Pull,Detected,,135.65,,135.75,,108.79,,158.39,,135.12,20.22,3.95,7.466,True,271.0,153.0,46.0,231.0,62.8,0.0,232.0
+22.626,Weightlifting,Snatch,Side View,Turnover,Detected,,136.03,,136.13,,108.79,,164.98,,157.43,19.72,3.899,7.288,True,270.0,156.0,45.0,228.0,-49.61,-16.54,232.0
+22.689,Weightlifting,Snatch,Side View,Turnover,Detected,,138.33,,137.67,,108.79,,167.33,,174.43,19.13,3.924,7.288,True,267.0,157.0,42.0,227.0,-15.8,-47.41,232.0
+22.751,Weightlifting,Snatch,Side View,Turnover,Detected,,140.85,,140.32,,109.5,,168.03,,153.73,18.93,3.899,7.652,True,264.0,156.0,39.0,228.0,16.27,-48.81,232.0
+22.813,Weightlifting,Snatch,Side View,Turnover,Detected,,141.03,,140.32,,109.5,,161.11,,164.57,18.14,3.899,7.652,True,264.0,154.0,39.0,230.0,32.04,0.0,232.0
+22.875,Weightlifting,Snatch,Side View,Catch,Detected,,142.72,,141.93,,109.98,,170.2,,52.13,17.85,3.875,7.118,True,269.0,164.0,44.0,220.0,-159.26,79.63,232.0
+22.937,Weightlifting,Snatch,Side View,Second Pull,Detected,,143.82,,143.76,,109.48,,160.47,,150.83,17.76,3.875,7.118,True,265.0,150.0,40.0,234.0,228.8,-65.37,234.0
+22.999,Weightlifting,Snatch,Side View,Second Pull,Detected,,144.53,,145.24,,110.42,,158.16,,143.96,17.66,3.875,7.558,True,265.0,146.0,40.0,238.0,64.98,0.0,238.0
+23.064,Weightlifting,Snatch,Side View,Catch,Detected,,146.03,,147.07,,109.99,,159.74,,46.29,17.08,3.875,7.558,True,265.0,162.0,40.0,222.0,-244.37,0.0,238.0
+23.122,Weightlifting,Snatch,Side View,Turnover,Detected,,146.03,,147.07,,109.99,,159.65,,36.61,16.88,3.924,7.749,True,265.0,165.0,40.0,219.0,-51.32,0.0,238.0
+23.185,Weightlifting,Snatch,Side View,Turnover,Detected,,147.6,,148.63,,112.28,,161.78,,21.36,16.03,3.924,7.749,True,263.0,164.0,38.0,220.0,16.03,-32.07,238.0
+23.251,Weightlifting,Snatch,Side View,Turnover,Detected,,148.17,,148.63,,110.72,,163.68,,25.29,15.74,3.95,7.849,True,263.0,162.0,38.0,222.0,30.39,0.0,238.0
+23.317,Weightlifting,Snatch,Side View,Turnover,Detected,,150.16,,151.79,,111.11,,163.98,,20.53,14.91,3.95,7.849,True,263.0,162.0,38.0,222.0,0.0,0.0,238.0
+23.381,Weightlifting,Snatch,Side View,Second Pull,Detected,,150.23,,152.02,,111.11,,162.62,,175.36,15.36,3.85,7.376,True,257.0,143.0,32.0,241.0,292.09,-92.24,241.0
+23.443,Weightlifting,Snatch,Side View,Turnover,Detected,,154.37,,155.48,,110.26,,163.98,,155.98,14.7,3.875,7.376,True,256.0,146.0,31.0,238.0,-49.01,-16.34,241.0
+23.501,Weightlifting,Snatch,Side View,Second Pull,Detected,,154.41,,155.66,,110.26,,163.85,,173.08,14.7,3.875,7.749,True,256.0,139.0,31.0,245.0,121.75,0.0,245.0
+23.562,Weightlifting,Snatch,Side View,Turnover,Detected,,155.57,,157.57,,111.01,,163.79,,161.57,14.56,3.875,7.749,True,253.0,137.0,28.0,247.0,31.86,-47.79,247.0
+23.622,Weightlifting,Snatch,Side View,Turnover,Detected,,156.82,,158.38,,111.01,,164.22,,164.17,14.34,3.826,7.749,True,253.0,136.0,28.0,248.0,16.91,0.0,248.0
+23.686,Weightlifting,Snatch,Side View,Turnover,Detected,,157.5,,159.95,,113.36,,164.09,,170.71,14.34,3.826,7.749,True,254.0,132.0,29.0,252.0,62.21,15.55,252.0
+23.747,Weightlifting,Snatch,Side View,Turnover,Detected,,158.46,,161.54,,114.12,,164.16,,169.42,14.34,3.924,7.652,True,254.0,134.0,29.0,250.0,-32.56,0.0,252.0
+23.81,Weightlifting,Snatch,Side View,Turnover,Detected,,159.87,,162.36,,116.77,,164.74,,167.73,13.66,3.924,7.652,True,254.0,136.0,29.0,248.0,-31.97,0.0,252.0
+23.874,Weightlifting,Snatch,Side View,Turnover,Detected,,159.87,,162.23,,118.13,,164.74,,174.53,13.66,3.899,7.652,True,256.0,137.0,31.0,247.0,-15.72,31.43,252.0
+23.936,Weightlifting,Snatch,Side View,Turnover,Detected,,159.87,,163.13,,120.22,,164.8,,173.86,13.06,3.899,7.652,True,255.0,136.0,30.0,248.0,15.71,-15.71,252.0
+23.999,Weightlifting,Snatch,Side View,Turnover,Detected,,160.45,,162.36,,116.77,,166.72,,172.53,12.76,3.95,7.652,True,255.0,135.0,30.0,249.0,16.22,0.0,252.0
+24.066,Weightlifting,Snatch,Side View,Turnover,Detected,,161.28,,163.96,,117.9,,165.44,,177.35,12.76,3.95,7.652,True,255.0,137.0,30.0,247.0,-30.31,0.0,252.0
+24.124,Weightlifting,Snatch,Side View,Turnover,Detected,,161.28,,163.96,,116.82,,165.5,,175.36,12.76,3.95,8.055,True,255.0,139.0,30.0,245.0,-34.02,0.0,252.0
+24.189,Weightlifting,Snatch,Side View,Turnover,Detected,,161.28,,163.96,,116.82,,165.5,,161.93,12.46,3.95,8.055,True,253.0,139.0,28.0,245.0,0.0,-30.79,252.0
+24.247,Weightlifting,Snatch,Side View,Turnover,Detected,,160.7,,164.08,,115.48,,163.75,,149.96,13.06,3.95,7.202,True,252.0,140.0,27.0,244.0,-17.02,-17.02,252.0
+24.311,Weightlifting,Snatch,Side View,Catch,Detected,,161.28,,164.08,,116.95,,165.55,,92.44,12.7,3.924,7.202,True,254.0,146.0,29.0,238.0,-94.23,31.41,252.0
+24.371,Weightlifting,Snatch,Side View,Turnover,Detected,,161.5,,164.18,,116.95,,164.54,,3.58,12.63,3.875,8.055,True,255.0,150.0,30.0,234.0,-66.07,16.52,252.0
+24.437,Weightlifting,Snatch,Side View,Second Pull,Detected,,161.78,,165.67,,116.24,,162.8,,175.14,12.5,3.875,8.055,True,255.0,143.0,30.0,241.0,106.91,0.0,252.0
+24.496,Weightlifting,Snatch,Side View,Turnover,Detected,,163.19,,165.75,,114.48,,163.37,,175.14,12.2,3.899,7.288,True,255.0,143.0,30.0,241.0,0.0,0.0,252.0
+24.56,Weightlifting,Snatch,Side View,Turnover,Detected,,163.76,,165.87,,113.11,,165.15,,176.35,11.61,3.899,7.288,True,255.0,139.0,30.0,245.0,62.25,0.0,252.0
+24.621,Weightlifting,Snatch,Side View,Turnover,Detected,,163.76,,165.75,,114.48,,165.15,,166.89,11.55,3.826,7.652,True,256.0,139.0,31.0,245.0,0.0,16.47,252.0
+24.683,Weightlifting,Snatch,Side View,Turnover,Detected,,163.76,,165.75,,115.48,,165.15,,157.91,11.84,3.826,7.652,True,257.0,139.0,32.0,245.0,0.0,15.92,252.0
+24.746,Weightlifting,Snatch,Side View,Turnover,Detected,,163.76,,165.87,,114.09,,165.15,,142.66,11.55,3.924,7.652,True,259.0,139.0,34.0,245.0,0.0,32.11,252.0
+24.808,Weightlifting,Snatch,Side View,Turnover,Detected,,163.8,,165.67,,115.0,,165.19,,139.4,11.43,3.924,7.652,True,258.0,142.0,33.0,242.0,-48.33,-16.11,252.0
+24.881,Weightlifting,Snatch,Side View,Turnover,Detected,,163.8,,165.55,,116.42,,165.19,,131.27,11.72,3.95,7.749,True,258.0,143.0,33.0,241.0,-13.74,0.0,252.0
+24.935,Weightlifting,Snatch,Side View,Turnover,Detected,,163.83,,165.47,,116.42,,164.06,,99.07,11.37,3.95,7.749,True,258.0,145.0,33.0,239.0,-37.16,0.0,252.0
+24.998,Weightlifting,Snatch,Side View,Turnover,Detected,,163.83,,165.47,,116.42,,162.82,,122.46,11.37,3.924,7.652,True,258.0,142.0,33.0,242.0,46.45,0.0,252.0
+25.066,Weightlifting,Snatch,Side View,Second Pull,Detected,,163.72,,165.59,,115.0,,162.58,,163.65,11.19,3.924,7.652,True,256.0,131.0,31.0,253.0,165.12,-30.02,253.0
+25.121,Weightlifting,Snatch,Side View,Turnover,Detected,,163.72,,165.59,,113.41,,162.43,,164.99,11.19,3.975,7.749,True,256.0,129.0,31.0,255.0,36.57,0.0,255.0
+25.183,Weightlifting,Snatch,Side View,Turnover,Detected,,164.29,,165.47,,114.88,,164.29,,168.47,10.9,3.975,7.749,True,255.0,131.0,30.0,253.0,-31.62,-15.81,255.0
+25.248,Weightlifting,Snatch,Side View,Turnover,Detected,,164.11,,165.52,,115.0,,164.3,,168.21,10.95,3.95,7.466,True,255.0,132.0,30.0,252.0,-15.42,0.0,255.0
+25.311,Weightlifting,Snatch,Side View,Turnover,Detected,,164.11,,165.52,,116.1,,163.18,,161.7,10.71,3.95,7.466,True,255.0,134.0,30.0,250.0,-31.98,0.0,255.0
+25.371,Weightlifting,Snatch,Side View,Turnover,Detected,,165.63,,166.33,,115.98,,162.68,,155.62,10.36,3.924,7.749,True,255.0,134.0,30.0,250.0,0.0,0.0,255.0
+25.435,Weightlifting,Snatch,Side View,Turnover,Detected,,165.63,,166.33,,117.53,,162.68,,156.78,10.3,3.924,7.749,True,255.0,133.0,30.0,251.0,15.7,0.0,255.0
+25.498,Weightlifting,Snatch,Side View,Turnover,Detected,,165.63,,166.46,,116.1,,169.96,,172.41,10.3,3.924,7.466,True,255.0,133.0,30.0,251.0,0.0,0.0,255.0
+25.559,Weightlifting,Snatch,Side View,Catch,Detected,,165.69,,166.52,,116.1,,169.96,,168.69,9.66,3.924,7.466,True,255.0,140.0,30.0,244.0,-114.32,0.0,255.0
+25.622,Weightlifting,Snatch,Side View,Turnover,Detected,,165.69,,166.52,,117.66,,171.26,,160.26,9.66,3.899,7.376,True,256.0,144.0,31.0,240.0,-64.5,16.12,255.0
+25.685,Weightlifting,Snatch,Side View,Turnover,Detected,,166.27,,166.52,,117.66,,164.47,,117.62,9.07,3.899,7.376,True,257.0,143.0,32.0,241.0,15.67,15.67,255.0
+25.749,Weightlifting,Snatch,Side View,Turnover,Detected,,166.27,,166.52,,117.66,,163.26,,114.73,9.07,3.95,7.558,True,258.0,142.0,33.0,242.0,15.57,15.57,255.0
+25.811,Weightlifting,Snatch,Side View,Turnover,Detected,,166.76,,166.52,,116.54,,169.83,,147.84,8.82,3.95,7.558,True,257.0,142.0,32.0,242.0,0.0,-16.19,255.0
+25.874,Weightlifting,Snatch,Side View,Turnover,Detected,,166.76,,166.52,,115.0,,171.03,,161.57,8.82,3.95,7.466,True,257.0,142.0,32.0,242.0,0.0,0.0,255.0
+25.937,Weightlifting,Snatch,Side View,Turnover,Detected,,166.85,,166.4,,116.42,,171.12,,146.31,8.82,3.95,7.466,True,257.0,144.0,32.0,240.0,-31.66,0.0,255.0
+26.001,Weightlifting,Snatch,Side View,Turnover,Detected,,166.85,,167.28,,115.76,,171.12,,153.43,8.82,4.001,7.951,True,257.0,143.0,32.0,241.0,15.9,0.0,255.0
+26.064,Weightlifting,Snatch,Side View,Turnover,Detected,,167.43,,167.28,,118.41,,169.27,,143.87,8.17,4.001,7.951,True,256.0,141.0,31.0,243.0,31.58,-15.79,255.0
+26.126,Weightlifting,Snatch,Side View,Turnover,Detected,,167.43,,167.16,,119.8,,169.21,,156.95,8.17,3.975,7.951,True,255.0,140.0,30.0,244.0,16.06,-16.06,255.0
+26.191,Weightlifting,Snatch,Side View,Turnover,Detected,,167.94,,167.16,,119.8,,170.91,,154.25,7.92,3.975,7.951,True,257.0,140.0,32.0,244.0,0.0,30.74,255.0
+26.252,Weightlifting,Snatch,Side View,Turnover,Detected,,167.94,,167.16,,119.8,,169.61,,147.14,7.96,4.028,7.849,True,258.0,139.0,33.0,245.0,16.4,16.4,255.0
+26.317,Weightlifting,Snatch,Side View,Turnover,Detected,,168.46,,167.05,,121.12,,172.72,,163.61,7.7,4.028,7.849,True,257.0,135.0,32.0,249.0,61.84,-15.46,255.0
+26.376,Weightlifting,Snatch,Side View,Turnover,Detected,,168.39,,167.1,,121.24,,174.03,,172.33,7.7,3.95,7.376,True,256.0,133.0,31.0,251.0,33.47,-16.74,255.0
+26.44,Weightlifting,Snatch,Side View,Turnover,Detected,,168.39,,167.21,,117.7,,172.72,,180.0,7.43,3.95,7.376,True,252.0,134.0,27.0,250.0,-15.75,-63.01,255.0
+26.501,Weightlifting,Snatch,Side View,Turnover,Detected,,168.46,,167.16,,116.57,,172.72,,180.0,7.39,3.95,7.749,True,252.0,134.0,27.0,250.0,0.0,0.0,255.0
+26.566,Weightlifting,Snatch,Side View,Turnover,Detected,,169.26,,167.28,,115.24,,175.44,,175.97,6.9,3.95,7.749,True,251.0,135.0,26.0,249.0,-15.55,-15.55,255.0
+26.631,Weightlifting,Snatch,Side View,Turnover,Detected,,168.49,,165.75,,114.48,,175.82,,173.76,6.87,3.95,7.466,True,250.0,137.0,25.0,247.0,-30.9,-15.45,255.0
+26.697,Weightlifting,Snatch,Side View,Turnover,Detected,,169.32,,166.58,,114.48,,179.24,,167.16,6.27,3.95,7.466,True,250.0,139.0,25.0,245.0,-30.57,0.0,255.0
+26.753,Weightlifting,Snatch,Side View,Turnover,Detected,,169.32,,166.58,,114.48,,177.01,,161.92,6.31,4.001,7.749,True,250.0,140.0,25.0,244.0,-17.1,0.0,255.0
+26.817,Weightlifting,Snatch,Side View,Turnover,Detected,,169.32,,166.58,,114.48,,177.94,,159.78,6.31,4.001,7.749,True,249.0,142.0,24.0,242.0,-31.85,-15.92,255.0
+26.879,Weightlifting,Snatch,Side View,Turnover,Detected,,169.26,,166.46,,115.8,,175.95,,164.98,6.34,4.028,7.558,True,247.0,142.0,22.0,242.0,0.0,-32.23,255.0
+26.941,Weightlifting,Snatch,Side View,Catch,Detected,,168.49,,165.07,,115.17,,173.46,,165.26,6.27,4.028,7.558,True,247.0,161.0,22.0,223.0,-308.87,0.0,255.0
+27.004,Weightlifting,Snatch,Side View,Catch,Detected,,167.98,,165.0,,116.43,,162.57,,177.83,6.24,3.975,7.376,True,248.0,157.0,23.0,227.0,63.01,15.75,255.0
+27.066,Weightlifting,Snatch,Side View,Turnover,Detected,,167.76,,164.17,,113.3,,166.02,,175.93,6.44,3.975,7.376,True,247.0,154.0,22.0,230.0,47.93,-15.98,255.0
+27.129,Weightlifting,Snatch,Side View,Catch,Detected,,167.76,,164.17,,114.68,,156.03,,172.27,6.14,3.95,7.749,True,247.0,163.0,22.0,221.0,-145.78,0.0,255.0
+27.194,Weightlifting,Snatch,Side View,Turnover,Detected,,167.76,,163.42,,111.62,,159.73,,174.13,6.44,3.95,7.749,True,248.0,163.0,23.0,221.0,0.0,15.33,255.0
+27.256,Weightlifting,Snatch,Side View,Turnover,Detected,,166.85,,161.84,,110.87,,162.03,,179.39,6.51,4.001,7.652,True,247.0,160.0,22.0,224.0,48.19,-16.06,255.0
+27.318,Weightlifting,Snatch,Side View,Turnover,Detected,,167.39,,161.84,,109.98,,170.89,,169.3,6.34,4.001,7.652,True,248.0,156.0,23.0,228.0,65.01,16.25,255.0
+27.379,Weightlifting,Snatch,Side View,Turnover,Detected,,167.39,,161.84,,108.6,,173.18,,155.56,6.34,3.95,7.376,True,247.0,154.0,22.0,230.0,32.63,-16.32,255.0
+27.441,Weightlifting,Snatch,Side View,Turnover,Detected,,167.18,,160.28,,107.85,,179.32,,145.86,5.71,3.95,7.376,True,248.0,153.0,23.0,231.0,15.79,15.79,255.0
+27.505,Weightlifting,Snatch,Side View,Turnover,Detected,,167.15,,160.18,,107.85,,179.8,,124.26,5.4,3.975,7.376,True,248.0,153.0,23.0,231.0,0.0,0.0,255.0
+27.569,Weightlifting,Snatch,Side View,Turnover,Detected,,168.62,,161.84,,108.02,,177.22,,132.97,5.11,3.975,7.376,True,248.0,151.0,23.0,233.0,31.47,0.0,255.0
+27.63,Weightlifting,Snatch,Side View,Turnover,Detected,,169.24,,161.84,,107.18,,174.96,,133.96,4.79,3.975,7.376,True,248.0,150.0,23.0,234.0,16.61,0.0,255.0
+27.691,Weightlifting,Snatch,Side View,Turnover,Detected,,170.65,,163.35,,107.93,,177.18,,122.68,4.45,3.95,7.376,True,248.0,150.0,23.0,234.0,0.0,0.0,255.0
+27.752,Weightlifting,Snatch,Side View,Turnover,Detected,,171.15,,163.27,,106.46,,175.2,,135.93,4.15,3.975,7.466,True,249.0,150.0,24.0,234.0,0.0,16.28,255.0
+27.815,Weightlifting,Snatch,Side View,Catch,Detected,,171.15,,163.27,,106.46,,178.47,,170.2,4.47,3.975,7.466,True,247.0,156.0,22.0,228.0,-95.1,-31.7,255.0
+27.881,Weightlifting,Snatch,Side View,Turnover,Detected,,171.15,,163.27,,106.46,,176.27,,172.87,4.13,3.95,7.558,True,246.0,157.0,21.0,227.0,-15.47,-15.47,255.0
+27.94,Weightlifting,Snatch,Side View,Turnover,Detected,,171.36,,164.81,,105.71,,175.7,,173.29,4.42,3.95,7.558,True,247.0,158.0,22.0,226.0,-16.63,16.63,255.0
+28.005,Weightlifting,Snatch,Side View,Turnover,Detected,,171.36,,164.81,,105.71,,175.7,,172.87,4.42,3.975,7.951,True,247.0,159.0,22.0,225.0,-15.41,0.0,255.0
+28.067,Weightlifting,Snatch,Side View,Turnover,Detected,,172.84,,166.43,,106.47,,178.8,,170.39,4.11,3.975,7.951,True,247.0,158.0,22.0,226.0,15.97,0.0,255.0
+28.131,Weightlifting,Snatch,Side View,Turnover,Detected,,172.8,,166.43,,106.47,,176.27,,172.41,4.13,4.001,7.951,True,246.0,158.0,21.0,226.0,0.0,-15.95,255.0
+28.191,Weightlifting,Snatch,Side View,Catch,Detected,,174.53,,168.93,,107.23,,162.23,,165.96,4.13,4.001,7.951,True,246.0,168.0,21.0,216.0,-165.39,0.0,255.0
+28.255,Weightlifting,Snatch,Side View,Turnover,Detected,,176.02,,169.8,,107.23,,163.89,,167.01,3.81,3.975,7.749,True,246.0,167.0,21.0,217.0,15.51,0.0,255.0
+28.319,Weightlifting,Snatch,Side View,Turnover,Detected,,176.05,,169.67,,107.1,,170.34,,177.12,3.79,3.975,7.749,True,245.0,166.0,20.0,218.0,15.66,-15.66,255.0
+28.382,Weightlifting,Snatch,Side View,Turnover,Detected,,176.05,,169.67,,107.1,,173.23,,107.73,3.48,3.975,7.749,True,243.0,166.0,18.0,218.0,0.0,-31.64,255.0
+28.443,Weightlifting,Snatch,Side View,Turnover,Detected,,177.76,,172.18,,107.88,,169.76,,118.93,3.5,3.975,7.749,True,241.0,165.0,16.0,219.0,16.34,-32.68,255.0
+28.506,Weightlifting,Snatch,Side View,Turnover,Detected,,177.72,,172.18,,108.66,,169.94,,147.11,3.52,3.975,7.749,True,241.0,161.0,16.0,223.0,63.29,0.0,255.0
+28.573,Weightlifting,Snatch,Side View,Catch,Detected,,177.72,,172.18,,107.08,,166.07,,168.16,3.52,3.975,7.749,True,241.0,167.0,16.0,217.0,-89.25,0.0,255.0
+28.635,Weightlifting,Snatch,Side View,Turnover,Detected,,179.22,,173.05,,107.08,,161.96,,175.79,3.2,3.975,7.849,True,242.0,167.0,17.0,217.0,0.0,16.27,255.0
+28.697,Weightlifting,Snatch,Side View,Catch,Detected,,179.22,,172.96,,109.37,,132.46,,128.16,3.23,3.975,7.849,True,248.0,172.0,23.0,212.0,-80.64,96.77,255.0
+28.762,Weightlifting,Snatch,Side View,Turnover,Detected,,179.19,,172.96,,109.37,,141.89,,137.62,3.25,4.001,7.652,True,248.0,171.0,23.0,213.0,15.29,0.0,255.0
+28.824,Weightlifting,Snatch,Side View,Turnover,Detected,,179.22,,173.1,,110.37,,148.37,,144.36,2.93,4.001,7.652,True,248.0,168.0,23.0,216.0,48.76,0.0,255.0
+28.885,Weightlifting,Snatch,Side View,Turnover,Detected,,178.32,,172.21,,110.37,,165.33,,165.52,2.93,3.95,7.558,True,247.0,165.0,22.0,219.0,49.17,-16.39,255.0
+28.946,Weightlifting,Snatch,Side View,Turnover,Detected,,179.25,,173.88,,109.5,,173.88,,172.79,2.91,3.95,7.558,True,244.0,165.0,19.0,219.0,0.0,-49.59,255.0
+29.006,Weightlifting,Snatch,Side View,Turnover,Detected,,179.25,,173.88,,109.5,,179.94,,144.78,2.91,3.924,7.466,True,241.0,165.0,16.0,219.0,0.0,-48.49,255.0
+29.071,Weightlifting,Snatch,Side View,Turnover,Detected,,178.99,,172.99,,111.15,,178.73,,152.86,2.26,3.924,7.466,True,240.0,166.0,15.0,218.0,-15.64,-15.64,255.0
+29.132,Weightlifting,Snatch,Side View,Turnover,Detected,,178.09,,172.87,,112.86,,175.2,,149.33,2.26,4.001,8.055,True,240.0,167.0,15.0,217.0,-16.36,0.0,255.0
+29.197,Weightlifting,Snatch,Side View,Turnover,Detected,,178.07,,172.87,,112.86,,174.81,,160.99,2.28,4.001,8.055,True,244.0,168.0,19.0,216.0,-15.45,61.8,255.0
+29.258,Weightlifting,Snatch,Side View,Turnover,Detected,,178.07,,172.87,,112.86,,172.47,,160.23,1.96,3.95,7.288,True,244.0,169.0,19.0,215.0,-16.58,0.0,255.0
+29.321,Weightlifting,Snatch,Side View,Turnover,Detected,,178.71,,172.87,,112.86,,170.98,,161.93,1.64,3.95,7.288,True,244.0,170.0,19.0,214.0,-15.87,0.0,255.0
+29.381,Weightlifting,Snatch,Side View,Turnover,Detected,,178.07,,172.87,,114.48,,175.59,,166.23,1.96,3.975,7.558,True,244.0,171.0,19.0,213.0,-16.57,0.0,255.0
+29.447,Weightlifting,Snatch,Side View,Turnover,Detected,,178.7,,172.2,,112.85,,171.84,,165.77,1.65,3.975,7.558,True,244.0,173.0,19.0,211.0,-30.55,0.0,255.0
+29.504,Weightlifting,Snatch,Side View,Turnover,Detected,,179.35,,172.2,,112.18,,166.61,,163.58,1.32,3.975,7.951,True,244.0,175.0,19.0,209.0,-34.71,0.0,255.0
+29.568,Weightlifting,Snatch,Side View,Turnover,Detected,,179.76,,173.96,,111.37,,162.22,,156.6,0.99,3.975,7.951,True,244.0,174.0,19.0,210.0,15.7,0.0,255.0
+29.63,Weightlifting,Snatch,Side View,Turnover,Detected,,179.73,,173.98,,111.37,,146.95,,141.34,0.98,3.95,7.466,True,246.0,174.0,21.0,210.0,0.0,32.27,255.0
+29.691,Weightlifting,Snatch,Side View,Turnover,Detected,,179.09,,173.98,,111.37,,131.19,,121.72,0.33,3.95,7.466,True,247.0,172.0,22.0,212.0,32.55,16.27,255.0
+29.755,Weightlifting,Snatch,Side View,Turnover,Detected,,178.45,,173.96,,112.31,,124.34,,114.11,0.0,3.975,7.558,True,247.0,170.0,22.0,214.0,31.23,0.0,255.0
+29.817,Weightlifting,Snatch,Side View,Turnover,Detected,,180.0,,173.07,,111.37,,116.57,,109.98,0.33,3.975,7.558,True,249.0,172.0,24.0,212.0,-32.33,32.33,255.0
+29.88,Weightlifting,Snatch,Side View,Turnover,Detected,,180.0,,173.07,,111.37,,120.96,,114.38,0.0,3.924,7.288,True,249.0,172.0,24.0,212.0,0.0,0.0,255.0
+29.942,Weightlifting,Snatch,Side View,Turnover,Detected,,180.0,,172.97,,112.22,,123.69,,114.94,0.33,3.924,7.288,True,247.0,172.0,22.0,212.0,0.0,-32.06,255.0
+30.004,Weightlifting,Snatch,Side View,Turnover,Detected,,179.1,,174.64,,112.99,,122.01,,112.92,0.33,3.95,7.558,True,246.0,174.0,21.0,210.0,-32.64,-16.32,255.0
+30.069,Weightlifting,Snatch,Side View,Turnover,Detected,,179.1,,174.55,,114.62,,122.01,,112.92,0.33,3.95,7.558,True,246.0,174.0,21.0,210.0,0.0,0.0,255.0
+30.128,Weightlifting,Snatch,Side View,Turnover,Detected,,178.45,,174.55,,114.62,,118.4,,109.96,0.0,3.975,7.376,True,246.0,174.0,21.0,210.0,0.0,0.0,255.0
+30.189,Weightlifting,Snatch,Side View,Turnover,Detected,,178.45,,174.55,,116.28,,115.91,,109.72,0.0,3.975,7.376,True,246.0,175.0,21.0,209.0,-16.39,0.0,255.0
+30.253,Weightlifting,Snatch,Side View,Turnover,Detected,,177.8,,174.55,,116.28,,109.25,,105.98,0.65,3.826,7.558,True,246.0,176.0,21.0,208.0,-15.66,0.0,255.0
+30.316,Weightlifting,Snatch,Side View,Turnover,Detected,,177.82,,174.55,,114.62,,101.24,,95.69,0.98,3.85,7.558,True,246.0,176.0,21.0,208.0,0.0,0.0,255.0
+30.378,Weightlifting,Snatch,Side View,Turnover,Detected,,177.82,,174.54,,114.62,,101.23,,95.69,0.98,3.95,7.466,True,246.0,176.0,21.0,208.0,0.0,0.0,255.0
+30.441,Weightlifting,Snatch,Side View,Turnover,Detected,,178.48,,174.44,,113.55,,105.29,,100.98,0.98,3.95,7.466,True,246.0,178.0,21.0,206.0,-31.84,0.0,255.0
+30.501,Weightlifting,Snatch,Side View,Turnover,Detected,,178.48,,174.44,,113.55,,112.55,,108.0,0.98,3.899,7.466,True,246.0,178.0,21.0,206.0,0.0,0.0,255.0
+30.566,Weightlifting,Snatch,Side View,Turnover,Detected,,179.13,,174.44,,113.55,,135.0,,119.48,0.64,3.899,7.466,True,242.0,178.0,17.0,206.0,0.0,-61.68,255.0
+30.635,Weightlifting,Snatch,Side View,Turnover,Detected,,177.63,,175.31,,112.63,,134.37,,119.48,1.27,3.875,7.951,True,241.0,178.0,16.0,206.0,0.0,-14.61,255.0
+30.692,Weightlifting,Snatch,Side View,Turnover,Detected,,179.75,,174.44,,112.63,,149.65,,129.38,0.31,3.875,7.951,True,241.0,179.0,16.0,205.0,-17.12,0.0,255.0
+30.754,Weightlifting,Snatch,Side View,Turnover,Detected,,179.75,,174.44,,112.63,,157.42,,136.82,0.31,3.875,7.749,True,242.0,180.0,17.0,204.0,-16.38,16.38,255.0
+30.817,Weightlifting,Snatch,Side View,Turnover,Detected,,179.76,,174.34,,112.53,,154.05,,135.0,0.31,3.875,7.749,True,242.0,180.0,17.0,204.0,0.0,0.0,255.0
+30.889,Weightlifting,Snatch,Side View,Turnover,Detected,,179.62,,174.34,,112.53,,162.8,,143.13,0.0,3.875,7.652,True,242.0,180.0,17.0,204.0,0.0,0.0,255.0
+30.946,Weightlifting,Snatch,Side View,Turnover,Detected,,179.25,,176.88,,115.15,,160.66,,139.76,0.62,3.875,7.652,True,244.0,180.0,19.0,204.0,0.0,35.52,255.0
+31.011,Weightlifting,Snatch,Side View,Turnover,Detected,,178.63,,176.81,,116.71,,156.51,,135.0,0.93,3.875,7.202,True,245.0,181.0,20.0,203.0,-15.38,15.38,255.0
+31.071,Weightlifting,Snatch,Side View,Turnover,Detected,,177.16,,176.02,,115.15,,160.49,,130.24,1.86,3.875,7.202,True,245.0,180.0,20.0,204.0,16.62,0.0,255.0
+31.133,Weightlifting,Snatch,Side View,Turnover,Detected,,177.77,,175.94,,115.08,,153.33,,123.69,1.55,3.875,6.957,True,245.0,180.0,20.0,204.0,0.0,0.0,255.0
+31.197,Weightlifting,Snatch,Side View,Turnover,Detected,,176.96,,174.37,,114.35,,153.99,,118.94,1.52,3.875,6.957,True,246.0,179.0,21.0,205.0,15.71,15.71,255.0
+31.259,Weightlifting,Snatch,Side View,Turnover,Detected,,176.99,,174.37,,114.35,,147.48,,120.5,1.81,3.875,7.376,True,247.0,179.0,22.0,205.0,0.0,16.29,255.0
+31.318,Weightlifting,Snatch,Side View,Turnover,Detected,,176.99,,174.37,,114.35,,156.45,,108.43,1.82,3.875,7.376,True,247.0,177.0,22.0,207.0,33.69,0.0,255.0
+31.384,Weightlifting,Snatch,Side View,Turnover,Detected,,177.05,,173.57,,111.87,,146.92,,98.97,2.08,3.875,7.466,True,249.0,176.0,24.0,208.0,15.09,30.18,255.0
+31.449,Weightlifting,Snatch,Side View,Turnover,Detected,,174.96,,172.83,,111.96,,141.94,,78.69,2.4,3.875,7.466,True,252.0,178.0,27.0,206.0,-31.54,47.31,255.0
+31.507,Weightlifting,Snatch,Side View,Turnover,Detected,,173.76,,172.74,,111.87,,146.12,,77.28,2.11,3.85,7.849,True,252.0,178.0,27.0,206.0,0.0,0.0,255.0
+31.569,Weightlifting,Snatch,Side View,Turnover,Detected,,174.91,,172.74,,111.87,,106.79,,87.27,1.52,3.85,7.849,True,253.0,180.0,28.0,204.0,-31.98,15.99,255.0
+31.635,Weightlifting,Snatch,Side View,Turnover,Detected,,174.9,,172.73,,111.87,,87.92,,65.22,1.83,3.924,7.558,True,252.0,183.0,27.0,201.0,-45.44,-15.15,255.0
+31.696,Weightlifting,Snatch,Side View,Turnover,Detected,,170.69,,172.82,,110.22,,98.47,,65.56,3.96,3.924,7.558,True,256.0,183.0,31.0,201.0,0.0,65.4,255.0
+31.757,Weightlifting,Snatch,Side View,Turnover,Detected,,170.93,,173.66,,110.22,,108.53,,79.48,4.26,3.899,7.466,True,258.0,182.0,33.0,202.0,16.61,33.22,255.0
+31.821,Weightlifting,Snatch,Side View,Turnover,Detected,,171.53,,173.66,,110.22,,116.91,,90.0,3.93,3.899,7.466,True,257.0,180.0,32.0,204.0,31.64,-15.82,255.0
+31.886,Weightlifting,Snatch,Side View,Turnover,Detected,,172.13,,173.75,,109.46,,124.44,,98.13,3.93,3.875,7.202,True,256.0,179.0,31.0,205.0,15.19,-15.19,255.0
+31.947,Weightlifting,Snatch,Side View,Turnover,Detected,,171.35,,173.75,,110.31,,38.91,,20.13,4.0,3.875,7.202,True,257.0,180.0,32.0,204.0,-16.42,16.42,255.0
+32.007,Weightlifting,Snatch,Side View,Turnover,Detected,,171.35,,174.45,,113.7,,31.85,,15.35,3.69,3.899,7.849,True,257.0,181.0,32.0,203.0,-16.57,0.0,255.0
+32.069,Weightlifting,Snatch,Side View,Turnover,Detected,,169.92,,176.16,,113.7,,81.24,,47.64,4.94,3.899,7.849,True,268.0,178.0,43.0,206.0,48.02,176.06,255.0
+32.135,Weightlifting,Snatch,Side View,Turnover,Detected,,169.18,,176.16,,113.7,,92.52,,56.49,5.28,3.85,7.558,True,270.0,178.0,45.0,206.0,0.0,30.94,255.0
+32.194,Weightlifting,Snatch,Side View,Turnover,Detected,,170.28,,176.16,,113.7,,92.69,,64.33,4.69,3.85,7.558,True,267.0,178.0,42.0,206.0,0.0,-49.65,255.0
+32.257,Weightlifting,Snatch,Side View,Turnover,Detected,,170.92,,176.26,,113.77,,100.81,,,4.69,3.85,7.749,True,265.0,176.0,40.0,208.0,32.02,-32.02,255.0
+32.324,Weightlifting,Snatch,Side View,Turnover,Detected,,172.06,,177.24,,111.16,,96.5,,,4.64,3.85,7.749,True,267.0,176.0,42.0,208.0,0.0,29.93,255.0
+32.381,Weightlifting,Snatch,Side View,Turnover,Detected,,170.97,,177.24,,110.31,,111.68,,,5.53,3.875,7.849,True,269.0,175.0,44.0,209.0,17.65,35.29,255.0
+32.446,Weightlifting,Snatch,Side View,Catch,Detected,,174.88,,177.24,,110.31,,60.9,,,3.84,3.899,7.849,True,267.0,193.0,42.0,191.0,-274.81,-30.53,255.0
+32.506,Weightlifting,Snatch,Side View,Not Detected,Detected,,173.48,,176.39,,110.31,,42.0,,,4.45,3.875,7.558,False,,,,,,,
+32.569,Weightlifting,Snatch,Side View,Not Detected,Detected,,172.12,,176.46,,112.08,,47.24,,,3.84,3.875,7.558,False,,,,,,,
+32.631,Weightlifting,Snatch,Side View,Not Detected,Detected,,171.34,,176.43,,112.08,,45.96,,,3.86,3.85,7.376,False,,,,,,,
+32.695,Weightlifting,Snatch,Side View,Not Detected,Detected,,171.11,,177.35,,113.72,,54.6,,,4.04,3.85,7.376,False,,,,,,,
+32.756,Weightlifting,Snatch,Side View,Not Detected,Detected,,170.3,,177.35,,113.72,,57.38,,,4.76,3.826,7.749,False,,,,,,,
+32.817,Weightlifting,Snatch,Side View,Not Detected,Detected,,170.61,,177.34,,114.72,,52.1,,,4.18,3.802,7.749,False,,,,,,,
+32.879,Weightlifting,Snatch,Side View,Not Detected,Detected,,172.72,,177.45,,113.11,,,,,3.51,3.756,7.652,False,,,,,,,
+32.944,Weightlifting,Snatch,Side View,Not Detected,Detected,,176.12,,176.63,,113.17,,52.04,,,1.77,3.802,7.652,False,,,,,,,
+33.007,Weightlifting,Snatch,Side View,Not Detected,Detected,,174.81,,176.63,,112.28,,48.3,,,1.76,3.644,7.849,False,,,,,,,
+33.069,Weightlifting,Snatch,Side View,Not Detected,Detected,,173.44,,176.63,,110.58,,,,,2.13,3.733,7.849,False,,,,,,,
+33.134,Weightlifting,Snatch,Side View,Not Detected,Detected,,174.32,,177.51,,109.65,,,,,2.15,3.459,7.951,False,,,,,,,
+33.197,Weightlifting,Snatch,Side View,Not Detected,Detected,,173.44,,176.63,,109.65,,,,,2.13,3.498,7.951,False,,,,,,,
+33.258,Weightlifting,Snatch,Side View,Not Detected,Detected,,172.75,,176.63,,109.65,,,,,2.51,3.364,7.118,False,,,,,,,
+33.322,Weightlifting,Snatch,Side View,Not Detected,Detected,,172.22,,176.66,,109.65,,,,,2.83,3.382,7.118,False,,,,,,,
+33.384,Weightlifting,Snatch,Side View,Not Detected,Detected,,170.77,,175.7,,110.45,,44.82,,,3.16,3.327,,False,,,,,,,
+33.446,Weightlifting,Snatch,Side View,Not Detected,Detected,,170.0,,177.49,,108.56,,50.56,,,4.34,3.309,,False,,,,,,,
+33.509,Weightlifting,Snatch,Side View,Not Detected,Detected,,168.3,,175.89,,105.87,,58.52,,,5.06,3.291,7.037,False,,,,,,,
+33.57,Weightlifting,Snatch,Side View,Not Detected,Detected,,170.2,,175.86,,105.87,,17.71,,,4.4,3.291,7.037,False,,,,,,,
+33.631,Weightlifting,Snatch,Side View,Not Detected,Detected,,169.16,,174.31,,107.17,,21.52,,,4.83,3.382,7.288,False,,,,,,,
+33.696,Weightlifting,Snatch,Side View,Not Detected,Detected,,169.14,,173.58,,106.44,,19.87,,,4.83,3.382,7.288,False,,,,,,,
+33.757,Weightlifting,Snatch,Side View,Not Detected,Detected,,167.38,,171.09,,107.61,,18.08,,,5.19,3.401,7.202,False,,,,,,,
+33.821,Weightlifting,Snatch,Side View,Not Detected,Detected,,167.64,,172.69,,111.14,,18.48,,,6.6,3.382,7.202,False,,,,,,,
+33.881,Weightlifting,Snatch,Side View,Not Detected,Detected,,167.64,,171.97,,108.54,,18.07,,,6.64,3.309,7.749,False,,,,,,,
+33.947,Weightlifting,Snatch,Side View,Not Detected,Detected,,166.81,,171.04,,112.13,,14.34,,,8.13,3.309,7.749,False,,,,,,,
+34.007,Weightlifting,Snatch,Side View,Not Detected,Detected,,168.48,,170.19,,111.12,,18.58,,,6.71,3.382,7.849,False,,,,,,,
+34.069,Weightlifting,Snatch,Side View,Not Detected,Detected,,173.41,,167.54,,111.12,,14.15,,,5.56,3.364,7.849,False,,,,,,,
+34.134,Weightlifting,Snatch,Side View,Not Detected,Detected,,172.95,,166.25,,111.85,,4.44,,,5.89,3.364,7.652,False,,,,,,,
+34.195,Weightlifting,Snatch,Side View,Not Detected,Detected,,167.81,,165.96,,112.49,,2.27,,,6.94,3.364,7.652,False,,,,,,,
+34.256,Weightlifting,Snatch,Side View,Turnover,Detected,,167.12,,165.07,,111.36,,8.5,,,7.31,3.439,7.749,True,254.0,207.0,29.0,177.0,-7.73,-7.18,255.0
+34.318,Weightlifting,Snatch,Side View,Catch,Detected,,169.87,,167.72,,109.81,,5.44,,,6.77,3.42,7.749,True,254.0,254.0,29.0,130.0,-750.87,0.0,255.0
+34.381,Weightlifting,Snatch,Side View,Second Pull,Detected,,170.81,,167.9,,109.06,,3.76,,,6.77,3.478,7.749,True,260.0,247.0,35.0,137.0,111.73,95.76,255.0
+34.444,Weightlifting,Snatch,Side View,Not Detected,Detected,,168.78,,155.09,,96.91,,5.56,,,2.55,3.478,7.749,False,,,,,,,
+34.506,Weightlifting,Snatch,Side View,Not Detected,Detected,,172.95,,164.05,,100.85,,5.41,,,2.17,3.644,7.951,False,,,,,,,
+34.568,Weightlifting,Snatch,Side View,Transition,Detected,,177.24,,173.99,,115.56,,0.98,,,7.13,3.644,7.951,True,254.0,287.0,29.0,97.0,-213.5,-32.03,255.0
+34.631,Weightlifting,Snatch,Side View,Transition,Detected,,176.95,,174.61,,114.16,,5.98,,,7.64,3.666,7.118,True,253.0,279.0,28.0,105.0,128.22,-16.03,255.0
+34.696,Weightlifting,Snatch,Side View,Transition,Detected,,179.4,,179.03,,109.81,,6.27,,,8.83,3.688,7.118,True,254.0,283.0,29.0,101.0,-61.76,15.44,255.0
+34.757,Weightlifting,Snatch,Side View,Transition,Detected,,179.53,,179.25,,110.63,,6.91,,,9.58,3.733,7.466,True,254.0,279.0,29.0,105.0,65.35,0.0,255.0
+34.825,Weightlifting,Snatch,Side View,Transition,Detected,,179.41,,179.54,,108.87,,6.52,,,9.87,3.733,7.466,True,253.0,285.0,28.0,99.0,-88.99,-14.83,255.0
+34.883,Weightlifting,Snatch,Side View,Transition,Detected,,179.69,,179.86,,109.07,,8.91,,,9.69,3.733,7.951,True,253.0,281.0,28.0,103.0,68.93,0.0,255.0
+34.945,Weightlifting,Snatch,Side View,Transition,Detected,,178.82,,179.76,,108.97,,9.5,,,10.77,3.733,7.951,True,250.0,288.0,25.0,96.0,-110.9,-47.53,255.0
+35.006,Weightlifting,Snatch,Side View,Transition,Detected,,179.9,,178.31,,111.6,,9.22,,,10.7,3.733,7.288,True,251.0,287.0,26.0,97.0,16.52,16.52,255.0
+35.07,Weightlifting,Snatch,Side View,Transition,Detected,,178.95,,179.17,,112.56,,6.36,,,11.73,3.733,7.288,True,251.0,289.0,26.0,95.0,-31.24,0.0,255.0
+35.131,Weightlifting,Snatch,Side View,Transition,Detected,,178.64,,174.83,,111.81,,4.17,,,12.68,3.733,7.558,True,252.0,287.0,27.0,97.0,32.72,16.36,255.0
+35.194,Weightlifting,Snatch,Side View,Transition,Detected,,176.28,,174.22,,120.26,,4.55,,,13.62,3.71,7.558,True,249.0,285.0,24.0,99.0,31.65,-47.48,255.0
+35.26,Weightlifting,Snatch,Side View,Transition,Detected,,175.71,,176.23,,118.82,,2.53,,,13.54,3.688,7.652,True,248.0,286.0,23.0,98.0,-15.22,-15.22,255.0
+35.325,Weightlifting,Snatch,Side View,Transition,Detected,,172.46,,179.05,,120.04,,12.56,,,15.26,3.688,7.652,True,240.0,285.0,15.0,99.0,15.44,-123.48,255.0
+35.382,Weightlifting,Snatch,Side View,Transition,Detected,,171.22,,179.97,,120.94,,12.32,,,16.22,3.688,7.652,True,242.0,285.0,17.0,99.0,0.0,35.79,255.0
+35.446,Weightlifting,Snatch,Side View,Transition,Detected,,171.22,,179.3,,103.66,,11.24,,,16.08,3.688,7.652,True,244.0,281.0,19.0,103.0,62.5,31.25,255.0
+35.508,Weightlifting,Snatch,Side View,Transition,Detected,,170.89,,178.59,,97.05,,10.3,,,16.27,3.688,7.558,True,248.0,279.0,23.0,105.0,31.59,63.17,255.0
+35.571,Weightlifting,Snatch,Side View,Transition,Detected,,171.56,,177.45,,117.21,,5.6,,,15.38,3.688,7.558,True,250.0,280.0,25.0,104.0,-15.93,31.87,255.0
+35.634,Weightlifting,Snatch,Side View,Transition,Detected,,170.44,,174.66,,118.47,,2.95,,,15.22,3.688,7.288,True,252.0,280.0,27.0,104.0,0.0,32.21,255.0
+35.696,Weightlifting,Snatch,Side View,Transition,Detected,,170.37,,177.56,,61.57,,1.68,,,15.22,3.688,7.288,True,253.0,281.0,28.0,103.0,-15.72,15.72,255.0
+35.758,Weightlifting,Snatch,Side View,Transition,Detected,,171.16,,178.23,,83.91,,1.52,,,15.41,3.71,7.749,True,254.0,282.0,29.0,102.0,-16.23,16.23,255.0
+35.823,Weightlifting,Snatch,Side View,Transition,Detected,,165.63,,174.41,,106.27,,7.5,,,15.85,3.688,7.749,True,261.0,282.0,36.0,102.0,0.0,108.25,255.0
+35.884,Weightlifting,Snatch,Side View,Transition,Detected,,161.67,,172.97,,113.24,,8.27,,,17.1,3.666,7.288,True,260.0,281.0,35.0,103.0,16.2,-16.2,255.0
+35.954,Weightlifting,Snatch,Side View,Transition,Detected,,162.44,,174.6,,113.85,,7.02,,,17.23,3.666,7.288,True,255.0,282.0,30.0,102.0,-14.55,-72.74,255.0
+36.012,Weightlifting,Snatch,Side View,Transition,Detected,,164.31,,176.37,,111.93,,7.45,,,17.03,3.644,7.749,True,253.0,283.0,28.0,101.0,-17.0,-33.99,255.0
+36.076,Weightlifting,Snatch,Side View,Transition,Detected,,168.32,,179.96,,114.52,,5.02,,,16.37,3.666,7.749,True,251.0,283.0,26.0,101.0,0.0,-31.14,255.0
+36.137,Weightlifting,Snatch,Side View,Transition,Detected,,171.7,,178.01,,114.52,,0.47,,,15.71,3.71,7.466,True,248.0,284.0,23.0,100.0,-16.46,-49.37,255.0
+36.2,Weightlifting,Snatch,Side View,Transition,Detected,,172.08,,177.8,,115.56,,3.5,,,14.95,3.71,7.466,True,255.0,285.0,30.0,99.0,-16.03,112.18,255.0
+36.259,Weightlifting,Snatch,Side View,Transition,Detected,,172.08,,178.52,,105.92,,5.0,,,14.95,3.71,7.652,True,256.0,286.0,31.0,98.0,-16.7,16.7,255.0
+36.325,Weightlifting,Snatch,Side View,Transition,Detected,,169.42,,176.95,,81.54,,4.46,,,14.69,3.71,7.652,True,255.0,284.0,30.0,100.0,30.48,-15.24,255.0
+36.386,Weightlifting,Snatch,Side View,Transition,Detected,,167.32,,173.12,,79.8,,2.92,,,14.69,3.666,7.558,True,255.0,284.0,30.0,100.0,0.0,0.0,255.0
+36.451,Weightlifting,Snatch,Side View,Transition,Detected,,166.29,,171.19,,78.9,,3.17,,,13.95,3.666,7.558,True,256.0,284.0,31.0,100.0,0.0,15.47,255.0
+36.514,Weightlifting,Snatch,Side View,Transition,Detected,,166.29,,170.81,,98.56,,4.67,,,13.87,3.666,7.288,True,256.0,284.0,31.0,100.0,0.0,0.0,255.0
+36.579,Weightlifting,Snatch,Side View,Transition,Detected,,169.15,,174.92,,108.52,,5.13,,,13.14,3.666,7.288,True,256.0,284.0,31.0,100.0,0.0,0.0,255.0
+36.644,Weightlifting,Snatch,Side View,Transition,Detected,,167.11,,171.07,,104.82,,6.55,,,13.22,3.644,7.749,True,257.0,285.0,32.0,99.0,-15.46,15.46,255.0
+36.706,Weightlifting,Snatch,Side View,Transition,Detected,,166.32,,169.74,,101.71,,0.06,,,13.07,3.644,7.749,True,252.0,285.0,27.0,99.0,0.0,-80.68,255.0
+36.769,Weightlifting,Snatch,Side View,Transition,Detected,,170.32,,177.51,,105.48,,2.85,,,12.99,3.644,7.288,True,251.0,285.0,26.0,99.0,0.0,-15.75,255.0
+36.833,Weightlifting,Snatch,Side View,Transition,Detected,,172.48,,179.88,,91.64,,0.53,,,12.28,3.644,7.288,True,252.0,283.0,27.0,101.0,31.74,15.87,255.0
+36.895,Weightlifting,Snatch,Side View,Transition,Detected,,173.59,,176.02,,105.26,,0.68,,163.87,12.42,3.666,7.376,True,254.0,283.0,29.0,101.0,0.0,31.81,255.0
+36.959,Weightlifting,Snatch,Side View,Transition,Detected,,169.85,,176.89,,86.93,,2.16,,164.95,12.49,3.666,7.376,True,254.0,281.0,29.0,103.0,31.63,0.0,255.0
+37.02,Weightlifting,Snatch,Side View,Transition,Detected,,168.59,,174.92,,96.47,,3.34,,166.2,12.64,3.71,7.558,True,254.0,281.0,29.0,103.0,0.0,0.0,255.0
+37.084,Weightlifting,Snatch,Side View,Transition,Detected,,172.69,,177.49,,108.62,,1.16,,157.52,12.89,3.71,7.558,True,253.0,279.0,28.0,105.0,31.75,-15.87,255.0
+37.147,Weightlifting,Snatch,Side View,Transition,Detected,,173.67,,175.68,,112.16,,3.14,,155.88,12.89,3.644,7.376,True,252.0,278.0,27.0,106.0,16.03,-16.03,255.0
+37.207,Weightlifting,Snatch,Side View,Transition,Detected,,171.07,,177.82,,112.11,,7.81,,146.92,13.47,3.644,7.376,True,249.0,278.0,24.0,106.0,0.0,-49.7,255.0
+37.27,Weightlifting,Snatch,Side View,Transition,Detected,,170.02,,178.91,,110.12,,6.54,,148.18,13.47,3.644,7.749,True,249.0,278.0,24.0,106.0,0.0,0.0,255.0
+37.333,Weightlifting,Snatch,Side View,Transition,Detected,,170.12,,177.96,,115.75,,3.95,,147.36,13.47,3.644,7.749,True,252.0,279.0,27.0,105.0,-15.84,47.53,255.0
+37.394,Weightlifting,Snatch,Side View,Transition,Detected,,170.22,,177.04,,116.57,,0.96,,147.86,13.14,3.688,7.652,True,254.0,279.0,29.0,105.0,0.0,33.18,255.0
+37.457,Weightlifting,Snatch,Side View,Transition,Detected,,168.35,,179.05,,116.57,,10.43,,133.55,13.07,3.688,7.652,True,249.0,280.0,24.0,104.0,-15.7,-78.5,255.0
+37.519,Weightlifting,Snatch,Side View,Transition,Detected,,167.4,,179.19,,113.82,,10.43,,138.0,13.07,3.71,8.055,True,247.0,281.0,22.0,103.0,-16.27,-32.55,255.0
+37.584,Weightlifting,Snatch,Side View,Transition,Detected,,163.94,,176.38,,117.64,,13.88,,124.14,13.79,3.71,8.055,True,247.0,281.0,22.0,103.0,0.0,0.0,255.0
+37.646,Weightlifting,Snatch,Side View,Transition,Detected,,162.27,,175.5,,118.44,,8.48,,133.85,13.87,3.71,7.288,True,248.0,282.0,23.0,102.0,-16.17,16.17,255.0
+37.712,Weightlifting,Snatch,Side View,Transition,Detected,,162.79,,173.87,,118.32,,9.78,,133.85,12.97,3.71,7.288,True,245.0,282.0,20.0,102.0,0.0,-45.49,255.0
+37.771,Weightlifting,Snatch,Side View,Transition,Detected,,162.55,,172.19,,115.85,,9.71,,135.82,12.64,3.622,7.749,True,245.0,283.0,20.0,101.0,-16.78,0.0,255.0
+37.831,Weightlifting,Snatch,Side View,Transition,Detected,,161.46,,168.8,,114.09,,12.37,,131.07,11.45,3.622,7.749,True,242.0,283.0,17.0,101.0,0.0,-50.09,255.0
+37.893,Weightlifting,Snatch,Side View,Transition,Detected,,159.81,,167.11,,114.91,,13.97,,130.03,12.26,3.71,7.376,True,240.0,283.0,15.0,101.0,0.0,-32.3,255.0
+37.961,Weightlifting,Snatch,Side View,Transition,Detected,,158.78,,164.65,,114.7,,12.11,,129.76,12.68,3.71,7.376,True,241.0,283.0,16.0,101.0,0.0,14.72,255.0
+38.021,Weightlifting,Snatch,Side View,Transition,Detected,,156.62,,163.74,,117.08,,10.79,,131.7,13.02,3.733,7.558,True,241.0,284.0,16.0,100.0,-16.69,0.0,255.0
+38.083,Weightlifting,Snatch,Side View,Transition,Detected,,156.27,,162.65,,120.96,,8.98,,131.62,13.18,3.733,7.558,True,242.0,284.0,17.0,100.0,0.0,16.2,255.0
+38.149,Weightlifting,Snatch,Side View,Transition,Detected,,154.71,,162.48,,122.9,,6.76,,134.58,13.7,3.666,7.951,True,242.0,284.0,17.0,100.0,0.0,0.0,255.0
+38.209,Weightlifting,Snatch,Side View,Transition,Detected,,153.87,,161.22,,119.88,,8.41,,129.44,13.54,3.666,7.951,True,241.0,280.0,16.0,104.0,66.68,-16.67,255.0
+38.272,Weightlifting,Snatch,Side View,Transition,Detected,,152.64,,160.56,,120.3,,7.78,,129.44,13.79,3.733,7.558,True,241.0,280.0,16.0,104.0,0.0,0.0,255.0
+38.338,Weightlifting,Snatch,Side View,Transition,Detected,,152.16,,161.44,,124.53,,6.49,,131.66,14.78,3.733,7.558,True,241.0,280.0,16.0,104.0,0.0,0.0,255.0
+38.398,Weightlifting,Snatch,Side View,Transition,Detected,,150.89,,160.65,,125.77,,5.58,,132.09,15.11,3.733,7.558,True,241.0,280.0,16.0,104.0,0.0,0.0,255.0
+38.465,Weightlifting,Snatch,Side View,Transition,Detected,,151.36,,159.7,,126.54,,6.94,,132.49,15.2,3.733,7.558,True,241.0,280.0,16.0,104.0,0.0,0.0,255.0
+38.524,Weightlifting,Snatch,Side View,Transition,Detected,,152.12,,159.7,,126.54,,5.95,,134.24,15.11,3.802,8.055,True,241.0,280.0,16.0,104.0,0.0,0.0,255.0
+38.589,Weightlifting,Snatch,Side View,Transition,Detected,,149.98,,161.83,,126.05,,1.37,,137.66,15.52,3.756,8.055,True,242.0,281.0,17.0,103.0,-15.47,15.47,255.0
+38.649,Weightlifting,Snatch,Side View,Transition,Detected,,149.6,,156.94,,123.15,,2.6,,136.06,14.78,3.85,7.118,True,244.0,282.0,19.0,102.0,-16.35,32.71,255.0
+38.712,Weightlifting,Snatch,Side View,Transition,Detected,,148.84,,155.99,,121.73,,1.01,,138.86,14.8,3.85,7.118,True,245.0,282.0,20.0,102.0,0.0,15.93,255.0
+38.776,Weightlifting,Snatch,Side View,Transition,Detected,,149.24,,156.21,,121.67,,1.37,,138.7,14.46,3.779,7.288,True,245.0,282.0,20.0,102.0,0.0,0.0,255.0
+38.837,Weightlifting,Snatch,Side View,Transition,Detected,,146.94,,152.79,,118.51,,0.52,,136.3,14.71,3.779,7.288,True,246.0,282.0,21.0,102.0,0.0,16.3,255.0
+38.9,Weightlifting,Snatch,Side View,Transition,Detected,,146.01,,150.92,,117.7,,0.39,,136.3,14.53,3.779,7.652,True,246.0,282.0,21.0,102.0,0.0,0.0,255.0
+38.964,Weightlifting,Snatch,Side View,Transition,Detected,,145.56,,148.24,,116.09,,0.23,,135.62,14.45,3.779,7.652,True,246.0,281.0,21.0,103.0,15.63,0.0,255.0
+39.023,Weightlifting,Snatch,Side View,Transition,Detected,,147.78,,157.02,,122.99,,0.26,,133.08,14.87,3.756,7.376,True,246.0,281.0,21.0,103.0,0.0,0.0,255.0
+39.088,Weightlifting,Snatch,Side View,Transition,Detected,,147.46,,157.53,,123.21,,1.4,,129.79,14.62,3.756,7.376,True,246.0,281.0,21.0,103.0,0.0,0.0,255.0
+39.15,Weightlifting,Snatch,Side View,Transition,Detected,,147.48,,156.17,,120.62,,2.85,,127.11,14.8,3.826,7.558,True,245.0,281.0,20.0,103.0,0.0,-16.15,255.0
+39.212,Weightlifting,Snatch,Side View,Transition,Detected,,150.69,,139.89,,110.92,,0.85,,128.34,14.89,3.802,7.558,True,245.0,281.0,20.0,103.0,0.0,0.0,255.0
+39.275,Weightlifting,Snatch,Side View,Transition,Detected,,149.93,,140.74,,113.36,,1.89,,128.3,14.8,3.826,7.558,True,244.0,281.0,19.0,103.0,0.0,-16.0,255.0
+39.337,Weightlifting,Snatch,Side View,Transition,Detected,,152.85,,139.28,,117.74,,2.53,,126.62,14.46,3.826,7.558,True,243.0,280.0,18.0,104.0,16.04,-16.04,255.0
+39.398,Weightlifting,Snatch,Side View,Transition,Detected,,152.71,,142.87,,117.83,,2.08,,126.16,14.64,3.826,7.288,True,242.0,280.0,17.0,104.0,0.0,-16.46,255.0
+39.461,Weightlifting,Snatch,Side View,Transition,Detected,,154.87,,141.85,,120.56,,3.38,,125.23,13.52,3.826,7.288,True,241.0,280.0,16.0,104.0,0.0,-15.95,255.0
+39.523,Weightlifting,Snatch,Side View,Transition,Detected,,156.29,,142.5,,120.56,,4.14,,126.16,12.76,3.875,7.466,True,240.0,280.0,15.0,104.0,0.0,-15.92,255.0
+39.587,Weightlifting,Snatch,Side View,Transition,Detected,,157.83,,144.94,,118.06,,6.01,,124.94,12.41,3.85,7.466,True,238.0,280.0,13.0,104.0,0.0,-31.46,255.0
+39.653,Weightlifting,Snatch,Side View,Transition,Detected,,157.72,,146.1,,119.47,,6.24,,124.76,12.49,3.899,7.466,True,237.0,279.0,12.0,105.0,15.48,-15.48,255.0
+39.711,Weightlifting,Snatch,Side View,Transition,Detected,,157.17,,145.08,,120.22,,4.67,,125.89,12.22,3.875,7.466,True,235.0,279.0,10.0,105.0,0.0,-33.79,255.0
+39.773,Weightlifting,Snatch,Side View,Transition,Detected,,157.08,,146.56,,120.25,,3.33,,127.25,12.3,3.875,7.749,True,234.0,279.0,9.0,105.0,0.0,-16.16,255.0
+39.837,Weightlifting,Snatch,Side View,Transition,Detected,,158.17,,148.58,,122.62,,5.51,,124.17,11.94,3.875,7.749,True,233.0,279.0,8.0,105.0,0.0,-15.52,255.0
+39.899,Weightlifting,Snatch,Side View,Transition,Detected,,158.94,,149.51,,120.84,,6.28,,123.17,11.45,3.85,7.749,True,233.0,279.0,8.0,105.0,0.0,0.0,255.0
+39.964,Weightlifting,Snatch,Side View,Transition,Detected,,160.6,,144.19,,113.94,,7.56,,122.88,10.97,3.826,7.749,True,232.0,280.0,7.0,104.0,-15.38,-15.38,255.0
+40.023,Weightlifting,Snatch,Side View,Transition,Detected,,161.26,,147.2,,120.86,,7.91,,123.29,10.27,3.85,7.466,True,230.0,280.0,5.0,104.0,0.0,-33.92,255.0
+40.087,Weightlifting,Snatch,Side View,Transition,Detected,,161.93,,144.65,,125.35,,8.58,,123.29,9.93,3.85,7.466,True,228.0,280.0,3.0,104.0,0.0,-31.77,255.0
+40.152,Weightlifting,Snatch,Side View,Transition,Detected,,160.16,,141.48,,124.03,,9.4,,120.8,9.99,3.95,7.749,True,228.0,280.0,3.0,104.0,0.0,0.0,255.0
+40.214,Weightlifting,Snatch,Side View,Transition,Detected,,160.36,,138.19,,115.58,,10.57,,120.63,9.93,3.924,7.749,True,225.0,280.0,0.0,104.0,0.0,-48.76,255.0
+40.275,Weightlifting,Snatch,Side View,Transition,Detected,,161.85,,139.85,,116.34,,11.53,,120.26,9.64,3.924,7.558,True,224.0,280.0,-1.0,104.0,0.0,-16.24,255.0
+40.337,Weightlifting,Snatch,Side View,Transition,Detected,,160.0,,137.3,,117.42,,9.07,,123.56,9.76,3.899,7.558,True,224.0,282.0,-1.0,102.0,-32.2,0.0,255.0
+40.404,Weightlifting,Snatch,Side View,Transition,Detected,,160.0,,138.06,,114.57,,8.74,,122.98,9.76,3.899,7.466,True,223.0,282.0,-2.0,102.0,0.0,-15.26,255.0
+40.465,Weightlifting,Snatch,Side View,Transition,Detected,,160.0,,141.1,,113.87,,8.39,,127.34,9.76,3.899,7.466,True,221.0,285.0,-4.0,99.0,-47.93,-31.95,255.0
+40.535,Weightlifting,Snatch,Side View,Transition,Detected,,159.09,,139.01,,108.05,,8.39,,126.51,10.18,3.875,7.652,True,220.0,284.0,-5.0,100.0,14.61,-14.61,255.0
+40.591,Weightlifting,Snatch,Side View,Transition,Detected,,160.89,,141.69,,112.1,,13.04,,124.44,9.76,3.875,7.652,True,215.0,284.0,-10.0,100.0,0.0,-87.53,255.0
+40.653,Weightlifting,Snatch,Side View,Transition,Detected,,159.31,,141.59,,113.78,,13.54,,123.26,10.11,3.975,7.749,True,214.0,284.0,-11.0,100.0,0.0,-16.12,255.0
+40.716,Weightlifting,Snatch,Side View,Transition,Detected,,158.43,,164.47,,122.86,,13.98,,124.71,10.11,3.95,7.749,True,211.0,284.0,-14.0,100.0,0.0,-47.23,255.0
+40.779,Weightlifting,Snatch,Side View,Transition,Detected,,159.11,,168.53,,125.96,,14.67,,124.71,9.82,3.975,7.466,True,210.0,284.0,-15.0,100.0,0.0,-16.34,255.0
+40.842,Weightlifting,Snatch,Side View,Transition,Detected,,158.66,,173.55,,128.98,,13.98,,128.18,10.53,3.95,7.466,True,221.0,284.0,-4.0,100.0,0.0,171.68,255.0
+40.902,Weightlifting,Snatch,Side View,Transition,Detected,,158.71,,178.18,,133.94,,13.47,,130.09,9.82,3.975,7.652,True,220.0,284.0,-5.0,100.0,0.0,-16.51,255.0
+40.97,Weightlifting,Snatch,Side View,Transition,Detected,,158.78,,179.68,,130.55,,14.74,,131.96,9.7,3.975,7.652,True,218.0,285.0,-7.0,99.0,-15.06,-30.12,255.0
+41.028,Weightlifting,Snatch,Side View,Transition,Detected,,157.94,,178.84,,132.13,,13.12,,132.95,9.7,3.95,8.055,True,218.0,285.0,-7.0,99.0,0.0,0.0,255.0
+41.091,Weightlifting,Snatch,Side View,Transition,Detected,,160.15,,176.75,,132.62,,15.03,,133.65,8.88,3.95,8.055,True,216.0,286.0,-9.0,98.0,-15.88,-31.76,255.0
+41.155,Weightlifting,Snatch,Side View,Transition,Detected,,161.04,,177.26,,127.13,,14.52,,136.09,8.18,3.975,7.849,True,215.0,286.0,-10.0,98.0,0.0,-15.6,255.0
+41.219,Weightlifting,Snatch,Side View,Transition,Detected,,160.91,,177.89,,132.99,,15.24,,138.25,7.39,3.975,7.849,True,214.0,288.0,-11.0,96.0,-31.5,-15.75,255.0
+41.283,Weightlifting,Snatch,Side View,Transition,Detected,,160.91,,178.84,,124.7,,15.24,,140.67,7.39,3.95,7.288,True,213.0,288.0,-12.0,96.0,0.0,-15.92,255.0
+41.346,Weightlifting,Snatch,Side View,Transition,Detected,,162.42,,177.99,,119.83,,19.39,,139.28,6.69,3.95,7.288,True,210.0,288.0,-15.0,96.0,0.0,-46.7,255.0
+41.406,Weightlifting,Snatch,Side View,Transition,Detected,,162.9,,178.74,,119.3,,20.08,,139.28,6.3,3.95,7.376,True,209.0,288.0,-16.0,96.0,0.0,-16.54,255.0
+41.472,Weightlifting,Snatch,Side View,Transition,Detected,178.86,163.77,168.39,177.34,101.06,116.38,,21.21,,142.13,6.26,3.95,7.376,True,207.0,288.0,-18.0,96.0,0.0,-30.38,255.0
+41.536,Weightlifting,Snatch,Side View,Transition,Detected,178.86,163.77,169.26,177.34,101.06,116.75,,21.21,,142.13,6.26,3.975,7.749,True,207.0,288.0,-18.0,96.0,0.0,0.0,255.0
+41.6,Weightlifting,Snatch,Side View,Transition,Detected,179.44,165.3,169.72,175.73,99.95,113.11,,21.86,,146.24,5.19,3.975,7.749,True,205.0,288.0,-20.0,96.0,0.0,-31.0,255.0
+41.662,Weightlifting,Snatch,Side View,Transition,Detected,179.44,165.96,169.72,175.73,101.06,111.23,,21.4,,147.6,4.85,3.975,7.376,True,205.0,288.0,-20.0,96.0,0.0,0.0,255.0
+41.723,Weightlifting,Snatch,Side View,Transition,Detected,178.52,166.62,171.5,175.51,102.24,113.56,,22.06,,151.71,4.5,3.95,7.376,True,202.0,288.0,-23.0,96.0,0.0,-47.99,255.0
+41.785,Weightlifting,Snatch,Side View,Transition,Detected,178.52,166.81,171.5,175.83,103.28,112.81,,22.06,,151.85,4.5,4.001,8.273,True,202.0,289.0,-23.0,95.0,-16.25,0.0,255.0
+41.848,Weightlifting,Snatch,Side View,Transition,Detected,177.79,166.81,173.38,175.83,102.69,110.78,,22.06,,157.29,4.5,4.028,8.273,True,199.0,288.0,-26.0,96.0,15.86,-47.58,255.0
+41.911,Weightlifting,Snatch,Side View,Transition,Detected,179.4,166.81,171.63,175.83,100.81,110.78,,22.54,,158.13,4.85,3.975,7.376,True,198.0,288.0,-27.0,96.0,0.0,-15.87,255.0
+41.973,Weightlifting,Snatch,Side View,Transition,Detected,179.24,167.47,172.07,177.34,102.81,109.27,,23.55,,163.24,4.5,3.975,7.376,True,195.0,285.0,-30.0,99.0,48.52,-48.52,255.0
+42.036,Weightlifting,Snatch,Side View,Transition,Detected,179.07,167.47,172.51,177.34,103.09,109.27,,24.68,,163.45,4.5,3.975,7.202,True,194.0,284.0,-31.0,100.0,15.7,-15.7,255.0
+42.1,Weightlifting,Snatch,Side View,Transition,Detected,180.0,167.47,171.58,178.11,104.13,110.54,,24.68,,164.57,4.53,3.975,7.202,True,193.0,284.0,-32.0,100.0,0.0,-15.78,255.0
+42.163,Weightlifting,Snatch,Side View,Transition,Detected,179.73,167.47,172.27,178.11,106.07,110.54,,24.1,,166.44,4.56,4.001,7.652,True,192.0,285.0,-33.0,99.0,-15.8,-15.8,255.0
+42.226,Weightlifting,Snatch,Side View,Transition,Detected,179.13,165.08,173.12,178.81,106.92,113.55,,23.44,,166.44,5.23,3.975,7.652,True,191.0,284.0,-34.0,100.0,16.23,-16.23,255.0
+42.288,Weightlifting,Snatch,Side View,Transition,Detected,178.42,165.08,173.98,178.01,107.78,112.76,,23.44,,167.72,5.57,4.001,8.273,True,190.0,284.0,-35.0,100.0,0.0,-16.08,255.0
+42.351,Weightlifting,Snatch,Side View,Transition,Detected,176.33,163.62,171.16,174.3,106.92,114.54,,23.43,,170.25,5.64,4.001,8.273,True,187.0,285.0,-38.0,99.0,-15.6,-46.8,255.0
+42.412,Weightlifting,Snatch,Side View,Transition,Detected,176.19,163.38,171.41,173.92,106.06,117.61,,22.35,,172.92,5.68,4.001,7.849,True,187.0,285.0,-38.0,99.0,0.0,0.0,255.0
+42.478,Weightlifting,Snatch,Side View,Transition,Detected,176.91,162.45,172.02,171.94,111.14,121.63,,22.86,,170.45,5.71,4.001,7.849,True,187.0,285.0,-38.0,99.0,0.0,0.0,255.0
+42.538,Weightlifting,Snatch,Side View,Transition,Detected,175.13,164.9,171.34,172.23,111.37,120.82,,24.23,,170.79,5.42,4.054,7.466,True,186.0,285.0,-39.0,99.0,0.0,-16.71,255.0
+42.602,Weightlifting,Snatch,Side View,Transition,Detected,175.31,162.91,174.16,170.81,111.63,119.14,,23.48,,171.45,6.5,4.054,7.466,True,185.0,285.0,-40.0,99.0,0.0,-15.51,255.0
+42.665,Weightlifting,Snatch,Side View,Transition,Detected,176.95,162.67,175.92,170.57,113.69,122.08,,23.48,,173.14,6.14,4.054,7.849,True,184.0,284.0,-41.0,100.0,15.98,-15.98,255.0
+42.73,Weightlifting,Snatch,Side View,Transition,Detected,177.71,163.36,177.36,168.89,117.0,120.47,,24.17,,174.43,5.78,4.054,7.849,True,183.0,284.0,-42.0,100.0,0.0,-15.2,255.0
+42.791,Weightlifting,Snatch,Side View,Transition,Detected,179.47,162.07,178.97,167.44,118.54,119.61,,24.61,,173.29,6.18,4.054,8.055,True,183.0,284.0,-42.0,100.0,0.0,0.0,255.0
+42.852,Weightlifting,Snatch,Side View,Transition,Detected,178.45,163.5,179.85,168.82,120.35,121.39,,24.61,,175.03,6.22,4.054,8.055,True,182.0,284.0,-43.0,100.0,0.0,-16.49,255.0
+42.914,Weightlifting,Snatch,Side View,Transition,Detected,175.74,165.19,177.75,170.47,122.03,124.12,,24.59,,175.03,6.3,4.028,7.652,True,181.0,284.0,-44.0,100.0,0.0,-15.95,255.0
+42.98,Weightlifting,Snatch,Side View,Transition,Detected,176.8,165.04,179.75,167.3,127.0,126.37,,25.3,,176.83,5.89,4.028,7.652,True,180.0,283.0,-45.0,101.0,15.21,-15.21,255.0
+43.04,Weightlifting,Snatch,Side View,Transition,Detected,177.55,165.04,179.75,167.3,127.0,126.37,,25.3,,176.83,5.53,4.054,7.558,True,181.0,283.0,-44.0,101.0,0.0,16.54,255.0
+43.102,Weightlifting,Snatch,Side View,Transition,Detected,174.98,168.82,177.89,165.35,129.03,133.28,,24.57,,178.67,6.3,4.054,7.558,True,179.0,283.0,-46.0,101.0,0.0,-32.29,255.0
+43.165,Weightlifting,Snatch,Side View,Transition,Detected,174.07,167.95,177.94,162.67,128.35,129.69,,24.57,,178.67,6.3,4.054,8.055,True,179.0,283.0,-46.0,101.0,0.0,0.0,255.0
+43.227,Weightlifting,Snatch,Side View,Transition,Detected,174.07,170.39,177.94,163.79,128.35,124.95,,25.84,,176.27,5.97,4.054,8.055,True,178.0,283.0,-47.0,101.0,0.0,-16.24,255.0
+43.289,Weightlifting,Snatch,Side View,Transition,Detected,174.81,170.39,178.8,163.79,126.03,123.68,,25.84,,176.82,5.6,4.165,7.749,True,178.0,282.0,-47.0,102.0,15.94,0.0,255.0
+43.353,Weightlifting,Snatch,Side View,Transition,Detected,174.81,172.26,178.8,163.93,126.03,124.54,,26.97,,175.69,5.6,4.165,7.749,True,178.0,282.0,-47.0,102.0,0.0,0.0,255.0
+43.413,Weightlifting,Snatch,Side View,Transition,Detected,174.81,172.26,178.8,164.74,127.49,128.15,,26.97,,175.69,5.6,4.109,7.466,True,177.0,282.0,-48.0,102.0,0.0,-16.35,255.0
+43.476,Weightlifting,Snatch,Side View,Transition,Detected,175.94,172.26,177.81,163.93,127.52,127.34,,26.97,,174.37,5.6,4.109,7.466,True,177.0,282.0,-48.0,102.0,0.0,0.0,255.0
+43.541,Weightlifting,Snatch,Side View,Transition,Detected,175.94,173.13,178.87,165.61,125.07,128.15,,28.09,,173.26,5.6,4.165,7.951,True,177.0,282.0,-48.0,102.0,0.0,0.0,255.0
+43.604,Weightlifting,Snatch,Side View,Transition,Detected,177.01,174.73,177.72,165.92,123.55,124.72,,27.7,,174.37,5.23,4.165,7.951,True,177.0,282.0,-48.0,102.0,0.0,0.0,255.0
+43.666,Weightlifting,Snatch,Side View,Transition,Detected,177.01,175.45,179.52,165.26,119.23,121.14,,27.29,,175.5,4.86,4.109,7.951,True,177.0,282.0,-48.0,102.0,0.0,0.0,255.0
+43.729,Weightlifting,Snatch,Side View,Transition,Detected,177.15,176.33,178.7,164.6,116.29,118.29,,28.42,,173.03,4.83,4.109,7.951,True,177.0,282.0,-48.0,102.0,0.0,0.0,255.0
+43.791,Weightlifting,Snatch,Side View,Transition,Detected,177.96,175.67,178.47,164.51,114.16,118.13,,27.7,,174.37,5.19,4.081,7.466,True,177.0,282.0,-48.0,102.0,0.0,0.0,255.0
+43.857,Weightlifting,Snatch,Side View,Transition,Detected,176.9,178.99,176.85,166.33,121.78,121.52,,28.42,,173.03,4.83,4.054,7.466,True,177.0,282.0,-48.0,102.0,0.0,0.0,255.0
+43.917,Weightlifting,Snatch,Side View,Transition,Detected,176.64,179.42,176.73,167.2,124.38,130.77,,29.15,,171.66,4.48,4.193,7.749,True,176.0,282.0,-49.0,102.0,0.0,-16.51,255.0
+43.982,Weightlifting,Snatch,Side View,Transition,Detected,177.56,180.0,176.65,167.91,121.97,130.21,,27.7,,172.16,5.19,4.193,7.749,True,177.0,281.0,-48.0,103.0,15.43,15.43,255.0
+44.045,Weightlifting,Snatch,Side View,Transition,Detected,175.82,180.0,174.6,167.74,119.46,131.27,,26.57,,173.29,5.56,4.081,7.376,True,177.0,281.0,-48.0,103.0,0.0,0.0,255.0
+44.106,Weightlifting,Snatch,Side View,Transition,Detected,176.57,179.27,176.22,164.6,125.08,131.49,,27.88,,170.82,5.23,4.081,7.376,True,177.0,282.0,-48.0,102.0,-16.39,0.0,255.0
+44.171,Weightlifting,Snatch,Side View,Transition,Detected,178.89,179.27,178.68,163.84,126.06,129.01,,27.88,,170.82,4.86,4.028,7.749,True,178.0,282.0,-47.0,102.0,0.0,15.48,255.0
+44.232,Weightlifting,Snatch,Side View,Transition,Detected,178.89,176.01,177.8,165.6,123.34,128.25,,27.44,,171.99,4.48,4.028,7.749,True,178.0,282.0,-47.0,102.0,0.0,0.0,255.0
+44.296,Weightlifting,Snatch,Side View,Transition,Detected,178.89,175.16,177.98,166.44,121.88,128.25,,27.44,,172.91,4.48,4.081,7.652,True,178.0,283.0,-47.0,101.0,-15.95,0.0,255.0
+44.357,Weightlifting,Snatch,Side View,Transition,Detected,178.89,175.16,177.8,165.44,121.7,130.74,,26.24,,174.11,4.48,4.081,7.652,True,178.0,283.0,-47.0,101.0,0.0,0.0,255.0
+44.42,Weightlifting,Snatch,Side View,Transition,Detected,177.31,175.16,176.96,165.19,121.7,131.57,,26.24,,174.58,4.86,4.028,7.466,True,178.0,282.0,-47.0,102.0,15.88,0.0,255.0
+44.482,Weightlifting,Snatch,Side View,Transition,Detected,177.31,173.49,177.83,165.83,125.85,133.31,,26.24,,174.58,4.86,4.028,7.466,True,178.0,282.0,-47.0,102.0,0.0,0.0,255.0
+44.545,Weightlifting,Snatch,Side View,Transition,Detected,177.16,174.29,177.66,166.53,125.59,133.12,12.97,26.72,160.74,171.99,5.3,4.081,7.376,True,178.0,282.0,-47.0,102.0,0.0,0.0,255.0
+44.609,Weightlifting,Snatch,Side View,Transition,Detected,177.29,174.96,178.84,165.83,128.46,134.22,12.97,25.97,160.74,171.99,5.67,4.081,7.376,True,178.0,282.0,-47.0,102.0,0.0,0.0,255.0
+44.669,Weightlifting,Snatch,Side View,Transition,Detected,177.0,173.29,179.6,167.27,129.56,138.37,11.61,25.52,157.52,171.78,5.33,4.081,7.376,True,178.0,282.0,-47.0,102.0,0.0,0.0,255.0
+44.734,Weightlifting,Snatch,Side View,Transition,Detected,176.55,174.04,179.38,165.41,126.87,135.69,12.2,24.78,156.8,171.78,6.05,4.081,7.376,True,178.0,282.0,-47.0,102.0,0.0,0.0,255.0
+44.793,Weightlifting,Snatch,Side View,Transition,Detected,176.55,174.88,179.26,163.78,123.63,134.91,12.2,23.03,156.04,172.5,6.05,4.193,7.951,True,179.0,282.0,-46.0,102.0,0.0,16.79,255.0
+44.86,Weightlifting,Snatch,Side View,Transition,Detected,175.68,174.04,179.51,163.86,120.53,138.09,12.94,23.03,156.04,169.5,6.42,4.193,7.951,True,179.0,282.0,-46.0,102.0,0.0,0.0,255.0
+44.923,Weightlifting,Snatch,Side View,Transition,Detected,176.83,172.35,177.63,165.87,121.42,138.41,12.77,22.54,155.22,170.73,5.97,4.028,7.288,True,179.0,282.0,-46.0,102.0,0.0,0.0,255.0
+44.984,Weightlifting,Snatch,Side View,Transition,Detected,176.83,171.61,177.63,163.27,122.86,135.07,12.77,22.54,155.22,169.83,5.97,4.028,7.288,True,180.0,281.0,-45.0,103.0,16.59,16.59,255.0
+45.049,Weightlifting,Snatch,Side View,Transition,Detected,176.83,170.04,178.52,164.86,118.74,138.63,12.77,22.02,154.36,171.08,5.6,3.95,8.163,True,180.0,280.0,-45.0,104.0,15.25,0.0,255.0
+45.11,Weightlifting,Snatch,Side View,Transition,Detected,175.38,170.78,179.25,164.11,120.16,135.07,13.5,20.02,155.22,170.72,6.34,3.95,8.163,True,180.0,281.0,-45.0,103.0,-16.33,0.0,255.0
+45.172,Weightlifting,Snatch,Side View,Transition,Detected,175.38,169.95,178.36,164.61,124.19,134.73,13.5,20.02,153.43,170.72,6.3,4.001,8.386,True,181.0,281.0,-44.0,103.0,0.0,16.35,255.0
+45.234,Weightlifting,Snatch,Side View,Transition,Detected,174.68,168.26,179.23,164.48,124.19,133.62,13.32,19.44,151.7,168.71,5.86,4.001,8.386,True,182.0,281.0,-43.0,103.0,0.0,15.98,255.0
+45.297,Weightlifting,Snatch,Side View,Transition,Detected,173.26,167.28,178.87,166.24,121.55,136.5,13.86,20.7,153.43,163.98,6.14,4.109,7.558,True,182.0,281.0,-43.0,103.0,0.0,0.0,255.0
+45.361,Weightlifting,Snatch,Side View,Transition,Detected,174.14,165.75,179.35,166.73,124.07,136.92,13.86,20.1,153.43,163.63,5.75,4.081,7.558,True,182.0,281.0,-43.0,103.0,0.0,0.0,255.0
+45.422,Weightlifting,Snatch,Side View,Transition,Detected,174.31,165.75,179.59,166.73,125.67,139.32,13.69,20.95,153.43,161.15,5.71,4.109,7.849,True,182.0,281.0,-43.0,103.0,0.0,0.0,255.0
+45.486,Weightlifting,Snatch,Side View,Transition,Detected,173.55,165.61,179.31,167.2,126.61,141.4,15.12,21.49,154.87,158.22,6.06,4.109,7.849,True,182.0,281.0,-43.0,103.0,0.0,0.0,255.0
+45.547,Weightlifting,Snatch,Side View,Transition,Detected,171.96,165.61,179.79,166.43,124.88,140.04,15.81,21.49,154.87,156.54,6.42,4.028,7.849,True,182.0,281.0,-43.0,103.0,0.0,0.0,255.0
+45.611,Weightlifting,Snatch,Side View,Transition,Detected,171.96,164.77,179.79,166.15,121.74,143.79,15.85,20.25,154.9,157.68,6.42,4.028,7.849,True,182.0,280.0,-43.0,104.0,16.01,0.0,255.0
+45.673,Weightlifting,Snatch,Side View,Transition,Detected,172.65,164.77,179.79,166.15,120.32,146.61,16.63,20.25,156.37,155.95,6.06,4.028,7.202,True,183.0,280.0,-42.0,104.0,0.0,15.94,255.0
+45.74,Weightlifting,Snatch,Side View,Transition,Detected,172.65,164.77,179.79,166.15,121.74,152.32,16.7,21.49,157.3,151.29,6.06,4.028,7.202,True,183.0,280.0,-42.0,104.0,0.0,0.0,255.0
+45.799,Weightlifting,Snatch,Side View,Transition,Detected,172.75,163.95,180.0,167.72,121.85,153.06,16.7,21.49,157.3,151.29,6.06,4.028,7.652,True,183.0,280.0,-42.0,104.0,0.0,0.0,255.0
+45.862,Weightlifting,Snatch,Side View,Transition,Detected,172.48,163.09,179.19,168.54,124.28,160.83,18.38,21.99,157.95,148.49,6.18,4.028,7.652,True,183.0,279.0,-42.0,105.0,16.1,0.0,255.0
+45.923,Weightlifting,Snatch,Side View,Transition,Detected,172.48,163.09,179.19,168.54,124.28,160.83,18.38,21.99,159.74,146.31,6.18,4.165,7.376,True,183.0,278.0,-42.0,106.0,16.34,0.0,255.0
+45.987,Weightlifting,Snatch,Side View,Transition,Detected,171.78,162.27,178.27,169.73,125.19,166.83,19.07,21.99,159.74,144.02,6.54,4.165,7.376,True,183.0,278.0,-42.0,106.0,0.0,0.0,255.0
+46.051,Weightlifting,Snatch,Side View,Transition,Detected,171.68,162.27,178.44,170.47,126.74,170.12,19.07,20.72,159.74,142.89,6.54,4.054,7.749,True,183.0,277.0,-42.0,107.0,15.74,0.0,255.0
+46.113,Weightlifting,Snatch,Side View,Transition,Detected,171.78,160.75,178.27,171.28,126.81,175.03,19.07,21.44,160.76,141.06,6.18,4.054,7.749,True,183.0,277.0,-42.0,107.0,0.0,0.0,255.0
+46.174,Weightlifting,Snatch,Side View,Transition,Detected,172.21,161.21,178.44,171.89,130.31,175.39,20.05,21.99,164.21,137.28,6.22,4.028,7.849,True,182.0,276.0,-43.0,108.0,16.03,-16.03,255.0
+46.236,Weightlifting,Snatch,Side View,Transition,Detected,172.21,160.5,178.44,171.53,130.31,178.62,20.21,23.19,164.37,136.03,5.86,4.028,7.849,True,182.0,275.0,-43.0,109.0,16.28,0.0,255.0
+46.298,Weightlifting,Snatch,Side View,Transition,Detected,172.21,160.5,178.44,171.53,130.31,178.62,20.38,24.45,166.54,133.94,5.86,4.028,7.558,True,181.0,274.0,-44.0,110.0,16.33,-16.33,255.0
+46.363,Weightlifting,Snatch,Side View,Transition,Detected,171.49,158.97,179.25,172.7,128.54,174.5,21.56,23.9,167.9,134.34,5.46,4.028,7.558,True,181.0,273.0,-44.0,111.0,15.16,0.0,255.0
+46.425,Weightlifting,Snatch,Side View,Transition,Detected,171.49,158.94,179.25,171.97,128.54,177.39,21.56,25.2,167.9,131.13,5.49,4.081,7.951,True,181.0,274.0,-44.0,110.0,-16.56,0.0,255.0
+46.492,Weightlifting,Snatch,Side View,Transition,Detected,171.49,157.41,179.83,173.51,125.9,174.5,21.56,25.93,169.95,129.25,5.13,4.081,7.951,True,180.0,274.0,-45.0,110.0,0.0,-14.83,255.0
+46.55,Weightlifting,Snatch,Side View,Transition,Detected,172.45,157.17,179.91,174.53,125.9,173.75,22.21,25.88,171.47,127.44,4.7,4.001,7.749,True,180.0,274.0,-45.0,110.0,0.0,0.0,255.0
+46.614,Weightlifting,Snatch,Side View,Transition,Detected,170.61,156.89,178.94,174.42,125.9,172.09,23.07,25.88,171.47,124.0,5.1,4.028,7.749,True,180.0,272.0,-45.0,112.0,31.08,0.0,255.0
+46.676,Weightlifting,Snatch,Side View,Transition,Detected,171.49,157.6,179.25,175.16,126.81,171.35,23.07,26.41,171.47,120.91,5.46,4.136,7.849,True,180.0,272.0,-45.0,112.0,0.0,0.0,255.0
+46.739,Weightlifting,Snatch,Side View,Transition,Detected,170.61,157.9,179.86,173.72,125.19,172.96,24.86,26.5,175.94,120.3,5.16,4.136,7.849,True,179.0,272.0,-46.0,112.0,0.0,-15.81,255.0
+46.801,Weightlifting,Snatch,Side View,Transition,Detected,170.61,157.9,179.86,174.47,125.19,170.27,24.86,26.5,178.01,122.17,5.16,4.028,7.202,True,178.0,272.0,-47.0,112.0,0.0,-16.05,255.0
+46.863,Weightlifting,Snatch,Side View,Transition,Detected,171.31,157.17,179.86,173.72,125.19,171.03,25.69,27.23,179.53,120.3,4.43,4.028,7.202,True,178.0,272.0,-47.0,112.0,0.0,0.0,255.0
+46.923,Weightlifting,Snatch,Side View,Transition,Detected,171.38,157.9,180.0,174.47,125.27,168.42,25.69,26.5,179.53,120.3,4.79,4.193,7.652,True,178.0,272.0,-47.0,112.0,0.0,0.0,255.0
+46.988,Weightlifting,Snatch,Side View,Transition,Detected,170.64,157.17,179.1,174.47,125.27,170.27,27.03,27.23,176.85,117.07,4.4,4.193,7.652,True,178.0,271.0,-47.0,113.0,15.22,0.0,255.0
+47.05,Weightlifting,Snatch,Side View,Transition,Detected,171.34,157.17,179.17,174.81,123.41,168.64,28.24,27.23,172.8,115.53,4.03,4.054,7.749,True,177.0,270.0,-48.0,114.0,16.44,-16.44,255.0
+47.114,Weightlifting,Snatch,Side View,Transition,Detected,170.7,157.26,179.83,173.98,122.86,170.61,28.94,27.43,168.45,110.96,4.03,4.054,7.749,True,176.0,269.0,-49.0,115.0,15.59,-15.59,255.0
+47.178,Weightlifting,Snatch,Side View,Transition,Detected,173.88,156.2,146.57,163.58,80.32,144.5,30.33,28.81,166.26,110.96,4.01,4.311,7.849,True,175.0,269.0,-50.0,115.0,0.0,-15.52,255.0
+47.239,Weightlifting,Snatch,Side View,Transition,Detected,173.57,157.11,178.38,177.62,112.72,149.66,30.51,29.41,164.05,106.25,4.43,4.311,7.849,True,174.0,269.0,-51.0,115.0,0.0,-16.37,255.0
+47.301,Weightlifting,Snatch,Side View,Transition,Detected,175.16,156.84,170.98,179.12,124.99,153.18,29.81,28.16,161.85,107.5,4.06,4.054,7.749,True,173.0,269.0,-52.0,115.0,0.0,-16.02,255.0
+47.363,Weightlifting,Snatch,Side View,Transition,Detected,174.97,157.95,170.08,175.44,128.17,160.65,30.6,29.41,160.26,106.25,3.69,4.054,7.749,True,172.0,268.0,-53.0,116.0,16.36,-16.36,255.0
+47.426,Weightlifting,Snatch,Side View,Transition,Detected,174.97,158.68,169.19,175.73,130.56,160.36,30.6,28.68,157.98,107.87,4.06,4.054,7.466,True,171.0,268.0,-54.0,116.0,0.0,-15.89,255.0
+47.489,Weightlifting,Snatch,Side View,Transition,Detected,172.75,157.78,171.77,176.73,126.78,159.61,30.68,28.81,151.24,104.85,4.01,4.054,7.466,True,169.0,268.0,-56.0,116.0,0.0,-31.68,255.0
+47.551,Weightlifting,Snatch,Side View,Transition,Detected,172.53,157.59,172.68,176.99,128.17,161.42,29.99,28.74,153.14,104.85,3.62,3.924,7.849,True,169.0,268.0,-56.0,116.0,0.0,0.0,255.0
+47.616,Weightlifting,Snatch,Side View,Transition,Detected,171.0,157.76,173.55,176.11,128.15,159.61,30.25,29.44,142.59,104.85,3.62,3.924,7.849,True,166.0,267.0,-59.0,117.0,15.2,-45.59,255.0
+47.678,Weightlifting,Snatch,Side View,Transition,Detected,170.98,157.59,175.3,176.37,127.27,159.61,31.72,29.37,134.55,103.36,3.22,3.95,7.951,True,166.0,267.0,-59.0,117.0,0.0,0.0,255.0
+47.74,Weightlifting,Snatch,Side View,Transition,Detected,170.03,158.49,176.26,175.46,127.27,159.61,31.72,29.37,132.3,103.36,3.22,3.95,7.951,True,165.0,267.0,-60.0,117.0,0.0,-16.28,255.0
+47.804,Weightlifting,Snatch,Side View,Transition,Detected,170.03,158.41,176.26,175.46,127.27,158.07,31.72,29.44,133.47,101.35,3.24,4.001,7.849,True,165.0,268.0,-60.0,116.0,-15.72,0.0,255.0
+47.866,Weightlifting,Snatch,Side View,Transition,Detected,169.07,158.61,176.33,175.32,129.64,155.58,33.06,31.35,128.81,100.15,2.88,4.001,7.849,True,163.0,267.0,-62.0,117.0,16.07,-32.15,255.0
+47.928,Weightlifting,Snatch,Side View,Transition,Detected,169.07,160.23,176.33,174.4,129.64,155.58,33.06,30.65,126.75,100.15,3.24,4.081,7.749,True,162.0,267.0,-63.0,117.0,0.0,-15.75,255.0
+47.991,Weightlifting,Snatch,Side View,Transition,Detected,168.81,158.61,177.28,176.34,129.64,154.56,33.69,32.53,122.07,98.97,2.52,4.081,7.749,True,160.0,267.0,-65.0,117.0,0.0,-32.0,255.0
+48.053,Weightlifting,Snatch,Side View,Transition,Detected,168.81,159.53,177.28,175.42,129.64,156.11,32.37,31.35,121.9,100.15,2.52,3.875,7.558,True,160.0,266.0,-65.0,118.0,16.03,0.0,255.0
+48.115,Weightlifting,Snatch,Side View,Transition,Detected,167.01,160.45,178.24,174.5,130.05,152.93,33.22,30.68,118.35,102.29,2.9,3.875,7.558,True,158.0,265.0,-67.0,119.0,16.2,-32.39,255.0
+48.177,Weightlifting,Snatch,Side View,Transition,Detected,167.01,162.08,178.24,173.57,130.05,152.93,31.88,29.97,121.64,102.29,3.26,3.95,7.849,True,158.0,265.0,-67.0,119.0,0.0,0.0,255.0
+48.241,Weightlifting,Snatch,Side View,Transition,Detected,166.07,160.45,179.18,175.26,130.05,152.16,32.35,31.9,121.17,103.1,2.9,3.95,7.849,True,157.0,265.0,-68.0,119.0,0.0,-15.74,255.0
+48.303,Weightlifting,Snatch,Side View,Transition,Detected,167.01,161.36,177.36,175.6,130.93,149.98,30.96,32.39,122.56,101.9,3.26,4.001,7.376,True,156.0,265.0,-69.0,119.0,0.0,-16.26,255.0
+48.368,Weightlifting,Snatch,Side View,Transition,Detected,166.77,159.95,178.26,176.39,132.78,147.65,33.02,32.6,118.09,103.1,2.17,4.001,7.376,True,155.0,265.0,-70.0,119.0,0.0,-15.15,255.0
+48.428,Weightlifting,Snatch,Side View,Transition,Detected,166.77,160.86,178.26,175.48,132.78,147.65,31.65,30.85,119.73,104.38,2.17,4.109,7.749,True,155.0,264.0,-70.0,120.0,16.73,0.0,255.0
+48.492,Weightlifting,Snatch,Side View,Transition,Detected,167.47,159.64,177.36,175.07,133.68,147.88,32.32,32.26,116.4,100.66,1.09,4.109,7.749,True,154.0,263.0,-71.0,121.0,15.59,-15.59,255.0
+48.554,Weightlifting,Snatch,Side View,Transition,Detected,167.47,160.34,177.36,175.87,132.24,147.08,32.32,32.76,112.3,98.05,1.45,4.028,7.652,True,153.0,263.0,-72.0,121.0,0.0,-16.04,255.0
+48.62,Weightlifting,Snatch,Side View,Transition,Detected,166.53,161.25,178.3,174.97,135.21,147.08,32.32,32.76,108.75,99.46,1.45,4.028,7.652,True,150.0,263.0,-75.0,121.0,0.0,-45.99,255.0
+48.68,Weightlifting,Snatch,Side View,Transition,Detected,167.47,161.25,176.47,174.97,136.1,147.08,32.32,31.56,107.15,103.84,1.45,3.875,7.466,True,149.0,263.0,-76.0,121.0,0.0,-16.63,255.0
+48.744,Weightlifting,Snatch,Side View,Transition,Detected,166.38,162.2,177.48,173.91,137.66,148.71,32.46,31.66,105.11,101.48,1.47,3.875,7.466,True,148.0,262.0,-77.0,122.0,15.63,-15.63,255.0
+48.807,Weightlifting,Snatch,Side View,Transition,Detected,167.1,163.05,177.48,174.58,137.66,146.26,31.75,32.15,105.11,100.28,1.47,3.95,7.749,True,147.0,262.0,-78.0,122.0,0.0,-15.84,255.0
+48.867,Weightlifting,Snatch,Side View,Transition,Detected,167.71,163.23,176.49,173.69,140.36,146.26,32.51,31.66,99.36,101.48,0.74,3.95,7.749,True,146.0,261.0,-79.0,123.0,16.49,-16.49,255.0
+48.929,Weightlifting,Snatch,Side View,Transition,Detected,166.79,163.23,177.41,173.69,140.36,146.26,32.51,32.34,99.36,96.76,0.74,3.779,7.849,True,146.0,261.0,-79.0,123.0,0.0,0.0,255.0
+48.991,Weightlifting,Snatch,Side View,Transition,Detected,166.7,164.13,176.48,173.61,139.61,147.08,32.64,29.96,95.69,93.7,0.74,3.779,7.849,True,144.0,259.0,-81.0,125.0,32.34,-32.34,255.0
+49.054,Weightlifting,Snatch,Side View,Transition,Detected,166.7,164.13,177.37,173.61,137.18,147.08,31.3,31.16,97.03,91.11,0.74,3.924,7.652,True,143.0,259.0,-82.0,125.0,0.0,-15.86,255.0
+49.116,Weightlifting,Snatch,Side View,Transition,Detected,165.06,164.13,177.39,174.43,138.06,146.26,32.04,29.96,95.84,93.46,1.12,3.924,7.652,True,141.0,259.0,-84.0,125.0,0.0,-32.75,255.0
+49.178,Weightlifting,Snatch,Side View,Transition,Detected,165.96,165.02,175.49,173.54,140.69,146.26,30.67,29.96,97.21,90.48,1.12,3.899,7.951,True,141.0,259.0,-84.0,125.0,0.0,0.0,255.0
+49.244,Weightlifting,Snatch,Side View,Transition,Detected,166.7,164.2,175.49,173.54,137.84,144.62,32.64,32.49,88.79,90.6,0.37,3.899,7.951,True,140.0,258.0,-85.0,126.0,15.07,-15.07,255.0
+49.306,Weightlifting,Snatch,Side View,Transition,Detected,165.87,163.48,176.45,173.54,139.37,144.62,33.82,34.4,84.26,87.02,0.0,3.85,7.849,True,139.0,258.0,-86.0,126.0,0.0,-16.09,255.0
+49.369,Weightlifting,Snatch,Side View,Transition,Detected,165.87,164.2,175.56,174.36,140.27,143.8,33.82,32.49,81.87,91.75,0.37,3.85,7.849,True,137.0,257.0,-88.0,127.0,15.91,-31.82,255.0
+49.429,Weightlifting,Snatch,Side View,Transition,Detected,166.0,164.2,175.56,175.2,140.27,143.13,31.85,33.69,83.71,82.87,0.37,3.899,7.466,True,136.0,256.0,-89.0,128.0,16.67,-16.67,255.0
+49.494,Weightlifting,Snatch,Side View,Transition,Detected,165.08,165.1,177.37,174.3,136.53,141.51,31.85,32.49,81.26,81.01,0.37,3.899,7.466,True,135.0,255.0,-90.0,129.0,15.26,-15.26,255.0
+49.556,Weightlifting,Snatch,Side View,Turnover,Detected,165.81,166.0,177.37,173.39,136.53,141.51,32.42,31.26,79.97,78.5,0.0,3.899,7.951,True,134.0,254.0,-91.0,130.0,16.45,-16.45,255.0
+49.619,Weightlifting,Snatch,Side View,Turnover,Detected,165.81,165.88,176.48,174.23,137.42,140.67,32.42,29.33,81.2,76.59,0.0,3.875,7.951,True,132.0,254.0,-93.0,130.0,0.0,-31.45,255.0
+49.683,Weightlifting,Snatch,Side View,Transition,Detected,165.81,165.21,176.48,174.31,137.42,143.76,31.12,28.61,83.08,82.87,0.37,3.899,7.849,True,133.0,255.0,-92.0,129.0,-15.57,15.57,255.0
+49.744,Weightlifting,Snatch,Side View,Transition,Detected,165.85,166.13,176.56,173.39,136.18,143.76,31.0,27.28,82.5,148.86,0.37,3.899,7.849,True,129.0,262.0,-96.0,122.0,-114.1,-65.2,255.0
+49.808,Weightlifting,Snatch,Side View,Transition,Detected,166.79,166.19,174.73,173.17,137.07,143.91,31.0,28.61,81.95,148.17,0.37,3.85,7.288,True,128.0,264.0,-97.0,120.0,-31.34,-15.67,255.0
+49.869,Weightlifting,Snatch,Side View,Transition,Detected,166.64,166.26,175.59,174.09,135.49,143.14,30.29,27.15,80.23,160.61,0.73,3.85,7.288,True,126.0,266.0,-99.0,118.0,-32.97,-32.97,255.0
+49.934,Weightlifting,Snatch,Side View,Transition,Detected,165.01,166.26,176.51,174.95,137.07,142.28,31.0,25.8,80.23,167.94,0.36,3.85,7.558,True,124.0,269.0,-101.0,115.0,-46.28,-30.85,255.0
+49.997,Weightlifting,Snatch,Side View,Transition,Detected,164.92,167.89,175.87,174.02,137.45,140.73,29.21,26.45,74.83,160.69,0.0,3.85,7.558,True,124.0,265.0,-101.0,119.0,63.73,0.0,255.0
+50.059,Weightlifting,Snatch,Side View,Transition,Detected,164.92,168.81,175.87,172.24,136.22,144.61,30.5,26.45,73.54,157.93,0.0,3.875,7.951,True,124.0,264.0,-101.0,120.0,16.04,0.0,255.0
+50.12,Weightlifting,Snatch,Side View,Transition,Detected,163.28,168.81,175.93,173.1,139.61,143.75,31.21,26.45,71.17,157.7,0.36,3.875,7.951,True,122.0,263.0,-103.0,121.0,16.21,-32.43,255.0
+50.181,Weightlifting,Snatch,Side View,Transition,Detected,162.35,170.34,177.72,172.16,137.45,143.75,32.48,27.18,69.98,159.08,0.73,3.899,7.558,True,122.0,263.0,-103.0,121.0,0.0,0.0,255.0
+50.248,Weightlifting,Snatch,Side View,Transition,Detected,163.9,168.63,177.6,173.91,138.74,142.88,31.05,28.02,69.98,150.26,0.37,3.899,7.558,True,121.0,256.0,-104.0,128.0,105.73,-15.1,255.0
+50.305,Weightlifting,Snatch,Side View,Transition,Detected,164.02,168.75,177.48,173.91,138.74,144.52,30.55,27.9,70.4,161.57,0.37,3.95,7.652,True,119.0,257.0,-106.0,127.0,-17.08,-34.17,255.0
+50.368,Weightlifting,Snatch,Side View,Transition,Detected,164.02,168.56,177.37,174.61,140.12,145.49,29.9,29.93,68.96,139.22,0.37,3.899,7.652,True,119.0,253.0,-106.0,131.0,64.14,0.0,255.0
+50.43,Weightlifting,Snatch,Side View,Turnover,Detected,164.85,170.16,177.26,173.74,141.57,145.49,28.69,31.04,67.24,118.13,0.37,3.85,7.466,True,119.0,251.0,-106.0,133.0,32.26,0.0,255.0
+50.497,Weightlifting,Snatch,Side View,Turnover,Detected,163.26,168.56,178.13,174.61,144.75,147.32,30.18,32.54,64.6,83.11,0.37,3.85,7.466,True,118.0,250.0,-107.0,134.0,14.92,-14.92,255.0
+50.553,Weightlifting,Snatch,Side View,Turnover,Detected,163.25,169.44,178.25,173.62,144.75,149.36,30.06,31.25,64.6,76.59,0.37,3.875,7.849,True,118.0,249.0,-107.0,135.0,17.64,0.0,255.0
+50.616,Weightlifting,Snatch,Side View,Turnover,Detected,166.32,168.69,177.26,173.74,152.35,151.29,29.19,31.47,61.36,61.84,1.87,3.85,7.849,True,117.0,248.0,-108.0,136.0,15.88,-15.88,255.0
+50.68,Weightlifting,Snatch,Side View,Turnover,Detected,164.72,169.56,179.0,172.87,149.41,153.43,28.72,30.18,60.55,63.91,1.5,3.875,7.376,True,117.0,248.0,-108.0,136.0,0.0,0.0,255.0
+50.742,Weightlifting,Snatch,Side View,Turnover,Detected,165.59,170.42,176.45,173.76,157.55,150.4,27.59,29.68,58.59,58.59,1.12,3.875,7.376,True,118.0,247.0,-107.0,137.0,16.04,16.04,255.0
+50.806,Weightlifting,Snatch,Side View,Turnover,Detected,167.19,169.7,175.59,173.76,155.24,150.4,26.85,29.16,56.41,54.45,1.87,3.875,7.202,True,117.0,246.0,-108.0,138.0,15.96,-15.96,255.0
+50.867,Weightlifting,Snatch,Side View,Turnover,Detected,165.69,171.27,176.61,172.8,153.43,151.96,27.05,29.68,56.85,54.65,1.12,3.875,7.202,True,117.0,246.0,-108.0,138.0,0.0,0.0,255.0
+50.929,Weightlifting,Snatch,Side View,Turnover,Detected,165.69,171.26,177.45,172.82,148.28,148.47,25.83,30.9,58.07,50.25,1.12,3.899,7.558,True,117.0,246.0,-108.0,138.0,0.0,0.0,255.0
+50.992,Weightlifting,Snatch,Side View,Turnover,Detected,165.69,169.7,176.61,174.56,158.3,147.57,26.25,30.4,60.26,48.1,1.49,3.899,7.558,True,115.0,246.0,-110.0,138.0,0.0,-31.42,255.0
+51.054,Weightlifting,Snatch,Side View,Turnover,Detected,166.55,171.12,175.75,173.73,158.3,149.06,26.25,29.8,59.84,49.92,1.12,3.924,7.466,True,116.0,246.0,-109.0,138.0,0.0,15.91,255.0
+51.118,Weightlifting,Snatch,Side View,Turnover,Detected,166.45,171.95,175.9,172.9,172.8,147.15,26.35,29.8,60.26,41.29,1.13,3.924,7.466,True,114.0,245.0,-111.0,139.0,15.75,-31.49,255.0
+51.18,Weightlifting,Snatch,Side View,Turnover,Detected,166.36,173.4,176.14,172.24,175.97,145.47,26.35,29.19,58.15,41.29,0.76,3.924,7.466,True,114.0,244.0,-111.0,140.0,16.07,0.0,255.0
+51.244,Weightlifting,Snatch,Side View,Turnover,Detected,166.44,173.4,175.66,173.04,176.04,146.18,26.45,29.19,58.15,38.94,0.76,3.924,7.466,True,113.0,244.0,-112.0,140.0,0.0,-15.72,255.0
+51.305,Weightlifting,Snatch,Side View,Turnover,Detected,166.44,173.4,175.66,173.04,172.87,146.18,26.45,29.19,58.62,36.21,0.76,3.85,7.849,True,112.0,244.0,-113.0,140.0,0.0,-16.32,255.0
+51.372,Weightlifting,Snatch,Side View,Turnover,Detected,167.1,173.53,175.81,171.44,166.67,147.32,27.49,29.49,58.95,32.47,1.54,3.826,7.849,True,111.0,244.0,-114.0,140.0,0.0,-15.18,255.0
+51.432,Weightlifting,Snatch,Side View,Turnover,Detected,167.1,172.6,176.64,171.49,167.66,145.39,27.49,29.94,58.95,32.11,1.93,3.975,7.849,True,111.0,244.0,-114.0,140.0,0.0,0.0,255.0
+51.496,Weightlifting,Snatch,Side View,Turnover,Detected,167.95,173.57,176.42,171.46,161.08,142.77,26.73,28.61,56.92,33.31,2.31,3.975,7.849,True,110.0,244.0,-115.0,140.0,0.0,-15.63,255.0
+51.562,Weightlifting,Snatch,Side View,Turnover,Detected,167.95,173.04,177.35,171.4,165.38,142.77,26.64,27.99,56.92,37.15,2.65,3.924,7.749,True,111.0,244.0,-114.0,140.0,0.0,15.12,255.0
+51.635,Weightlifting,Snatch,Side View,Turnover,Detected,167.86,173.04,177.44,171.4,157.35,146.52,26.64,27.99,56.92,37.15,2.65,3.924,7.749,True,110.0,244.0,-115.0,140.0,0.0,-13.8,255.0
+51.698,Weightlifting,Snatch,Side View,Turnover,Detected,167.1,174.47,176.59,170.56,153.84,146.52,26.13,29.01,57.72,37.87,1.91,3.899,8.055,True,110.0,244.0,-115.0,140.0,0.0,0.0,255.0
+51.759,Weightlifting,Snatch,Side View,Turnover,Detected,166.44,175.01,176.5,171.51,148.74,145.23,26.88,28.4,57.72,32.91,1.15,3.899,8.055,True,109.0,244.0,-116.0,140.0,0.0,-16.24,255.0
+51.825,Weightlifting,Snatch,Side View,Turnover,Detected,166.44,174.12,177.35,173.23,152.95,144.39,26.88,28.0,58.18,29.98,1.15,3.875,7.652,True,109.0,244.0,-116.0,140.0,0.0,0.0,255.0
+51.888,Weightlifting,Snatch,Side View,Turnover,Detected,166.44,174.12,176.5,173.27,149.68,140.82,25.6,28.4,59.47,26.57,1.15,3.875,7.652,True,107.0,243.0,-118.0,141.0,15.85,-31.7,255.0
+51.948,Weightlifting,Snatch,Side View,Turnover,Detected,167.19,175.88,177.35,172.39,155.44,139.19,24.85,27.12,57.46,21.26,1.15,3.899,7.849,True,107.0,242.0,-118.0,142.0,16.66,0.0,255.0
+52.011,Weightlifting,Snatch,Side View,Turnover,Detected,167.29,175.76,175.65,172.43,147.34,139.15,24.29,27.25,58.23,17.99,0.77,3.899,7.849,True,106.0,242.0,-119.0,142.0,0.0,-16.03,255.0
+52.072,Weightlifting,Snatch,Side View,Turnover,Detected,168.24,176.58,174.81,171.6,149.68,140.78,24.2,27.65,60.31,26.57,0.76,3.924,7.749,True,107.0,242.0,-118.0,142.0,0.0,16.18,255.0
+52.134,Weightlifting,Snatch,Side View,Turnover,Detected,169.09,175.76,173.66,173.27,148.88,141.4,22.87,27.65,61.13,23.84,0.76,3.924,7.749,True,107.0,242.0,-118.0,142.0,0.0,0.0,255.0
+52.2,Weightlifting,Snatch,Side View,Turnover,Detected,170.68,175.01,172.66,173.27,149.54,141.4,23.45,26.79,59.81,22.98,1.53,3.875,7.466,True,107.0,242.0,-118.0,142.0,0.0,0.0,255.0
+52.261,Weightlifting,Snatch,Side View,Turnover,Detected,171.56,175.01,172.67,173.29,151.8,141.63,23.45,28.0,60.31,19.53,1.53,3.875,7.466,True,106.0,241.0,-119.0,143.0,16.18,-16.18,255.0
+52.322,Weightlifting,Snatch,Side View,Turnover,Detected,171.56,175.01,172.67,173.29,149.61,140.1,23.45,28.0,60.31,19.53,1.53,3.924,7.376,True,106.0,241.0,-119.0,143.0,0.0,0.0,255.0
+52.385,Weightlifting,Snatch,Side View,Turnover,Detected,171.65,173.99,171.97,175.03,149.75,140.78,24.2,28.13,60.31,17.5,1.15,3.924,7.376,True,106.0,241.0,-119.0,143.0,0.0,0.0,255.0
+52.448,Weightlifting,Snatch,Side View,Turnover,Detected,172.3,175.56,171.97,174.22,150.56,146.5,24.85,28.57,59.0,16.31,1.16,3.899,7.202,True,105.0,241.0,-120.0,143.0,0.0,-16.09,255.0
+52.51,Weightlifting,Snatch,Side View,Turnover,Detected,171.56,175.56,173.93,175.1,149.89,141.71,24.29,28.57,60.31,16.31,0.77,3.899,7.202,True,105.0,241.0,-120.0,143.0,0.0,0.0,255.0
+52.574,Weightlifting,Snatch,Side View,Turnover,Detected,171.56,174.87,174.03,175.03,148.96,139.9,24.29,27.75,60.77,16.04,1.16,3.85,7.202,True,104.0,241.0,-121.0,143.0,0.0,-15.75,255.0
+52.636,Weightlifting,Snatch,Side View,Turnover,Detected,173.25,174.05,172.25,176.74,149.89,140.46,23.91,27.75,59.15,16.04,1.16,3.85,7.202,True,104.0,241.0,-121.0,143.0,0.0,0.0,255.0
+52.698,Weightlifting,Snatch,Side View,Turnover,Detected,172.5,175.63,172.25,175.93,152.23,141.8,24.66,26.99,59.15,16.04,0.39,3.826,7.376,True,104.0,241.0,-121.0,143.0,0.0,0.0,255.0
+52.762,Weightlifting,Snatch,Side View,Turnover,Detected,175.07,175.71,168.93,175.83,149.15,141.83,24.66,26.99,57.74,16.04,0.39,3.826,7.376,True,104.0,240.0,-121.0,144.0,15.72,0.0,255.0
+52.826,Weightlifting,Snatch,Side View,Turnover,Detected,175.07,175.58,169.04,175.81,144.81,141.84,24.66,27.11,58.26,13.31,0.39,3.875,7.376,True,103.0,240.0,-122.0,144.0,0.0,-15.47,255.0
+52.891,Weightlifting,Snatch,Side View,Turnover,Detected,175.81,175.58,168.3,176.69,144.92,139.27,25.15,27.11,59.73,13.31,0.39,3.85,7.376,True,102.0,240.0,-123.0,144.0,0.0,-15.69,255.0
+52.948,Weightlifting,Snatch,Side View,Turnover,Detected,175.88,175.65,168.34,176.59,142.93,140.99,25.15,27.11,59.73,11.71,0.39,3.875,7.466,True,102.0,240.0,-123.0,144.0,0.0,0.0,255.0
+53.013,Weightlifting,Snatch,Side View,Turnover,Detected,178.46,176.43,166.62,177.41,145.03,138.48,25.19,26.34,58.84,11.71,0.39,3.875,7.466,True,102.0,240.0,-123.0,144.0,0.0,0.0,255.0
+53.073,Weightlifting,Snatch,Side View,Turnover,Detected,176.85,176.24,168.29,177.48,150.28,138.48,26.35,27.63,60.31,13.18,0.0,3.924,7.558,True,102.0,240.0,-123.0,144.0,0.0,0.0,255.0
+53.135,Weightlifting,Snatch,Side View,Turnover,Detected,176.85,175.4,168.29,179.11,144.87,137.69,27.63,27.63,59.02,10.53,0.0,3.924,7.558,True,102.0,240.0,-123.0,144.0,0.0,0.0,255.0
+53.201,Weightlifting,Snatch,Side View,Turnover,Detected,177.71,175.4,167.52,179.11,144.96,137.69,26.35,27.63,60.31,12.14,0.0,3.899,7.466,True,101.0,240.0,-124.0,144.0,0.0,-15.17,255.0
+53.261,Weightlifting,Snatch,Side View,Turnover,Detected,176.66,175.34,170.85,179.22,146.23,139.33,26.05,28.79,58.84,12.02,0.0,3.899,7.466,True,101.0,240.0,-124.0,144.0,0.0,0.0,255.0
+53.326,Weightlifting,Snatch,Side View,Turnover,Detected,176.59,174.51,171.69,179.11,146.98,138.49,26.05,28.79,59.27,12.02,0.0,3.875,7.376,True,101.0,240.0,-124.0,144.0,0.0,0.0,255.0
+53.388,Weightlifting,Snatch,Side View,Turnover,Detected,177.62,173.86,171.58,179.05,145.07,138.43,25.94,28.29,57.48,13.18,0.39,3.875,7.376,True,101.0,239.0,-124.0,145.0,15.77,0.0,255.0
+53.45,Weightlifting,Snatch,Side View,Turnover,Detected,177.62,175.46,172.4,179.27,145.89,142.3,24.66,27.51,56.44,13.18,0.0,3.899,7.202,True,101.0,239.0,-124.0,145.0,0.0,0.0,255.0
+53.516,Weightlifting,Snatch,Side View,Turnover,Detected,177.62,176.88,172.38,178.52,147.01,142.3,25.94,26.84,55.71,10.53,0.39,3.899,7.202,True,100.0,239.0,-125.0,145.0,0.0,-15.05,255.0
+53.577,Weightlifting,Snatch,Side View,Turnover,Detected,179.31,176.07,169.03,179.82,145.35,139.7,25.94,28.0,56.22,12.02,0.39,3.875,7.558,True,99.0,239.0,-126.0,145.0,0.0,-16.42,255.0
+53.637,Weightlifting,Snatch,Side View,Turnover,Detected,179.31,175.25,169.82,178.15,147.22,140.6,24.66,28.0,56.99,9.37,0.39,3.875,7.558,True,99.0,239.0,-126.0,145.0,0.0,0.0,255.0
+53.704,Weightlifting,Snatch,Side View,Turnover,Detected,179.31,174.46,169.79,178.15,149.96,142.41,24.66,27.63,56.99,7.74,0.0,3.826,7.652,True,98.0,239.0,-127.0,145.0,0.0,-14.82,255.0
+53.763,Weightlifting,Snatch,Side View,Turnover,Detected,178.98,174.63,170.53,178.2,148.18,137.58,25.6,27.51,57.53,10.53,0.39,3.826,7.652,True,98.0,239.0,-127.0,145.0,0.0,0.0,255.0
+58.995,Weightlifting,Snatch,Side View,Turnover,Not Detected,,,,,,,,,,,,,,False,,,,,,,

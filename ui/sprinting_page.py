@@ -1,6 +1,17 @@
+import time
+
 from PyQt6.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton,
-    QRadioButton, QGroupBox, QFileDialog, QMessageBox, QGridLayout,
+    QApplication,
+    QWidget,
+    QVBoxLayout,
+    QHBoxLayout,
+    QLabel,
+    QPushButton,
+    QRadioButton,
+    QGroupBox,
+    QFileDialog,
+    QMessageBox,
+    QGridLayout,
     QSizePolicy
 )
 from PyQt6.QtCore import Qt
@@ -73,9 +84,6 @@ class SprintingPage(QWidget):
 
         self.video_label = QLabel("Video preview will appear here.")
         self.video_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-
-        # Important:
-        # Do not allow incoming video pixmap size to resize the whole UI.
         self.video_label.setMinimumSize(640, 300)
         self.video_label.setMaximumHeight(430)
         self.video_label.setSizePolicy(
@@ -145,6 +153,26 @@ class SprintingPage(QWidget):
 
         self.apply_styles()
 
+    def open_file_dialog_non_native(self, title, file_filter):
+        """
+        Uses Qt non-native file dialog.
+        This helps avoid Windows native Explorer freezing with large .bag folders.
+        """
+
+        dialog = QFileDialog(self)
+        dialog.setWindowTitle(title)
+        dialog.setNameFilter(file_filter)
+        dialog.setFileMode(QFileDialog.FileMode.ExistingFile)
+        dialog.setOption(QFileDialog.Option.DontUseNativeDialog, True)
+
+        if dialog.exec() == QFileDialog.DialogCode.Accepted:
+            selected_files = dialog.selectedFiles()
+
+            if selected_files:
+                return selected_files[0]
+
+        return ""
+
     def create_metrics_group(self):
         metrics_group = QGroupBox("Live Biomechanics Metrics")
         metrics_group.setSizePolicy(
@@ -192,18 +220,37 @@ class SprintingPage(QWidget):
         return metrics_group
 
     def select_input_file(self):
+        if self.is_recording:
+            QMessageBox.warning(
+                self,
+                "Recording Active",
+                "Please stop and save the analysis before changing the input file."
+            )
+            return
+
+        if self.video_thread is not None:
+            if not self._stop_preview_internal(reset_metrics=True):
+                QMessageBox.warning(
+                    self,
+                    "Preview Still Closing",
+                    "Please wait until the current preview fully stops before changing the file."
+                )
+                return
+
         if self.radio_bag.isChecked():
             file_filter = "RealSense Bag Files (*.bag);;All Files (*)"
             title = "Select RealSense Bag File"
         else:
-            file_filter = "Video Files (*.mp4 *.avi *.mov *.mkv);;All Files (*)"
-            title = "Select Sprinting Video File"
+            file_filter = (
+                "Video Files (*.mp4 *.avi *.mov *.mkv);;"
+                "RealSense Bag Files (*.bag);;"
+                "All Files (*)"
+            )
+            title = "Select Sprinting Video / Bag File"
 
-        file_path, _ = QFileDialog.getOpenFileName(
-            None,
-            title,
-            "",
-            file_filter
+        file_path = self.open_file_dialog_non_native(
+            title=title,
+            file_filter=file_filter
         )
 
         if file_path:
@@ -214,6 +261,8 @@ class SprintingPage(QWidget):
                 self.radio_bag.setChecked(True)
             else:
                 self.radio_video.setChecked(True)
+
+            self.status_label.setText("Status: Input file selected.")
 
     def get_source_type(self):
         if self.radio_realsense_live.isChecked():
@@ -244,7 +293,14 @@ class SprintingPage(QWidget):
             )
             return
 
-        self._stop_preview_internal(reset_metrics=False)
+        if self.video_thread is not None:
+            if not self._stop_preview_internal(reset_metrics=False):
+                QMessageBox.warning(
+                    self,
+                    "Preview Still Closing",
+                    "Please wait until the current preview fully stops before starting again."
+                )
+                return
 
         source_type = self.get_source_type()
 
@@ -258,7 +314,11 @@ class SprintingPage(QWidget):
 
         self.video_thread = VideoThread(
             source_type=source_type,
-            file_path=self.selected_file
+            file_path=self.selected_file,
+            sport="Sprinting",
+            exercise="Sprinting",
+            camera_view="Side View",
+            barbell_roi=None
         )
 
         self.video_thread.frame_ready.connect(self.update_video_frame)
@@ -280,16 +340,30 @@ class SprintingPage(QWidget):
 
     def _stop_preview_internal(self, reset_metrics=True):
         if self.video_thread is not None:
-            self.video_thread.stop()
+            thread = self.video_thread
+            thread.stop()
+
+            deadline = time.time() + 3.0
+
+            while thread.isRunning() and time.time() < deadline:
+                QApplication.processEvents()
+                thread.wait(100)
+
+            if thread.isRunning():
+                self.status_label.setText("Status: Previous preview is still closing. Please wait.")
+                return False
+
             self.video_thread = None
 
         self.video_label.clear()
         self.video_label.setText("Video preview will appear here.")
 
-        self.status_label.setText("Status: Preview stopped.")
-
         if reset_metrics:
             self.reset_metrics()
+
+        self.status_label.setText("Status: Preview stopped.")
+
+        return True
 
     def update_video_frame(self, q_img):
         pixmap = QPixmap.fromImage(q_img)
@@ -360,6 +434,9 @@ class SprintingPage(QWidget):
 
         if self.video_thread is None:
             self.start_preview()
+
+        if self.video_thread is None:
+            return
 
         input_mode = self.get_input_mode()
 
