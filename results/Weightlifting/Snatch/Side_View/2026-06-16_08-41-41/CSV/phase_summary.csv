@@ -1,0 +1,5 @@
+phase,start_time_s,end_time_s,sample_count
+First Pull,61.989,122.783,157
+Setup,0.004,61.857,560
+Transition,65.542,108.675,79
+Turnover,67.82,101.772,302
