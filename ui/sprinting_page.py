@@ -46,7 +46,6 @@ class SprintingPage(QWidget):
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         title.setObjectName("PageTitle")
 
-        # ================= INPUT SOURCE =================
         input_group = QGroupBox("Select Input Source")
         input_layout = QVBoxLayout()
         input_layout.setSpacing(4)
@@ -72,7 +71,6 @@ class SprintingPage(QWidget):
 
         input_group.setLayout(input_layout)
 
-        # ================= PREVIEW AREA =================
         preview_group = QGroupBox("Live Preview / Tracking View")
         preview_group.setSizePolicy(
             QSizePolicy.Policy.Expanding,
@@ -115,7 +113,6 @@ class SprintingPage(QWidget):
 
         preview_group.setLayout(preview_layout)
 
-        # ================= METRICS PANEL =================
         metrics_group = self.create_metrics_group()
         metrics_group.setMinimumWidth(300)
         metrics_group.setMaximumWidth(360)
@@ -125,7 +122,6 @@ class SprintingPage(QWidget):
         content_layout.addWidget(preview_group, 4)
         content_layout.addWidget(metrics_group, 1)
 
-        # ================= BOTTOM BUTTONS =================
         button_layout = QHBoxLayout()
         button_layout.setContentsMargins(0, 0, 0, 0)
         button_layout.setSpacing(10)
@@ -154,11 +150,6 @@ class SprintingPage(QWidget):
         self.apply_styles()
 
     def open_file_dialog_non_native(self, title, file_filter):
-        """
-        Uses Qt non-native file dialog.
-        This helps avoid Windows native Explorer freezing with large .bag folders.
-        """
-
         dialog = QFileDialog(self)
         dialog.setWindowTitle(title)
         dialog.setNameFilter(file_filter)
@@ -187,6 +178,8 @@ class SprintingPage(QWidget):
 
         metric_names = [
             "Pose",
+            "Phase",
+
             "Left Hip Angle",
             "Right Hip Angle",
             "Left Knee Angle",
@@ -198,6 +191,7 @@ class SprintingPage(QWidget):
             "Left Elbow Angle",
             "Right Elbow Angle",
             "Trunk Lean Angle",
+
             "Athlete Depth (m)",
             "Center Depth (m)"
         ]
@@ -407,7 +401,7 @@ class SprintingPage(QWidget):
         if value is None:
             return "N/A"
 
-        if name == "Pose":
+        if name in ["Pose", "Phase"]:
             return str(value)
 
         if "(m)" in name:
@@ -452,7 +446,8 @@ class SprintingPage(QWidget):
             sport="Sprinting",
             exercise="Sprinting",
             input_mode=input_mode,
-            source_file=self.selected_file
+            source_file=self.selected_file,
+            camera_view="Side View"
         )
 
         self.recorder.start()

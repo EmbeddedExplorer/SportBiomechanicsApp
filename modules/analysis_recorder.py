@@ -9,6 +9,8 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
+from modules.phase_definitions import EXCLUDED_PLOT_PHASES
+
 
 class AnalysisRecorder:
     def __init__(
@@ -359,10 +361,10 @@ class AnalysisRecorder:
         if current_phase is not None:
             phase_segments.append((current_phase, start_time, last_time))
 
-        y_min, y_max = ax.get_ylim()
+        _, y_max = ax.get_ylim()
 
         for phase, start, end in phase_segments:
-            if phase in ["Not Detected", "N/A"]:
+            if phase in EXCLUDED_PLOT_PHASES:
                 continue
 
             ax.axvspan(start, end, alpha=0.08)
@@ -499,7 +501,7 @@ class AnalysisRecorder:
         for _, row in plot_df.iterrows():
             phase = row["phase"]
 
-            if phase in ["Not Detected", "N/A"]:
+            if phase in EXCLUDED_PLOT_PHASES:
                 continue
 
             if phase != previous_phase:
@@ -523,7 +525,7 @@ class AnalysisRecorder:
             "source_file": self.source_file,
             "record_count": self.record_count(),
             "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            "note": "V9.1 DLib/OpenCV ROI-based barbell tracking. Trajectory is saved in meters when RealSense depth is available, otherwise in pixels."
+            "note": "Phase definitions added for weightlifting and sprinting."
         }
 
         with open(self.session_path / "recording_metadata.json", "w", encoding="utf-8") as file:

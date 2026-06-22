@@ -6,7 +6,9 @@ from PyQt6.QtGui import QImage
 
 from modules.biomechanics import compute_pose_metrics
 from modules.barbell_tracker import BarbellTracker
+from modules.barbell_auto_detector import BarbellAutoDetector
 from modules.phase_detector import PhaseDetector
+from modules.sprinting_phase_detector import SprintingPhaseDetector
 
 
 class VideoThread(QThread):
@@ -43,8 +45,19 @@ class VideoThread(QThread):
         self.mp_drawing = None
 
         self.barbell_tracker = BarbellTracker()
-        self.phase_detector = PhaseDetector()
+        self.barbell_auto_detector = BarbellAutoDetector()
 
+        self.phase_detector = PhaseDetector()
+        self.sprinting_phase_detector = SprintingPhaseDetector()
+
+        self.auto_barbell_detection_reported = False
+
+        # Used for manual ROI selection from the current preview frame.
+        self.latest_frame_for_roi = None
+
+    # ==========================================================
+    # MEDIAPIPE
+    # ==========================================================
     def setup_mediapipe(self):
         try:
             import mediapipe as mp
@@ -75,6 +88,9 @@ class VideoThread(QThread):
 
         self.pose = None
 
+    # ==========================================================
+    # THREAD ENTRY
+    # ==========================================================
     def run(self):
         self.running = True
 
@@ -82,13 +98,18 @@ class VideoThread(QThread):
 
         if self.source_type in ["realsense_live", "realsense_bag"]:
             self.run_realsense()
+
         elif self.source_type == "video_file":
             self.run_opencv_video(self.file_path)
+
         else:
             self.status_ready.emit("Invalid video source.")
 
         self.close_mediapipe()
 
+    # ==========================================================
+    # VIDEO FILE
+    # ==========================================================
     def run_opencv_video(self, source):
         cap = None
 
@@ -134,6 +155,9 @@ class VideoThread(QThread):
             self.status_ready.emit("Video feed stopped.")
             self.running = False
 
+    # ==========================================================
+    # REALSENSE / BAG
+    # ==========================================================
     def run_realsense(self):
         pipeline = None
         started = False
@@ -142,9 +166,10 @@ class VideoThread(QThread):
             import pyrealsense2 as rs
 
             pipeline = rs.pipeline()
-            config = rs.config()
 
             if self.source_type == "realsense_bag":
+                config = rs.config()
+
                 if not self.file_path:
                     self.status_ready.emit("No .bag file selected.")
                     return
@@ -157,39 +182,33 @@ class VideoThread(QThread):
 
                 config.enable_all_streams()
 
-            else:
-                config.enable_stream(
-                    rs.stream.color,
-                    640,
-                    480,
-                    rs.format.bgr8,
-                    30
-                )
+                profile = pipeline.start(config)
+                started = True
 
-                config.enable_stream(
-                    rs.stream.depth,
-                    640,
-                    480,
-                    rs.format.z16,
-                    30
-                )
-
-            profile = pipeline.start(config)
-            started = True
-
-            if self.source_type == "realsense_bag":
                 try:
                     playback = profile.get_device().as_playback()
                     playback.set_real_time(False)
                 except Exception:
                     pass
 
+                self.status_ready.emit("RealSense .bag feed started.")
+
+            else:
+                profile = self.start_live_realsense_with_fallback(rs, pipeline)
+
+                if profile is None:
+                    self.status_ready.emit("Could not start live RealSense with available profiles.")
+                    return
+
+                started = True
+                self.status_ready.emit("Live RealSense feed started.")
+
             align = rs.align(rs.stream.color)
-            self.status_ready.emit("RealSense feed started. RGB + depth available.")
 
             while self.running:
                 try:
-                    frames = pipeline.wait_for_frames(timeout_ms=300)
+                    frames = pipeline.wait_for_frames(timeout_ms=600)
+
                 except Exception:
                     if self.running:
                         self.status_ready.emit("No more RealSense frames available.")
@@ -207,12 +226,7 @@ class VideoThread(QThread):
                     continue
 
                 color_image = np.asanyarray(color_frame.get_data())
-
-                if self.source_type == "realsense_bag":
-                    try:
-                        color_image = cv2.cvtColor(color_image, cv2.COLOR_RGB2BGR)
-                    except Exception:
-                        pass
+                color_image = self.normalize_realsense_color(color_frame, color_image, rs)
 
                 depth_intrinsics = None
 
@@ -245,6 +259,7 @@ class VideoThread(QThread):
                         )
                     else:
                         self.status_ready.emit("RealSense RGB-D running | Center depth: N/A")
+
                 else:
                     self.status_ready.emit("RealSense color running | Depth frame not available.")
 
@@ -269,6 +284,118 @@ class VideoThread(QThread):
             self.status_ready.emit("RealSense feed stopped.")
             self.running = False
 
+    def start_live_realsense_with_fallback(self, rs, pipeline):
+        """
+        Tries several common RealSense profiles.
+
+        This helps when the exact 640x480 RGB-D profile is not available
+        or USB bandwidth is limited.
+        """
+
+        profiles_to_try = [
+            {
+                "name": "640x480 color + 640x480 depth @30",
+                "color": (640, 480, rs.format.bgr8, 30),
+                "depth": (640, 480, rs.format.z16, 30),
+            },
+            {
+                "name": "640x480 color + 640x480 depth @15",
+                "color": (640, 480, rs.format.bgr8, 15),
+                "depth": (640, 480, rs.format.z16, 15),
+            },
+            {
+                "name": "848x480 color + 848x480 depth @30",
+                "color": (848, 480, rs.format.bgr8, 30),
+                "depth": (848, 480, rs.format.z16, 30),
+            },
+            {
+                "name": "640x480 color only @30",
+                "color": (640, 480, rs.format.bgr8, 30),
+                "depth": None,
+            },
+        ]
+
+        last_error = None
+
+        for item in profiles_to_try:
+            config = rs.config()
+
+            try:
+                cw, ch, cf, cfps = item["color"]
+                config.enable_stream(rs.stream.color, cw, ch, cf, cfps)
+
+                if item["depth"] is not None:
+                    dw, dh, df, dfps = item["depth"]
+                    config.enable_stream(rs.stream.depth, dw, dh, df, dfps)
+
+                profile = pipeline.start(config)
+
+                self.status_ready.emit(f"Started RealSense profile: {item['name']}")
+                return profile
+
+            except Exception as e:
+                last_error = e
+
+                try:
+                    pipeline.stop()
+                except Exception:
+                    pass
+
+                continue
+
+        if last_error is not None:
+            self.status_ready.emit(f"RealSense profile error: {last_error}")
+
+        return None
+
+    def normalize_realsense_color(self, color_frame, color_image, rs):
+        """
+        Converts RGB frames to BGR only when the frame format is RGB.
+        Prevents blue/red tint problems.
+        """
+
+        try:
+            fmt = color_frame.profile.as_video_stream_profile().format()
+
+            if fmt == rs.format.rgb8:
+                return cv2.cvtColor(color_image, cv2.COLOR_RGB2BGR)
+
+            if fmt == rs.format.bgr8:
+                return color_image
+
+        except Exception:
+            pass
+
+        return color_image
+
+    # ==========================================================
+    # ROI SUPPORT
+    # ==========================================================
+    def get_latest_frame_copy(self):
+        if self.latest_frame_for_roi is None:
+            return None
+
+        return self.latest_frame_for_roi.copy()
+
+    def set_manual_barbell_roi(self, roi):
+        """
+        Allows UI to update ROI while preview is running.
+        This resets the tracker and uses the new manual ROI.
+        """
+
+        if roi is None:
+            return
+
+        self.barbell_roi = roi
+        self.barbell_tracker.reset()
+        self.barbell_auto_detector.reset()
+        self.auto_barbell_detection_reported = True
+
+        self.status_ready.emit(f"Manual barbell ROI selected: {roi}")
+
+    # ==========================================================
+    # MAIN FRAME PROCESSING
+    # ==========================================================
     def process_pose_overlay(
         self,
         frame,
@@ -279,13 +406,15 @@ class VideoThread(QThread):
         display_frame = frame.copy()
         clean_frame_for_tracking = frame.copy()
 
+        # Store latest clean frame for ROI selection from preview.
+        self.latest_frame_for_roi = clean_frame_for_tracking.copy()
+
         h, w, _ = display_frame.shape
 
         center_x = w // 2
         center_y = h // 2
 
         center_depth = None
-        athlete_depth = None
 
         if depth_available and depth_frame is not None:
             center_depth = self.get_depth_value(depth_frame, center_x, center_y)
@@ -301,6 +430,7 @@ class VideoThread(QThread):
                 (0, 255, 255),
                 2
             )
+
         else:
             cv2.putText(
                 display_frame,
@@ -314,131 +444,234 @@ class VideoThread(QThread):
 
         rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
-        if self.pose is not None:
-            results = self.pose.process(rgb_frame)
+        if self.pose is None:
+            return display_frame
 
-            if results.pose_landmarks:
-                self.mp_drawing.draw_landmarks(
-                    display_frame,
-                    results.pose_landmarks,
-                    self.mp_pose.POSE_CONNECTIONS
-                )
+        results = self.pose.process(rgb_frame)
 
-                landmarks = results.pose_landmarks.landmark
+        if not results.pose_landmarks:
+            metrics = self.empty_metrics()
+            metrics["Pose"] = "Not Detected"
+            metrics["Center Depth (m)"] = center_depth
+            self.metrics_ready.emit(metrics)
+            return display_frame
 
-                ids = [
-                    self.mp_pose.PoseLandmark.LEFT_SHOULDER.value,
-                    self.mp_pose.PoseLandmark.RIGHT_SHOULDER.value,
-                    self.mp_pose.PoseLandmark.LEFT_HIP.value,
-                    self.mp_pose.PoseLandmark.RIGHT_HIP.value
-                ]
+        self.mp_drawing.draw_landmarks(
+            display_frame,
+            results.pose_landmarks,
+            self.mp_pose.POSE_CONNECTIONS
+        )
 
-                xs = []
-                ys = []
+        landmarks = results.pose_landmarks.landmark
 
-                for idx in ids:
-                    lm = landmarks[idx]
+        athlete_depth = self.draw_athlete_com(
+            display_frame=display_frame,
+            landmarks=landmarks,
+            depth_frame=depth_frame,
+            depth_available=depth_available,
+            image_width=w,
+            image_height=h
+        )
 
-                    if lm.visibility > 0.5:
-                        xs.append(int(lm.x * w))
-                        ys.append(int(lm.y * h))
+        metrics = compute_pose_metrics(
+            landmarks=landmarks,
+            pose_landmark_enum=self.mp_pose.PoseLandmark,
+            image_width=w,
+            image_height=h,
+            athlete_depth=athlete_depth,
+            center_depth=center_depth
+        )
 
-                if xs and ys:
-                    athlete_x = int(sum(xs) / len(xs))
-                    athlete_y = int(sum(ys) / len(ys))
+        metrics["Pose"] = "Detected"
 
-                    cv2.circle(display_frame, (athlete_x, athlete_y), 8, (0, 165, 255), -1)
+        # ======================================================
+        # WEIGHTLIFTING
+        # ======================================================
+        if self.sport == "Weightlifting":
+
+            if self.camera_view == "Side View":
+
+                if self.barbell_roi is None:
+                    auto_roi = self.barbell_auto_detector.detect(
+                        frame=clean_frame_for_tracking,
+                        landmarks=landmarks,
+                        pose_landmark_enum=self.mp_pose.PoseLandmark
+                    )
+
+                    if auto_roi is not None:
+                        self.barbell_roi = auto_roi
+
+                        if not self.auto_barbell_detection_reported:
+                            self.status_ready.emit(
+                                f"Auto barbell disk detected: {auto_roi}"
+                            )
+                            self.auto_barbell_detection_reported = True
+
+                if self.barbell_roi is not None:
+                    barbell_metrics = self.barbell_tracker.update(
+                        frame=clean_frame_for_tracking,
+                        depth_frame=depth_frame if depth_available else None,
+                        depth_intrinsics=depth_intrinsics,
+                        initial_bbox=self.barbell_roi
+                    )
+
+                    self.current_phase = self.phase_detector.update(
+                        exercise=self.exercise,
+                        barbell_metrics=barbell_metrics
+                    )
+
+                    trajectory_metrics = self.barbell_tracker.update_trajectory_state(
+                        phase=self.current_phase,
+                        exercise=self.exercise
+                    )
+
+                    barbell_metrics.update(trajectory_metrics)
+                    metrics.update(barbell_metrics)
+
+                    self.barbell_tracker.draw_overlay(
+                        display_frame,
+                        camera_view=self.camera_view,
+                        phase=self.current_phase
+                    )
+
+                else:
+                    barbell_metrics = self.barbell_tracker.empty_metrics()
+                    metrics.update(barbell_metrics)
+                    self.current_phase = "Setup"
 
                     cv2.putText(
                         display_frame,
-                        "Athlete COM",
-                        (athlete_x + 10, athlete_y),
+                        "Auto detecting barbell disk...",
+                        (20, 175),
                         cv2.FONT_HERSHEY_SIMPLEX,
-                        0.55,
-                        (0, 165, 255),
+                        0.65,
+                        (0, 255, 255),
                         2
                     )
 
-                    if depth_available and depth_frame is not None:
-                        athlete_depth = self.get_depth_value(
-                            depth_frame,
-                            athlete_x,
-                            athlete_y
-                        )
+            elif self.camera_view == "Front View":
+                barbell_metrics = self.barbell_tracker.empty_metrics()
+                metrics.update(barbell_metrics)
 
-                        if athlete_depth is not None:
-                            cv2.putText(
-                                display_frame,
-                                f"Athlete Depth: {athlete_depth:.2f} m",
-                                (20, 145),
-                                cv2.FONT_HERSHEY_SIMPLEX,
-                                0.65,
-                                (0, 165, 255),
-                                2
-                            )
-
-                metrics = compute_pose_metrics(
+                self.current_phase = self.phase_detector.update_front_view(
+                    exercise=self.exercise,
                     landmarks=landmarks,
                     pose_landmark_enum=self.mp_pose.PoseLandmark,
                     image_width=w,
-                    image_height=h,
-                    athlete_depth=athlete_depth,
-                    center_depth=center_depth
+                    image_height=h
                 )
 
-                if self.sport == "Weightlifting":
-
-                    # Side View: ROI-based barbell trajectory tracking.
-                    if self.camera_view == "Side View" and self.barbell_roi is not None:
-                        barbell_metrics = self.barbell_tracker.update(
-                            frame=clean_frame_for_tracking,
-                            depth_frame=depth_frame if depth_available else None,
-                            depth_intrinsics=depth_intrinsics,
-                            initial_bbox=self.barbell_roi
-                        )
-
-                        self.current_phase = self.phase_detector.update(
-                            exercise=self.exercise,
-                            barbell_metrics=barbell_metrics
-                        )
-
-                        metrics.update(barbell_metrics)
-
-                        self.barbell_tracker.draw_overlay(
-                            display_frame,
-                            camera_view=self.camera_view
-                        )
-
-                    # Front View: no barbell trajectory tracking.
-                    else:
-                        barbell_metrics = self.barbell_tracker.empty_metrics()
-                        metrics.update(barbell_metrics)
-
-                        if self.camera_view == "Front View":
-                            self.current_phase = "Front View Analysis"
-                        else:
-                            self.current_phase = "Not Detected"
-
-                    metrics["Phase"] = self.current_phase
-                    metrics["Exercise"] = self.exercise
-                    metrics["Camera View"] = self.camera_view
-
-                    self.draw_context_overlay(display_frame)
-
-                else:
-                    metrics["Phase"] = "N/A"
-
-                self.metrics_ready.emit(metrics)
-
             else:
-                metrics = self.empty_metrics()
-                metrics["Pose"] = "Not Detected"
-                metrics["Center Depth (m)"] = center_depth
-                self.metrics_ready.emit(metrics)
+                barbell_metrics = self.barbell_tracker.empty_metrics()
+                metrics.update(barbell_metrics)
+                self.current_phase = "Not Detected"
+
+            metrics["Phase"] = self.current_phase
+            metrics["Exercise"] = self.exercise
+            metrics["Camera View"] = self.camera_view
+
+            self.draw_weightlifting_overlay(display_frame)
+
+        # ======================================================
+        # SPRINTING
+        # ======================================================
+        elif self.sport == "Sprinting":
+            self.current_phase = self.sprinting_phase_detector.update(
+                landmarks=landmarks,
+                pose_landmark_enum=self.mp_pose.PoseLandmark,
+                image_width=w,
+                image_height=h
+            )
+
+            metrics["Phase"] = self.current_phase
+            metrics["Exercise"] = "Sprinting"
+            metrics["Camera View"] = self.camera_view
+
+            self.draw_sprinting_overlay(display_frame)
+
+        else:
+            metrics["Phase"] = "N/A"
+
+        self.metrics_ready.emit(metrics)
 
         return display_frame
 
-    def draw_context_overlay(self, frame):
+    # ==========================================================
+    # OVERLAYS
+    # ==========================================================
+    def draw_athlete_com(
+        self,
+        display_frame,
+        landmarks,
+        depth_frame,
+        depth_available,
+        image_width,
+        image_height
+    ):
+        ids = [
+            self.mp_pose.PoseLandmark.LEFT_SHOULDER.value,
+            self.mp_pose.PoseLandmark.RIGHT_SHOULDER.value,
+            self.mp_pose.PoseLandmark.LEFT_HIP.value,
+            self.mp_pose.PoseLandmark.RIGHT_HIP.value
+        ]
+
+        xs = []
+        ys = []
+
+        for idx in ids:
+            lm = landmarks[idx]
+
+            if lm.visibility > 0.5:
+                xs.append(int(lm.x * image_width))
+                ys.append(int(lm.y * image_height))
+
+        if not xs or not ys:
+            return None
+
+        athlete_x = int(sum(xs) / len(xs))
+        athlete_y = int(sum(ys) / len(ys))
+
+        cv2.circle(
+            display_frame,
+            (athlete_x, athlete_y),
+            8,
+            (0, 165, 255),
+            -1
+        )
+
+        cv2.putText(
+            display_frame,
+            "Athlete COM",
+            (athlete_x + 10, athlete_y),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            0.55,
+            (0, 165, 255),
+            2
+        )
+
+        athlete_depth = None
+
+        if depth_available and depth_frame is not None:
+            athlete_depth = self.get_depth_value(
+                depth_frame,
+                athlete_x,
+                athlete_y
+            )
+
+            if athlete_depth is not None:
+                cv2.putText(
+                    display_frame,
+                    f"Athlete Depth: {athlete_depth:.2f} m",
+                    (20, 145),
+                    cv2.FONT_HERSHEY_SIMPLEX,
+                    0.65,
+                    (0, 165, 255),
+                    2
+                )
+
+        return athlete_depth
+
+    def draw_weightlifting_overlay(self, frame):
         if self.sport != "Weightlifting":
             return
 
@@ -462,6 +695,32 @@ class VideoThread(QThread):
             )
             y += 28
 
+    def draw_sprinting_overlay(self, frame):
+        if self.sport != "Sprinting":
+            return
+
+        overlay_lines = [
+            "Exercise: Sprinting",
+            f"Phase: {self.current_phase}"
+        ]
+
+        y = 30
+
+        for line in overlay_lines:
+            cv2.putText(
+                frame,
+                line,
+                (20, y),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                0.65,
+                (0, 255, 255),
+                2
+            )
+            y += 28
+
+    # ==========================================================
+    # DEPTH
+    # ==========================================================
     def get_depth_value(self, depth_frame, x, y):
         try:
             depth_width = depth_frame.get_width()
@@ -480,6 +739,9 @@ class VideoThread(QThread):
         except Exception:
             return None
 
+    # ==========================================================
+    # EMPTY METRICS
+    # ==========================================================
     def empty_metrics(self):
         return {
             "Pose": "Not Detected",
@@ -501,8 +763,16 @@ class VideoThread(QThread):
             "Center Depth (m)": None,
 
             "Barbell Detected": False,
+
             "Barbell X (px)": None,
             "Barbell Y (px)": None,
+
+            "Barbell Raw Horizontal Displacement (px)": None,
+            "Barbell Raw Vertical Displacement (px)": None,
+            "Barbell Raw Vertical Velocity (px/s)": None,
+            "Barbell Raw Horizontal Velocity (px/s)": None,
+            "Barbell Raw Max Height (px)": None,
+
             "Barbell Horizontal Displacement (px)": None,
             "Barbell Vertical Displacement (px)": None,
             "Barbell Vertical Velocity (px/s)": None,
@@ -512,6 +782,13 @@ class VideoThread(QThread):
             "Barbell X (m)": None,
             "Barbell Y (m)": None,
             "Barbell Z Depth (m)": None,
+
+            "Barbell Raw Horizontal Displacement (m)": None,
+            "Barbell Raw Vertical Displacement (m)": None,
+            "Barbell Raw Vertical Velocity (m/s)": None,
+            "Barbell Raw Horizontal Velocity (m/s)": None,
+            "Barbell Raw Max Height (m)": None,
+
             "Barbell Horizontal Displacement (m)": None,
             "Barbell Vertical Displacement (m)": None,
             "Barbell Vertical Velocity (m/s)": None,
@@ -519,6 +796,9 @@ class VideoThread(QThread):
             "Barbell Max Height (m)": None,
         }
 
+    # ==========================================================
+    # QIMAGE + STOP
+    # ==========================================================
     def convert_cv_to_qimage(self, frame):
         rgb_image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
