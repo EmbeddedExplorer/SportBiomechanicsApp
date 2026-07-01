@@ -52,7 +52,7 @@ class VideoThread(QThread):
 
         self.auto_barbell_detection_reported = False
 
-        # Used for manual ROI selection from the current preview frame.
+        # Used for selecting / correcting ROI from current preview frame.
         self.latest_frame_for_roi = None
 
     # ==========================================================
@@ -108,7 +108,7 @@ class VideoThread(QThread):
         self.close_mediapipe()
 
     # ==========================================================
-    # VIDEO FILE
+    # NORMAL VIDEO FILE
     # ==========================================================
     def run_opencv_video(self, source):
         cap = None
@@ -156,7 +156,7 @@ class VideoThread(QThread):
             self.running = False
 
     # ==========================================================
-    # REALSENSE / BAG
+    # REALSENSE LIVE / BAG
     # ==========================================================
     def run_realsense(self):
         pipeline = None
@@ -226,7 +226,11 @@ class VideoThread(QThread):
                     continue
 
                 color_image = np.asanyarray(color_frame.get_data())
-                color_image = self.normalize_realsense_color(color_frame, color_image, rs)
+                color_image = self.normalize_realsense_color(
+                    color_frame=color_frame,
+                    color_image=color_image,
+                    rs=rs
+                )
 
                 depth_intrinsics = None
 
@@ -249,7 +253,7 @@ class VideoThread(QThread):
 
                 self.frame_ready.emit(self.convert_cv_to_qimage(color_image))
 
-                if depth_frame:
+                if depth_frame is not None:
                     h, w, _ = color_image.shape
                     center_depth = self.get_depth_value(depth_frame, w // 2, h // 2)
 
@@ -286,9 +290,9 @@ class VideoThread(QThread):
 
     def start_live_realsense_with_fallback(self, rs, pipeline):
         """
-        Tries several common RealSense profiles.
+        Tries several RealSense stream profiles.
 
-        This helps when the exact 640x480 RGB-D profile is not available
+        This helps when one profile is not supported by the connected camera
         or USB bandwidth is limited.
         """
 
@@ -350,8 +354,7 @@ class VideoThread(QThread):
 
     def normalize_realsense_color(self, color_frame, color_image, rs):
         """
-        Converts RGB frames to BGR only when the frame format is RGB.
-        Prevents blue/red tint problems.
+        Converts RealSense RGB frames to BGR only when needed.
         """
 
         try:
@@ -379,8 +382,7 @@ class VideoThread(QThread):
 
     def set_manual_barbell_roi(self, roi):
         """
-        Allows UI to update ROI while preview is running.
-        This resets the tracker and uses the new manual ROI.
+        Allows the UI to update / correct the barbell ROI while preview is running.
         """
 
         if roi is None:
@@ -406,7 +408,6 @@ class VideoThread(QThread):
         display_frame = frame.copy()
         clean_frame_for_tracking = frame.copy()
 
-        # Store latest clean frame for ROI selection from preview.
         self.latest_frame_for_roi = clean_frame_for_tracking.copy()
 
         h, w, _ = display_frame.shape
@@ -515,6 +516,15 @@ class VideoThread(QThread):
                         initial_bbox=self.barbell_roi
                     )
 
+                    # Important for Clean & Jerk:
+                    # Jerk Phase starts only when barbell is clearly above athlete's head.
+                    barbell_metrics = self.add_barbell_pose_reference_metrics(
+                        barbell_metrics=barbell_metrics,
+                        landmarks=landmarks,
+                        image_width=w,
+                        image_height=h
+                    )
+
                     self.current_phase = self.phase_detector.update(
                         exercise=self.exercise,
                         barbell_metrics=barbell_metrics
@@ -522,7 +532,8 @@ class VideoThread(QThread):
 
                     trajectory_metrics = self.barbell_tracker.update_trajectory_state(
                         phase=self.current_phase,
-                        exercise=self.exercise
+                        exercise=self.exercise,
+                        barbell_metrics=barbell_metrics
                     )
 
                     barbell_metrics.update(trajectory_metrics)
@@ -595,6 +606,120 @@ class VideoThread(QThread):
         self.metrics_ready.emit(metrics)
 
         return display_frame
+
+    # ==========================================================
+    # BARBELL VS ATHLETE HEAD REFERENCE
+    # ==========================================================
+    def add_barbell_pose_reference_metrics(
+        self,
+        barbell_metrics,
+        landmarks,
+        image_width,
+        image_height,
+        min_visibility=0.45
+    ):
+        """
+        Adds strict side-view pose reference information.
+
+        Main use:
+        Clean & Jerk Jerk Phase should start only when the barbell disk center
+        is clearly above the athlete's head-top level.
+
+        Important:
+        Smaller y value means higher position in image coordinates.
+        """
+
+        try:
+            if not barbell_metrics.get("Barbell Detected", False):
+                barbell_metrics["Barbell Above Head"] = False
+                return barbell_metrics
+
+            barbell_y = barbell_metrics.get("Barbell Y (px)")
+
+            if barbell_y is None:
+                barbell_metrics["Barbell Above Head"] = False
+                return barbell_metrics
+
+            LM = self.mp_pose.PoseLandmark
+
+            def visible_y(idx):
+                lm = landmarks[idx]
+
+                if hasattr(lm, "visibility") and lm.visibility < min_visibility:
+                    return None
+
+                return float(lm.y * image_height)
+
+            def avg_y(ids):
+                values = []
+
+                for idx in ids:
+                    y = visible_y(idx)
+
+                    if y is not None:
+                        values.append(y)
+
+                if not values:
+                    return None
+
+                return sum(values) / len(values)
+
+            head_points = []
+
+            for idx in [
+                LM.NOSE.value,
+                LM.LEFT_EYE.value,
+                LM.RIGHT_EYE.value,
+                LM.LEFT_EAR.value,
+                LM.RIGHT_EAR.value
+            ]:
+                y = visible_y(idx)
+
+                if y is not None:
+                    head_points.append(y)
+
+            # Head top = highest visible head landmark.
+            head_top_y = min(head_points) if head_points else None
+
+            shoulder_y = avg_y([
+                LM.LEFT_SHOULDER.value,
+                LM.RIGHT_SHOULDER.value
+            ])
+
+            hip_y = avg_y([
+                LM.LEFT_HIP.value,
+                LM.RIGHT_HIP.value
+            ])
+
+            if head_top_y is None:
+                if shoulder_y is not None and hip_y is not None:
+                    torso_length = max(1.0, hip_y - shoulder_y)
+                    head_top_y = shoulder_y - 0.55 * torso_length
+
+            above_head = False
+            head_clearance = None
+
+            if head_top_y is not None:
+                # Positive clearance means barbell disk center is above head-top.
+                head_clearance = float(head_top_y) - float(barbell_y)
+
+                # Strict overhead rule.
+                # If Jerk is still early, increase 30.0 to 35.0 or 40.0.
+                above_head = head_clearance >= 30.0
+
+            barbell_metrics["Barbell Above Head"] = above_head
+            barbell_metrics["Athlete Head Y (px)"] = round(head_top_y, 2) if head_top_y is not None else None
+            barbell_metrics["Barbell Head Clearance (px)"] = (
+                round(head_clearance, 2)
+                if head_clearance is not None
+                else None
+            )
+
+            return barbell_metrics
+
+        except Exception:
+            barbell_metrics["Barbell Above Head"] = False
+            return barbell_metrics
 
     # ==========================================================
     # OVERLAYS
@@ -794,6 +919,10 @@ class VideoThread(QThread):
             "Barbell Vertical Velocity (m/s)": None,
             "Barbell Horizontal Velocity (m/s)": None,
             "Barbell Max Height (m)": None,
+
+            "Barbell Above Head": False,
+            "Athlete Head Y (px)": None,
+            "Barbell Head Clearance (px)": None,
         }
 
     # ==========================================================

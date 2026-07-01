@@ -5,22 +5,22 @@ from collections import deque
 import cv2
 import numpy as np
 
-from modules.phase_definitions import (
-    EXCLUDED_PLOT_PHASES,
-    TRAJECTORY_END_PHASES
-)
+from modules.phase_definitions import EXCLUDED_PLOT_PHASES
 
 
 class BarbellTracker:
     """
     ROI-based barbell / plate tracker.
 
-    Main logic:
-    - Raw tracking starts immediately after ROI / automatic disk selection.
-    - Setup movement is tracked internally but NOT drawn as final trajectory.
-    - Final trajectory starts only when the phase leaves Setup.
-    - Reference line is fixed at the first lifting-phase barbell center.
-    - Trajectory stops extending after the final phase becomes stable.
+    Clean & Jerk trajectory rule:
+    - Do not lock during clean catch.
+    - Do not lock during squat.
+    - Since Jerk Phase now starts only at overhead level, lock only after:
+        1. Jerk Phase starts.
+        2. Sustained overhead frames are confirmed.
+        3. Several jerk frames pass.
+        4. Bar reaches final maximum.
+        5. Bar starts slight downward movement.
     """
 
     def __init__(self, max_history=5000):
@@ -33,7 +33,6 @@ class BarbellTracker:
 
         self.bbox = None
 
-        # Raw tracking reference. This starts immediately after tracker initialization.
         self.raw_start_center_px = None
         self.raw_start_point_m = None
 
@@ -47,14 +46,25 @@ class BarbellTracker:
         self.raw_max_vertical_displacement_px = 0.0
         self.raw_max_vertical_displacement_m = 0.0
 
-        # Final trajectory reference. This starts only after Setup.
         self.trajectory_started = False
         self.trajectory_finished = False
         self.trajectory_reference_center_px = None
         self.trajectory_reference_point_m = None
         self.trajectory_history = deque(maxlen=max_history)
 
-        self.final_stable_count = 0
+        self.trajectory_max_height_px = 0.0
+        self.trajectory_max_height_m = None
+        self.trajectory_downfall_count = 0
+
+        self.jerk_peak_tracking_started = False
+        self.jerk_start_height_px = None
+        self.jerk_start_height_m = None
+        self.jerk_max_height_px = None
+        self.jerk_max_height_m = None
+        self.jerk_frames = 0
+
+        self.cleanjerk_overhead_frames = 0
+        self.cleanjerk_lock_armed = False
 
         self.latest_raw_metrics = self.empty_metrics()
         self.last_trajectory_metrics = self.empty_trajectory_metrics()
@@ -86,7 +96,19 @@ class BarbellTracker:
         self.trajectory_reference_point_m = None
         self.trajectory_history.clear()
 
-        self.final_stable_count = 0
+        self.trajectory_max_height_px = 0.0
+        self.trajectory_max_height_m = None
+        self.trajectory_downfall_count = 0
+
+        self.jerk_peak_tracking_started = False
+        self.jerk_start_height_px = None
+        self.jerk_start_height_m = None
+        self.jerk_max_height_px = None
+        self.jerk_max_height_m = None
+        self.jerk_frames = 0
+
+        self.cleanjerk_overhead_frames = 0
+        self.cleanjerk_lock_armed = False
 
         self.latest_raw_metrics = self.empty_metrics()
         self.last_trajectory_metrics = self.empty_trajectory_metrics()
@@ -95,10 +117,6 @@ class BarbellTracker:
     # TRACKER CREATION
     # ==========================================================
     def create_tracker(self):
-        """
-        Try DLib first. If DLib is unavailable, use OpenCV trackers.
-        """
-
         try:
             dlib = importlib.import_module("dlib")
             tracker = dlib.correlation_tracker()
@@ -290,7 +308,6 @@ class BarbellTracker:
             "Barbell Raw Horizontal Velocity (m/s)": round(raw_horizontal_velocity_m_s, 4) if raw_horizontal_velocity_m_s is not None else None,
             "Barbell Raw Max Height (m)": round(self.raw_max_vertical_displacement_m, 4),
 
-            # Final plotted trajectory values remain None during Setup.
             "Barbell Horizontal Displacement (px)": None,
             "Barbell Vertical Displacement (px)": None,
             "Barbell Vertical Velocity (px/s)": None,
@@ -309,19 +326,13 @@ class BarbellTracker:
     # ==========================================================
     # FINAL TRAJECTORY UPDATE
     # ==========================================================
-    def update_trajectory_state(self, phase, exercise=""):
-        """
-        Start trajectory only after Setup.
-        This prevents setup adjustment movement from appearing in the final bar path.
-        """
-
+    def update_trajectory_state(self, phase, exercise="", barbell_metrics=None):
         if self.current_center_px is None:
             return self.empty_trajectory_metrics()
 
         if phase in EXCLUDED_PLOT_PHASES:
             return self.empty_trajectory_metrics()
 
-        # Once locked, keep returning last values but do not extend path.
         if self.trajectory_finished:
             return self.last_trajectory_metrics
 
@@ -329,6 +340,20 @@ class BarbellTracker:
             self.trajectory_started = True
             self.trajectory_reference_center_px = self.current_center_px
             self.trajectory_reference_point_m = self.current_point_m
+
+            self.trajectory_max_height_px = 0.0
+            self.trajectory_max_height_m = None
+            self.trajectory_downfall_count = 0
+
+            self.jerk_peak_tracking_started = False
+            self.jerk_start_height_px = None
+            self.jerk_start_height_m = None
+            self.jerk_max_height_px = None
+            self.jerk_max_height_m = None
+            self.jerk_frames = 0
+
+            self.cleanjerk_overhead_frames = 0
+            self.cleanjerk_lock_armed = False
 
         center_x, center_y = self.current_center_px
         ref_x, ref_y = self.trajectory_reference_center_px
@@ -339,15 +364,12 @@ class BarbellTracker:
         vertical_velocity_px_s = self.latest_raw_metrics.get("Barbell Raw Vertical Velocity (px/s)")
         horizontal_velocity_px_s = self.latest_raw_metrics.get("Barbell Raw Horizontal Velocity (px/s)")
 
-        max_height_px = 0.0
+        self.trajectory_max_height_px = max(
+            self.trajectory_max_height_px,
+            vertical_displacement_px
+        )
 
-        if self.trajectory_history:
-            max_height_px = max(
-                item.get("vertical_displacement_px", 0.0)
-                for item in self.trajectory_history
-            )
-
-        max_height_px = max(max_height_px, vertical_displacement_px)
+        max_height_px = self.trajectory_max_height_px
 
         horizontal_displacement_m = None
         vertical_displacement_m = None
@@ -365,19 +387,15 @@ class BarbellTracker:
             vertical_velocity_m_s = self.latest_raw_metrics.get("Barbell Raw Vertical Velocity (m/s)")
             horizontal_velocity_m_s = self.latest_raw_metrics.get("Barbell Raw Horizontal Velocity (m/s)")
 
-            previous_m_values = [
-                item.get("vertical_displacement_m")
-                for item in self.trajectory_history
-                if item.get("vertical_displacement_m") is not None
-            ]
-
-            if previous_m_values:
-                max_height_m = max(previous_m_values)
-
-            if max_height_m is None:
-                max_height_m = vertical_displacement_m
+            if self.trajectory_max_height_m is None:
+                self.trajectory_max_height_m = vertical_displacement_m
             else:
-                max_height_m = max(max_height_m, vertical_displacement_m)
+                self.trajectory_max_height_m = max(
+                    self.trajectory_max_height_m,
+                    vertical_displacement_m
+                )
+
+            max_height_m = self.trajectory_max_height_m
 
         trajectory_record = {
             "phase": phase,
@@ -411,34 +429,202 @@ class BarbellTracker:
             "Barbell Max Height (m)": round(max_height_m, 4) if max_height_m is not None else None,
         }
 
-        self.check_trajectory_finish(phase, vertical_velocity_px_s)
+        self.check_trajectory_finish(
+            phase=phase,
+            exercise=exercise,
+            vertical_displacement_px=vertical_displacement_px,
+            vertical_displacement_m=vertical_displacement_m,
+            vertical_velocity_px_s=vertical_velocity_px_s,
+            barbell_metrics=barbell_metrics
+        )
 
         return self.last_trajectory_metrics
 
-    def check_trajectory_finish(self, phase, vertical_velocity_px_s):
-        """
-        Stop extending trajectory after final phase becomes stable.
+    def check_trajectory_finish(
+        self,
+        phase,
+        exercise,
+        vertical_displacement_px,
+        vertical_displacement_m,
+        vertical_velocity_px_s,
+        barbell_metrics=None
+    ):
+        exercise_name = exercise.lower().strip()
 
-        Uses final app phase names:
-        - Snatch final: Overhead Squat Phase
-        - Clean & Jerk final: Jerk Phase
-        """
+        if "snatch" in exercise_name:
+            self.check_snatch_finish(
+                phase=phase,
+                vertical_displacement_px=vertical_displacement_px,
+                vertical_velocity_px_s=vertical_velocity_px_s
+            )
+        else:
+            self.check_clean_jerk_finish(
+                phase=phase,
+                vertical_displacement_px=vertical_displacement_px,
+                vertical_displacement_m=vertical_displacement_m,
+                vertical_velocity_px_s=vertical_velocity_px_s,
+                barbell_metrics=barbell_metrics
+            )
 
-        if phase not in TRAJECTORY_END_PHASES:
-            self.final_stable_count = 0
+    def check_snatch_finish(
+        self,
+        phase,
+        vertical_displacement_px,
+        vertical_velocity_px_s
+    ):
+        if phase not in ["Catch Phase", "Overhead Squat Phase"]:
+            self.trajectory_downfall_count = 0
             return
 
+        peak_height_px = self.trajectory_max_height_px
+
+        min_peak_height_px = 35.0
+        downfall_threshold_px = 12.0
+        strong_downfall_threshold_px = 18.0
+        downward_velocity_threshold = -5.0
+        required_downfall_frames = 3
+
+        if peak_height_px is None or peak_height_px < min_peak_height_px:
+            self.trajectory_downfall_count = 0
+            return
+
+        downfall_px = peak_height_px - vertical_displacement_px
+
         try:
-            velocity = abs(float(vertical_velocity_px_s))
+            velocity = float(vertical_velocity_px_s)
         except Exception:
-            velocity = 999.0
+            velocity = 0.0
 
-        if velocity <= 10.0:
-            self.final_stable_count += 1
+        is_falling = velocity <= downward_velocity_threshold
+        has_enough_downfall = downfall_px >= downfall_threshold_px
+        has_strong_downfall = downfall_px >= strong_downfall_threshold_px
+
+        if has_enough_downfall and (is_falling or has_strong_downfall):
+            self.trajectory_downfall_count += 1
         else:
-            self.final_stable_count = 0
+            self.trajectory_downfall_count = max(0, self.trajectory_downfall_count - 1)
 
-        if self.final_stable_count >= 12:
+        if self.trajectory_downfall_count >= required_downfall_frames:
+            self.trajectory_finished = True
+
+    def check_clean_jerk_finish(
+        self,
+        phase,
+        vertical_displacement_px,
+        vertical_displacement_m,
+        vertical_velocity_px_s,
+        barbell_metrics=None
+    ):
+        """
+        Clean & Jerk trajectory lock.
+
+        Strict rule:
+        - Do not lock during Catch.
+        - Do not lock during Squat.
+        - Do not lock at the first early local maximum.
+        - Lock only after:
+            1. Phase is Jerk Phase.
+            2. Barbell is clearly overhead for enough frames.
+            3. A minimum number of Jerk frames pass.
+            4. Final overhead max is reached.
+            5. Bar starts falling slightly.
+        """
+
+        if phase != "Jerk Phase":
+            self.trajectory_downfall_count = 0
+            self.cleanjerk_overhead_frames = 0
+            self.cleanjerk_lock_armed = False
+            return
+
+        barbell_above_head = False
+        head_clearance = None
+
+        if barbell_metrics is not None:
+            barbell_above_head = bool(barbell_metrics.get("Barbell Above Head", False))
+            head_clearance = barbell_metrics.get("Barbell Head Clearance (px)")
+
+        strong_overhead = False
+
+        try:
+            if head_clearance is not None:
+                strong_overhead = float(head_clearance) >= 18.0
+        except Exception:
+            strong_overhead = False
+
+        if not self.jerk_peak_tracking_started:
+            self.jerk_peak_tracking_started = True
+            self.jerk_start_height_px = vertical_displacement_px
+            self.jerk_start_height_m = vertical_displacement_m
+            self.jerk_max_height_px = vertical_displacement_px
+            self.jerk_max_height_m = vertical_displacement_m
+            self.jerk_frames = 0
+            self.trajectory_downfall_count = 0
+            self.cleanjerk_overhead_frames = 0
+            self.cleanjerk_lock_armed = False
+            return
+
+        self.jerk_frames += 1
+
+        self.jerk_max_height_px = max(
+            self.jerk_max_height_px,
+            vertical_displacement_px
+        )
+
+        if vertical_displacement_m is not None:
+            if self.jerk_max_height_m is None:
+                self.jerk_max_height_m = vertical_displacement_m
+            else:
+                self.jerk_max_height_m = max(
+                    self.jerk_max_height_m,
+                    vertical_displacement_m
+                )
+
+        if barbell_above_head and strong_overhead:
+            self.cleanjerk_overhead_frames += 1
+        else:
+            self.cleanjerk_overhead_frames = max(
+                0,
+                self.cleanjerk_overhead_frames - 1
+            )
+
+        if self.cleanjerk_overhead_frames >= 12:
+            self.cleanjerk_lock_armed = True
+
+        if not self.cleanjerk_lock_armed:
+            self.trajectory_downfall_count = 0
+            return
+
+        min_jerk_frames_before_lock = 45
+
+        if self.jerk_frames < min_jerk_frames_before_lock:
+            self.trajectory_downfall_count = 0
+            return
+
+        downfall_threshold_px = 12.0
+        strong_downfall_threshold_px = 22.0
+        downward_velocity_threshold = -5.0
+        required_downfall_frames = 4
+
+        downfall_px = self.jerk_max_height_px - vertical_displacement_px
+
+        try:
+            velocity = float(vertical_velocity_px_s)
+        except Exception:
+            velocity = 0.0
+
+        is_falling = velocity <= downward_velocity_threshold
+        has_enough_downfall = downfall_px >= downfall_threshold_px
+        has_strong_downfall = downfall_px >= strong_downfall_threshold_px
+
+        if has_enough_downfall and (is_falling or has_strong_downfall):
+            self.trajectory_downfall_count += 1
+        else:
+            self.trajectory_downfall_count = max(
+                0,
+                self.trajectory_downfall_count - 1
+            )
+
+        if self.trajectory_downfall_count >= required_downfall_frames:
             self.trajectory_finished = True
 
     def empty_trajectory_metrics(self):

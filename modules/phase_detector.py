@@ -1,13 +1,12 @@
 import time
+import math
 
 from modules.phase_definitions import SETUP_PHASE
 
 
 class PhaseDetector:
     """
-    Weightlifting phase detector for BioMotion Studio.
-
-    Final phase labels:
+    Weightlifting phase detector.
 
     Snatch:
         Setup
@@ -24,16 +23,11 @@ class PhaseDetector:
         Squat Phase
         Jerk Phase
 
-    Side View:
-        Uses barbell motion.
-
-    Front View:
-        Uses pose landmarks, mainly wrist height relative to body.
-
     Important:
-        - Setup is internal.
-        - Phase logic is forward-only to reduce toggling.
-        - Phase changes require short confirmation.
+        - Snatch logic is kept stable.
+        - Clean & Jerk side view uses barbell above-head logic.
+        - Clean & Jerk front view now uses wrist/head-top overhead logic.
+        - The small dip before jerk remains Squat Phase.
     """
 
     def __init__(self):
@@ -46,6 +40,7 @@ class PhaseDetector:
         self.lift_off_time = None
 
         self.frame_count = 0
+        self.frames_in_phase = 0
 
         self.last_displacement = None
         self.last_velocity = 0.0
@@ -63,13 +58,29 @@ class PhaseDetector:
 
         self.final_stable_count = 0
 
+        # Clean & Jerk side-view memory
+        self.clean_catch_displacement = None
+        self.squat_start_displacement = None
+        self.squat_lowest_displacement = None
+        self.side_overhead_count = 0
+
         # Front-view memory
         self.initial_wrist_y = None
+        self.initial_hip_y = None
         self.previous_wrist_y = None
+        self.front_wrist_smooth_y = None
+        self.front_previous_smooth_wrist_y = None
         self.front_upward_count = 0
 
+        self.squat_start_wrist_y = None
+        self.front_squat_lowest_wrist_y = None
+        self.front_overhead_count = 0
+
+        self.initial_knee_angle = None
+        self.last_knee_angle = None
+
     # ==========================================================
-    # SIDE VIEW: BARBELL-BASED UPDATE
+    # SIDE VIEW UPDATE
     # ==========================================================
     def update(self, exercise, barbell_metrics):
         self.frame_count += 1
@@ -102,10 +113,7 @@ class PhaseDetector:
         except Exception:
             velocity = 0.0
 
-        self.max_displacement_seen = max(
-            self.max_displacement_seen,
-            displacement
-        )
+        self.max_displacement_seen = max(self.max_displacement_seen, displacement)
 
         if not self.lift_started:
             if not self.detect_lift_off(displacement, velocity):
@@ -124,7 +132,7 @@ class PhaseDetector:
         if "snatch" in exercise_name:
             candidate = self.detect_snatch_side_candidate(displacement, velocity)
 
-            return self.set_phase_forward_only(
+            return self.apply_forward_order(
                 candidate,
                 [
                     "Setup",
@@ -135,9 +143,13 @@ class PhaseDetector:
                 ]
             )
 
-        candidate = self.detect_clean_jerk_side_candidate(displacement, velocity)
+        candidate = self.detect_clean_jerk_side_candidate(
+            displacement=displacement,
+            velocity=velocity,
+            barbell_metrics=barbell_metrics
+        )
 
-        return self.set_phase_forward_only(
+        return self.apply_forward_order(
             candidate,
             [
                 "Setup",
@@ -150,12 +162,6 @@ class PhaseDetector:
         )
 
     def detect_lift_off(self, displacement, velocity):
-        """
-        Lift-off detection from barbell motion.
-
-        It is intentionally relaxed because tracker movement can be noisy.
-        """
-
         displacement_threshold = 4.0
         frame_delta_threshold = 1.0
         velocity_threshold = 10.0
@@ -179,20 +185,39 @@ class PhaseDetector:
 
         return self.upward_motion_count >= required_motion_frames
 
+    # ==========================================================
+    # SNATCH SIDE VIEW
+    # ==========================================================
     def detect_snatch_side_candidate(self, displacement, velocity):
-        """
-        Snatch side-view phases:
-            Deadlift Phase
-            Jump Phase
-            Catch Phase
-            Overhead Squat Phase
-        """
-
         jump_start_height = 65.0
         catch_height = 115.0
 
         jump_velocity_threshold = 60.0
         stable_velocity_threshold = 18.0
+
+        if self.phase == SETUP_PHASE:
+            return "Deadlift Phase"
+
+        if self.phase == "Deadlift Phase":
+            if self.frames_in_phase < 4:
+                return "Deadlift Phase"
+
+            if displacement >= jump_start_height or velocity >= jump_velocity_threshold:
+                return "Jump Phase"
+
+            return "Deadlift Phase"
+
+        if self.phase == "Jump Phase":
+            if self.frames_in_phase < 4:
+                return "Jump Phase"
+
+            if displacement >= catch_height and abs(velocity) <= 25.0:
+                return "Catch Phase"
+
+            if displacement >= catch_height and velocity < -5.0:
+                return "Catch Phase"
+
+            return "Jump Phase"
 
         if self.phase == "Catch Phase":
             if abs(velocity) <= stable_velocity_threshold:
@@ -208,79 +233,102 @@ class PhaseDetector:
         if self.phase == "Overhead Squat Phase":
             return "Overhead Squat Phase"
 
-        if displacement >= catch_height and abs(velocity) <= 25.0:
-            self.catch_seen = True
-            return "Catch Phase"
-
-        if displacement >= catch_height and velocity < -5.0:
-            self.catch_seen = True
-            return "Catch Phase"
-
-        if displacement >= jump_start_height or velocity >= jump_velocity_threshold:
-            return "Jump Phase"
-
         return "Deadlift Phase"
 
-    def detect_clean_jerk_side_candidate(self, displacement, velocity):
+    # ==========================================================
+    # CLEAN & JERK SIDE VIEW
+    # ==========================================================
+    def detect_clean_jerk_side_candidate(self, displacement, velocity, barbell_metrics):
         """
-        Clean & Jerk side-view phases:
-            Deadlift Phase
-            Jump Phase
-            Catch Phase
-            Squat Phase
-            Jerk Phase
+        Clean & Jerk side view.
+
+        Corrected rule:
+        Jerk Phase starts only when the barbell disk center is clearly above
+        the athlete's head-top level.
+
+        Therefore:
+        - Catch Phase = clean catch/front rack briefly.
+        - Squat Phase = recovery, dip, and early drive.
+        - Jerk Phase = barbell clearly overhead.
         """
 
         jump_start_height = 65.0
         catch_height = 100.0
 
         jump_velocity_threshold = 60.0
-        stable_velocity_threshold = 22.0
+        catch_velocity_threshold = 32.0
 
-        jerk_velocity_threshold = 50.0
-        jerk_extra_height_threshold = 25.0
+        barbell_above_head = bool(barbell_metrics.get("Barbell Above Head", False))
 
-        now = time.time()
+        if self.phase == SETUP_PHASE:
+            return "Deadlift Phase"
 
-        if self.phase == "Jerk Phase":
-            return "Jerk Phase"
+        if self.phase == "Deadlift Phase":
+            if self.frames_in_phase < 4:
+                return "Deadlift Phase"
 
-        if self.phase == "Squat Phase":
-            # After squat phase, a strong upward bar movement indicates jerk.
-            if velocity >= jerk_velocity_threshold:
-                self.jerk_seen = True
-                return "Jerk Phase"
+            if displacement >= jump_start_height or velocity >= jump_velocity_threshold:
+                return "Jump Phase"
 
-            return "Squat Phase"
+            return "Deadlift Phase"
+
+        if self.phase == "Jump Phase":
+            if self.frames_in_phase < 4:
+                return "Jump Phase"
+
+            if displacement >= catch_height and abs(velocity) <= catch_velocity_threshold:
+                self.catch_seen = True
+                return "Catch Phase"
+
+            if displacement >= catch_height and velocity < -5.0:
+                self.catch_seen = True
+                return "Catch Phase"
+
+            return "Jump Phase"
 
         if self.phase == "Catch Phase":
-            # After clean catch, short stable period becomes squat/recovery.
-            if abs(velocity) <= stable_velocity_threshold:
-                self.final_stable_count += 1
-            else:
-                self.final_stable_count = 0
+            if self.clean_catch_displacement is None:
+                self.clean_catch_displacement = displacement
 
-            if self.final_stable_count >= 8:
+            if self.frames_in_phase >= 10:
                 self.squat_seen = True
                 return "Squat Phase"
 
             return "Catch Phase"
 
-        if displacement >= catch_height and abs(velocity) <= 30.0:
-            self.catch_seen = True
-            return "Catch Phase"
+        if self.phase == "Squat Phase":
+            if self.squat_start_displacement is None:
+                self.squat_start_displacement = displacement
 
-        if displacement >= catch_height and velocity < -5.0:
-            self.catch_seen = True
-            return "Catch Phase"
+            if self.squat_lowest_displacement is None:
+                self.squat_lowest_displacement = displacement
 
-        if displacement >= jump_start_height or velocity >= jump_velocity_threshold:
-            return "Jump Phase"
+            self.squat_lowest_displacement = min(
+                self.squat_lowest_displacement,
+                displacement
+            )
+
+            # No displacement-only fallback here.
+            # That fallback caused early false Jerk detection.
+            if self.frames_in_phase >= 12:
+                if barbell_above_head:
+                    self.side_overhead_count += 1
+                else:
+                    self.side_overhead_count = max(0, self.side_overhead_count - 1)
+
+                if self.side_overhead_count >= 5:
+                    self.jerk_seen = True
+                    return "Jerk Phase"
+
+            return "Squat Phase"
+
+        if self.phase == "Jerk Phase":
+            return "Jerk Phase"
 
         return "Deadlift Phase"
 
     # ==========================================================
-    # FRONT VIEW: POSE-BASED UPDATE
+    # FRONT VIEW UPDATE
     # ==========================================================
     def update_front_view(
         self,
@@ -302,29 +350,53 @@ class PhaseDetector:
         if pose_data is None:
             return self.set_phase("Not Detected", force=True)
 
-        wrist_y = pose_data["wrist_y"]
+        raw_wrist_y = pose_data["wrist_y"]
         shoulder_y = pose_data["shoulder_y"]
         hip_y = pose_data["hip_y"]
-        knee_y = pose_data["knee_y"]
         ankle_y = pose_data["ankle_y"]
+        head_y = pose_data["head_y"]
+        knee_angle = pose_data["knee_angle"]
 
         body_height = max(1.0, ankle_y - shoulder_y)
 
-        # Larger ratio means wrists are higher in the body frame.
+        if self.front_wrist_smooth_y is None:
+            self.front_wrist_smooth_y = raw_wrist_y
+        else:
+            alpha = 0.72
+            self.front_wrist_smooth_y = (
+                alpha * self.front_wrist_smooth_y
+                + (1.0 - alpha) * raw_wrist_y
+            )
+
+        wrist_y = self.front_wrist_smooth_y
         wrist_height_ratio = (ankle_y - wrist_y) / body_height
 
         if self.initial_wrist_y is None:
             self.initial_wrist_y = wrist_y
 
+        if self.initial_hip_y is None:
+            self.initial_hip_y = hip_y
+
+        if self.initial_knee_angle is None and knee_angle is not None:
+            self.initial_knee_angle = knee_angle
+
         if not self.lift_started:
             if not self.detect_front_view_lift_start(wrist_y):
                 self.previous_wrist_y = wrist_y
+                self.front_previous_smooth_wrist_y = wrist_y
                 return self.set_phase(SETUP_PHASE, force=True)
 
             self.lift_started = True
             self.lift_off_time = time.time()
 
+        wrist_velocity_up = 0.0
+
+        if self.front_previous_smooth_wrist_y is not None:
+            wrist_velocity_up = self.front_previous_smooth_wrist_y - wrist_y
+
         self.previous_wrist_y = wrist_y
+        self.front_previous_smooth_wrist_y = wrist_y
+        self.last_knee_angle = knee_angle
 
         exercise_name = exercise.lower().strip()
 
@@ -332,12 +404,10 @@ class PhaseDetector:
             candidate = self.detect_snatch_front_candidate(
                 wrist_height_ratio=wrist_height_ratio,
                 wrist_y=wrist_y,
-                shoulder_y=shoulder_y,
-                hip_y=hip_y,
-                knee_y=knee_y
+                shoulder_y=shoulder_y
             )
 
-            return self.set_phase_forward_only(
+            return self.apply_forward_order(
                 candidate,
                 [
                     "Setup",
@@ -352,11 +422,14 @@ class PhaseDetector:
             wrist_height_ratio=wrist_height_ratio,
             wrist_y=wrist_y,
             shoulder_y=shoulder_y,
+            head_y=head_y,
             hip_y=hip_y,
-            knee_y=knee_y
+            body_height=body_height,
+            knee_angle=knee_angle,
+            wrist_velocity_up=wrist_velocity_up
         )
 
-        return self.set_phase_forward_only(
+        return self.apply_forward_order(
             candidate,
             [
                 "Setup",
@@ -369,9 +442,9 @@ class PhaseDetector:
         )
 
     def detect_front_view_lift_start(self, wrist_y):
-        upward_threshold_px = 2.0
+        upward_threshold_px = 1.8
         initial_movement_threshold_px = 5.0
-        required_frames = 2
+        required_frames = 3
 
         moved_from_initial = False
 
@@ -394,74 +467,185 @@ class PhaseDetector:
 
         return self.front_upward_count >= required_frames
 
+    # ==========================================================
+    # SNATCH FRONT VIEW
+    # ==========================================================
     def detect_snatch_front_candidate(
         self,
         wrist_height_ratio,
         wrist_y,
-        shoulder_y,
-        hip_y,
-        knee_y
+        shoulder_y
     ):
+        min_deadlift_frames = 12
+        min_jump_frames = 10
+        min_catch_frames = 18
+
+        if self.phase == SETUP_PHASE:
+            return "Deadlift Phase"
+
+        if self.phase == "Deadlift Phase":
+            if self.frames_in_phase < min_deadlift_frames:
+                return "Deadlift Phase"
+
+            if wrist_height_ratio >= 0.45:
+                return "Jump Phase"
+
+            return "Deadlift Phase"
+
+        if self.phase == "Jump Phase":
+            if self.frames_in_phase < min_jump_frames:
+                return "Jump Phase"
+
+            if wrist_y <= shoulder_y:
+                self.catch_seen = True
+                return "Catch Phase"
+
+            if wrist_height_ratio >= 0.72:
+                self.catch_seen = True
+                return "Catch Phase"
+
+            return "Jump Phase"
+
+        if self.phase == "Catch Phase":
+            if self.frames_in_phase < min_catch_frames:
+                return "Catch Phase"
+
+            return "Overhead Squat Phase"
+
         if self.phase == "Overhead Squat Phase":
             return "Overhead Squat Phase"
 
-        if self.phase == "Catch Phase":
-            self.final_stable_count += 1
-
-            if self.final_stable_count >= 10:
-                return "Overhead Squat Phase"
-
-            return "Catch Phase"
-
-        # Wrists above shoulder level indicates snatch catch.
-        if wrist_y <= shoulder_y:
-            self.catch_seen = True
-            return "Catch Phase"
-
-        if wrist_height_ratio >= 0.50:
-            return "Jump Phase"
-
         return "Deadlift Phase"
 
+    # ==========================================================
+    # CLEAN & JERK FRONT VIEW
+    # ==========================================================
     def detect_clean_jerk_front_candidate(
         self,
         wrist_height_ratio,
         wrist_y,
         shoulder_y,
+        head_y,
         hip_y,
-        knee_y
+        body_height,
+        knee_angle,
+        wrist_velocity_up
     ):
-        if self.phase == "Jerk Phase":
-            return "Jerk Phase"
+        """
+        Front-view Clean & Jerk.
 
-        # Overhead position indicates jerk.
-        if wrist_y <= shoulder_y - 15:
-            self.jerk_seen = True
-            return "Jerk Phase"
+        Updated rule:
+        Jerk Phase starts only when the wrists/bar region is clearly above
+        the athlete's head-top level.
 
-        if self.phase == "Squat Phase":
-            return "Squat Phase"
+        Therefore:
+        - Catch Phase = clean catch/front rack.
+        - Squat Phase = recovery, dip, and early upward drive.
+        - Jerk Phase = overhead position only.
+        """
+
+        min_deadlift_frames = 20
+        min_jump_frames = 14
+        min_catch_frames = 20
+        min_squat_frames = 28
+
+        shoulder_zone = abs(wrist_y - shoulder_y)
+
+        hip_drop_ratio = 0.0
+        if self.initial_hip_y is not None:
+            hip_drop_ratio = (hip_y - self.initial_hip_y) / body_height
+
+        knee_is_bent = False
+        if knee_angle is not None:
+            knee_is_bent = knee_angle <= 145.0
+
+        if self.phase == SETUP_PHASE:
+            return "Deadlift Phase"
+
+        if self.phase == "Deadlift Phase":
+            if self.frames_in_phase < min_deadlift_frames:
+                return "Deadlift Phase"
+
+            if wrist_height_ratio >= 0.36 or wrist_velocity_up >= 2.5:
+                return "Jump Phase"
+
+            return "Deadlift Phase"
+
+        if self.phase == "Jump Phase":
+            if self.frames_in_phase < min_jump_frames:
+                return "Jump Phase"
+
+            # Front rack / clean catch around shoulder level.
+            if shoulder_zone <= 60:
+                self.catch_seen = True
+                return "Catch Phase"
+
+            if wrist_height_ratio >= 0.58:
+                self.catch_seen = True
+                return "Catch Phase"
+
+            return "Jump Phase"
 
         if self.phase == "Catch Phase":
-            self.final_stable_count += 1
+            if self.frames_in_phase < min_catch_frames:
+                return "Catch Phase"
 
-            if self.final_stable_count >= 8:
+            if knee_is_bent or hip_drop_ratio >= 0.04:
+                self.squat_seen = True
+                return "Squat Phase"
+
+            if self.frames_in_phase >= min_catch_frames + 12:
+                self.squat_seen = True
                 return "Squat Phase"
 
             return "Catch Phase"
 
-        # Front rack / shoulder level indicates clean catch.
-        shoulder_zone = abs(wrist_y - shoulder_y)
+        if self.phase == "Squat Phase":
+            if self.squat_start_wrist_y is None:
+                self.squat_start_wrist_y = wrist_y
 
-        if shoulder_zone <= 50 or wrist_height_ratio >= 0.62:
-            self.catch_seen = True
-            return "Catch Phase"
+            if self.front_squat_lowest_wrist_y is None:
+                self.front_squat_lowest_wrist_y = wrist_y
 
-        if wrist_height_ratio >= 0.45:
-            return "Jump Phase"
+            # Image coordinate: larger y = lower.
+            self.front_squat_lowest_wrist_y = max(
+                self.front_squat_lowest_wrist_y,
+                wrist_y
+            )
+
+            wrist_up_after_dip = self.front_squat_lowest_wrist_y - wrist_y
+
+            # Positive clearance means wrist/bar region is above head-top.
+            head_clearance = head_y - wrist_y
+
+            # Same idea as side-view overhead logic.
+            # If Jerk appears too late, reduce 30.0 to 25.0.
+            # If Jerk appears too early, increase 30.0 to 35.0 or 40.0.
+            wrist_above_head = head_clearance >= 30.0
+
+            if self.frames_in_phase < min_squat_frames:
+                return "Squat Phase"
+
+            if wrist_above_head:
+                self.front_overhead_count += 1
+            else:
+                self.front_overhead_count = max(0, self.front_overhead_count - 1)
+
+            # Require sustained overhead frames and clear upward motion after dip.
+            if self.front_overhead_count >= 5 and wrist_up_after_dip >= 12.0:
+                self.jerk_seen = True
+                return "Jerk Phase"
+
+            return "Squat Phase"
+
+        if self.phase == "Jerk Phase":
+            return "Jerk Phase"
 
         return "Deadlift Phase"
 
+    # ==========================================================
+    # LANDMARK EXTRACTION
+    # ==========================================================
     def extract_front_view_pose_data(
         self,
         landmarks,
@@ -472,21 +656,54 @@ class PhaseDetector:
     ):
         LM = pose_landmark_enum
 
+        def visible_xy(idx):
+            lm = landmarks[idx]
+
+            if hasattr(lm, "visibility") and lm.visibility < min_visibility:
+                return None
+
+            return (
+                float(lm.x * image_width),
+                float(lm.y * image_height)
+            )
+
         def avg_y(ids):
             values = []
 
             for idx in ids:
-                lm = landmarks[idx]
+                point = visible_xy(idx)
 
-                if hasattr(lm, "visibility") and lm.visibility < min_visibility:
+                if point is None:
                     continue
 
-                values.append(float(lm.y * image_height))
+                _, y = point
+                values.append(y)
 
             if not values:
                 return None
 
             return sum(values) / len(values)
+
+        def angle_2d(a, b, c):
+            if a is None or b is None or c is None:
+                return None
+
+            ax, ay = a
+            bx, by = b
+            cx, cy = c
+
+            v1 = (ax - bx, ay - by)
+            v2 = (cx - bx, cy - by)
+
+            dot = v1[0] * v2[0] + v1[1] * v2[1]
+            mag1 = math.sqrt(v1[0] ** 2 + v1[1] ** 2)
+            mag2 = math.sqrt(v2[0] ** 2 + v2[1] ** 2)
+
+            if mag1 == 0 or mag2 == 0:
+                return None
+
+            cos_angle = max(-1.0, min(1.0, dot / (mag1 * mag2)))
+            return math.degrees(math.acos(cos_angle))
 
         wrist_y = avg_y([
             LM.LEFT_WRIST.value,
@@ -513,6 +730,46 @@ class PhaseDetector:
             LM.RIGHT_ANKLE.value
         ])
 
+        # Use head-top instead of average head center.
+        # Smaller y = higher in image coordinates.
+        head_points = []
+
+        for idx in [
+            LM.NOSE.value,
+            LM.LEFT_EYE.value,
+            LM.RIGHT_EYE.value,
+            LM.LEFT_EAR.value,
+            LM.RIGHT_EAR.value
+        ]:
+            point = visible_xy(idx)
+
+            if point is not None:
+                _, y = point
+                head_points.append(y)
+
+        head_y = min(head_points) if head_points else None
+
+        left_knee_angle = angle_2d(
+            visible_xy(LM.LEFT_HIP.value),
+            visible_xy(LM.LEFT_KNEE.value),
+            visible_xy(LM.LEFT_ANKLE.value)
+        )
+
+        right_knee_angle = angle_2d(
+            visible_xy(LM.RIGHT_HIP.value),
+            visible_xy(LM.RIGHT_KNEE.value),
+            visible_xy(LM.RIGHT_ANKLE.value)
+        )
+
+        knee_angles = [
+            angle for angle in [left_knee_angle, right_knee_angle]
+            if angle is not None
+        ]
+
+        knee_angle = None
+        if knee_angles:
+            knee_angle = sum(knee_angles) / len(knee_angles)
+
         required = [
             wrist_y,
             shoulder_y,
@@ -524,18 +781,24 @@ class PhaseDetector:
         if any(value is None for value in required):
             return None
 
+        if head_y is None:
+            torso_length = max(1.0, hip_y - shoulder_y)
+            head_y = shoulder_y - 0.45 * torso_length
+
         return {
             "wrist_y": wrist_y,
             "shoulder_y": shoulder_y,
             "hip_y": hip_y,
             "knee_y": knee_y,
-            "ankle_y": ankle_y
+            "ankle_y": ankle_y,
+            "head_y": head_y,
+            "knee_angle": knee_angle
         }
 
     # ==========================================================
-    # FORWARD-ONLY PHASE SMOOTHING
+    # ORDER CONTROL
     # ==========================================================
-    def set_phase_forward_only(self, candidate_phase, phase_order):
+    def apply_forward_order(self, candidate_phase, phase_order):
         if candidate_phase not in phase_order:
             return self.set_phase(candidate_phase, force=True)
 
@@ -546,14 +809,21 @@ class PhaseDetector:
 
         candidate_index = phase_order.index(candidate_phase)
 
-        # Prevent backward phase toggling.
         if candidate_index < current_index:
-            return self.phase
+            return self.set_phase(self.phase)
 
         if candidate_index == current_index:
             self.pending_phase = None
             self.pending_count = 0
-            return self.phase
+            return self.set_phase(self.phase)
+
+        if candidate_index > current_index + 1:
+            candidate_phase = phase_order[current_index + 1]
+
+        if self.phase == SETUP_PHASE:
+            required_confirmation_frames = 1
+        else:
+            required_confirmation_frames = 4
 
         if candidate_phase != self.pending_phase:
             self.pending_phase = candidate_phase
@@ -561,16 +831,41 @@ class PhaseDetector:
         else:
             self.pending_count += 1
 
-        required_confirmation_frames = 2
-
         if self.pending_count >= required_confirmation_frames:
             return self.set_phase(candidate_phase, force=True)
 
-        return self.phase
+        return self.set_phase(self.phase)
 
     def set_phase(self, new_phase, force=False):
         if force or new_phase != self.phase:
+            previous_phase = self.phase
             self.phase = new_phase
+            self.frames_in_phase = 0
             self.last_phase_change_time = time.time()
+
+            if new_phase == "Catch Phase":
+                self.catch_seen = True
+                self.final_stable_count = 0
+
+            if new_phase == "Squat Phase":
+                self.squat_seen = True
+
+                self.squat_start_displacement = self.last_displacement
+                self.squat_lowest_displacement = self.last_displacement
+                self.side_overhead_count = 0
+
+                self.squat_start_wrist_y = self.previous_wrist_y
+                self.front_squat_lowest_wrist_y = self.previous_wrist_y
+                self.front_overhead_count = 0
+
+            if new_phase == "Jerk Phase":
+                self.jerk_seen = True
+
+            if previous_phase != new_phase:
+                self.pending_phase = None
+                self.pending_count = 0
+
+        else:
+            self.frames_in_phase += 1
 
         return self.phase
