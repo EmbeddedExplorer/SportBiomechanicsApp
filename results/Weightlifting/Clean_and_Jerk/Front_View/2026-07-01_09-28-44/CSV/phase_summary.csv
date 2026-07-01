@@ -1,0 +1,6 @@
+phase,start_time_s,end_time_s,sample_count
+Catch Phase,20.946,21.448,9
+Jerk Phase,24.505,82.872,925
+Jump Phase,20.758,20.884,3
+Setup,0.044,20.695,331
+Squat Phase,21.511,24.441,48

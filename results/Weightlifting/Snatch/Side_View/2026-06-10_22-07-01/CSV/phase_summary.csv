@@ -1,7 +1,0 @@
-phase,start_time_s,end_time_s,sample_count
-Catch,86.728,87.868,5
-First Pull,58.194,123.548,274
-Second Pull,64.324,64.324,1
-Setup,0.02,58.115,629
-Transition,60.867,95.323,81
-Turnover,62.647,89.652,295

@@ -1,0 +1,10 @@
+{
+    "app_name": "BioMotion Studio",
+    "sport": "Weightlifting",
+    "exercise": "Snatch",
+    "camera_view": "Front View",
+    "input_mode": "RealSense Bag File",
+    "source_file": "E:/Pose estimation tool/Recording_bagFiles/FrontView_Snatch/20240405_130613.bag",
+    "created_at": "2026-07-01_09-21-48",
+    "session_path": "results\\Weightlifting\\Snatch\\Front_View\\2026-07-01_09-21-48"
+}

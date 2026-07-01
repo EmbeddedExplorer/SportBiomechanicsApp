@@ -1,0 +1,5 @@
+phase,start_time_s,end_time_s,sample_count
+Catch Phase,47.833,48.927,13
+Deadlift Phase,0.016,41.757,454
+Jump Phase,41.851,47.741,65
+Overhead Squat Phase,49.021,70.95,240
