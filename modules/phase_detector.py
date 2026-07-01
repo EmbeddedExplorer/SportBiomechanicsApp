@@ -26,8 +26,9 @@ class PhaseDetector:
     Important:
         - Snatch logic is kept stable.
         - Clean & Jerk side view uses barbell above-head logic.
-        - Clean & Jerk front view now uses wrist/head-top overhead logic.
-        - The small dip before jerk remains Squat Phase.
+        - Clean & Jerk front view uses wrist/head-top overhead logic.
+        - Setup remains Setup until true vertical lift-off is detected.
+        - Horizontal barbell adjustment during Setup does not start Deadlift.
     """
 
     def __init__(self):
@@ -47,6 +48,12 @@ class PhaseDetector:
         self.max_displacement_seen = 0.0
 
         self.upward_motion_count = 0
+
+        # Setup / lift-off stabilization
+        self.setup_reference_displacement = None
+        self.setup_min_displacement = None
+        self.setup_max_displacement = None
+        self.true_lift_confirm_count = 0
 
         self.pending_phase = None
         self.pending_count = 0
@@ -162,28 +169,62 @@ class PhaseDetector:
         )
 
     def detect_lift_off(self, displacement, velocity):
-        displacement_threshold = 4.0
-        frame_delta_threshold = 1.0
-        velocity_threshold = 10.0
-        required_motion_frames = 2
+        """
+        Detect true lift-off from Setup.
 
-        moved_from_start = displacement > displacement_threshold
+        Updated logic:
+        - Horizontal barbell adjustment during Setup should not start Deadlift.
+        - Small vertical jitter should not start Deadlift.
+        - Deadlift starts only after clear upward vertical displacement.
+        - Reference line will be drawn from the true lift-start point because
+          trajectory starts only when phase leaves Setup.
+        """
 
-        moved_from_previous = False
+        vertical_lift_threshold_px = 12.0
+        frame_delta_threshold_px = 1.5
+        velocity_threshold_px_s = 8.0
+        required_confirm_frames = 3
+
+        if self.setup_reference_displacement is None:
+            self.setup_reference_displacement = displacement
+            self.setup_min_displacement = displacement
+            self.setup_max_displacement = displacement
+            self.last_displacement = displacement
+            self.true_lift_confirm_count = 0
+            return False
+
+        self.setup_min_displacement = min(
+            self.setup_min_displacement,
+            displacement
+        )
+
+        self.setup_max_displacement = max(
+            self.setup_max_displacement,
+            displacement
+        )
+
+        vertical_gain_from_setup = displacement - self.setup_min_displacement
+
+        moved_up_from_previous = False
 
         if self.last_displacement is not None:
-            moved_from_previous = (
+            moved_up_from_previous = (
                 displacement - self.last_displacement
-            ) > frame_delta_threshold
+            ) >= frame_delta_threshold_px
 
-        velocity_up = velocity > velocity_threshold
+        velocity_up = velocity >= velocity_threshold_px_s
 
-        if moved_from_start or moved_from_previous or velocity_up:
-            self.upward_motion_count += 1
+        clear_vertical_lift = vertical_gain_from_setup >= vertical_lift_threshold_px
+
+        if clear_vertical_lift and (moved_up_from_previous or velocity_up):
+            self.true_lift_confirm_count += 1
         else:
-            self.upward_motion_count = max(0, self.upward_motion_count - 1)
+            self.true_lift_confirm_count = max(
+                0,
+                self.true_lift_confirm_count - 1
+            )
 
-        return self.upward_motion_count >= required_motion_frames
+        return self.true_lift_confirm_count >= required_confirm_frames
 
     # ==========================================================
     # SNATCH SIDE VIEW
@@ -308,8 +349,6 @@ class PhaseDetector:
                 displacement
             )
 
-            # No displacement-only fallback here.
-            # That fallback caused early false Jerk detection.
             if self.frames_in_phase >= 12:
                 if barbell_above_head:
                     self.side_overhead_count += 1
@@ -575,7 +614,6 @@ class PhaseDetector:
             if self.frames_in_phase < min_jump_frames:
                 return "Jump Phase"
 
-            # Front rack / clean catch around shoulder level.
             if shoulder_zone <= 60:
                 self.catch_seen = True
                 return "Catch Phase"
@@ -607,7 +645,6 @@ class PhaseDetector:
             if self.front_squat_lowest_wrist_y is None:
                 self.front_squat_lowest_wrist_y = wrist_y
 
-            # Image coordinate: larger y = lower.
             self.front_squat_lowest_wrist_y = max(
                 self.front_squat_lowest_wrist_y,
                 wrist_y
@@ -615,12 +652,7 @@ class PhaseDetector:
 
             wrist_up_after_dip = self.front_squat_lowest_wrist_y - wrist_y
 
-            # Positive clearance means wrist/bar region is above head-top.
             head_clearance = head_y - wrist_y
-
-            # Same idea as side-view overhead logic.
-            # If Jerk appears too late, reduce 30.0 to 25.0.
-            # If Jerk appears too early, increase 30.0 to 35.0 or 40.0.
             wrist_above_head = head_clearance >= 30.0
 
             if self.frames_in_phase < min_squat_frames:
@@ -631,7 +663,6 @@ class PhaseDetector:
             else:
                 self.front_overhead_count = max(0, self.front_overhead_count - 1)
 
-            # Require sustained overhead frames and clear upward motion after dip.
             if self.front_overhead_count >= 5 and wrist_up_after_dip >= 12.0:
                 self.jerk_seen = True
                 return "Jerk Phase"
@@ -730,8 +761,6 @@ class PhaseDetector:
             LM.RIGHT_ANKLE.value
         ])
 
-        # Use head-top instead of average head center.
-        # Smaller y = higher in image coordinates.
         head_points = []
 
         for idx in [
