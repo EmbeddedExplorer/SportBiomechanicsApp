@@ -170,6 +170,47 @@ class SprintingPage(QWidget):
 
         return ""
 
+
+    # ==========================================================
+    # UI HELPERS
+    # ==========================================================
+    def set_status(self, message):
+        self.status_label.setText(f"Status: {message}")
+
+    def update_file_label(self, file_path):
+        if not file_path:
+            self.file_label.setText("No file selected")
+            self.file_label.setToolTip("")
+            return
+
+        file_name = Path(file_path).name
+
+        if file_path.lower().endswith(".bag"):
+            label = "Selected .bag file"
+        else:
+            label = "Selected video file"
+
+        self.file_label.setText(f"{label}: {file_name}")
+        self.file_label.setToolTip(str(file_path))
+
+    def is_preview_active(self):
+        return self.video_thread is not None and self.video_thread.isRunning()
+
+    def confirm_stop_preview_before_leaving(self):
+        if not self.is_preview_active():
+            return True
+
+        reply = QMessageBox.question(
+            self,
+            "Preview Active",
+            (
+                "A preview is currently running.\n\n"
+                "Do you want to stop the preview and go back to Home?"
+            )
+        )
+
+        return reply == QMessageBox.StandardButton.Yes
+
     # ==========================================================
     # METRICS UI
     # ==========================================================
@@ -261,14 +302,14 @@ class SprintingPage(QWidget):
 
         if file_path:
             self.selected_file = file_path
-            self.file_label.setText(file_path)
+            self.update_file_label(file_path)
 
             if file_path.lower().endswith(".bag"):
                 self.radio_bag.setChecked(True)
             else:
                 self.radio_video.setChecked(True)
 
-            self.status_label.setText("Status: Input file selected.")
+            self.set_status("Input file selected. Start preview to verify pose tracking.")
 
     def get_source_type(self):
         if self.radio_realsense_live.isChecked():
@@ -320,6 +361,9 @@ class SprintingPage(QWidget):
                 "Please select a video or .bag file first."
             )
             return
+
+        self.set_status("Starting sprinting preview...")
+        QApplication.processEvents()
 
         self.video_thread = VideoThread(
             source_type=source_type,
@@ -457,6 +501,9 @@ class SprintingPage(QWidget):
 
         input_mode = self.get_input_mode()
 
+        self.set_status("Preparing sprinting analysis session...")
+        QApplication.processEvents()
+
         self.current_session_path = create_session_folder(
             sport="Sprinting",
             exercise="Sprinting",
@@ -479,7 +526,7 @@ class SprintingPage(QWidget):
         self.btn_start_recording.setEnabled(False)
         self.btn_stop_recording.setEnabled(True)
 
-        self.status_label.setText("Status: Recording analysis started.")
+        self.set_status("Recording started. Keep the athlete visible until you stop and save.")
 
     def stop_and_save_analysis(self):
         if not self.is_recording or self.recorder is None:
@@ -502,6 +549,9 @@ class SprintingPage(QWidget):
             self.btn_start_recording.setEnabled(True)
             self.btn_stop_recording.setEnabled(False)
             return
+
+        self.set_status("Saving sprinting analysis outputs. Please wait...")
+        QApplication.processEvents()
 
         output_info = self.recorder.save_outputs()
 
@@ -717,6 +767,9 @@ class SprintingPage(QWidget):
             )
             return
 
+        if not self.confirm_stop_preview_before_leaving():
+            return
+
         self._stop_preview_internal(reset_metrics=True)
         self.on_back()
 
@@ -801,5 +854,9 @@ class SprintingPage(QWidget):
             QLabel#FileLabel {
                 color: #CFCFCF;
                 font-size: 12px;
+                background-color: #16232E;
+                border: 1px solid #2E5E78;
+                border-radius: 5px;
+                padding: 5px;
             }
         """)
