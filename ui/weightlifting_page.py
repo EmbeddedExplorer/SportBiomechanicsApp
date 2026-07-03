@@ -1,4 +1,7 @@
 import time
+from pathlib import Path
+
+import pandas as pd
 
 from PyQt6.QtWidgets import (
     QApplication,
@@ -652,6 +655,141 @@ class WeightliftingPage(QWidget):
 
         self.status_label.setText("Status: Recording analysis started.")
 
+    # ==========================================================
+    # ENHANCED SESSION INFO HELPERS
+    # ==========================================================
+    def safe_csv_value(self, value):
+        try:
+            if pd.isna(value):
+                return ""
+        except Exception:
+            pass
+
+        try:
+            if hasattr(value, "item"):
+                return value.item()
+        except Exception:
+            pass
+
+        return value
+
+    def read_first_row_csv(self, csv_path):
+        csv_path = Path(csv_path)
+
+        if not csv_path.exists():
+            return {}
+
+        try:
+            df = pd.read_csv(csv_path)
+
+            if df.empty:
+                return {}
+
+            row = df.iloc[0].to_dict()
+
+            clean_row = {}
+
+            for key, value in row.items():
+                clean_row[key] = self.safe_csv_value(value)
+
+            return clean_row
+
+        except Exception:
+            return {}
+
+    def existing_file_path(self, file_path):
+        file_path = Path(file_path)
+
+        if file_path.exists():
+            return str(file_path)
+
+        return ""
+
+    def build_enhanced_session_info(self, output_info):
+        """
+        Build richer session_info for the analysis dashboard.
+
+        This keeps old keys unchanged:
+            sport
+            exercise
+            camera_view
+            input_mode
+            source_file
+            results_folder
+            record_count
+
+        Adds new useful keys from:
+            CSV/lift_summary.csv
+            CSV/phase_biomechanics_summary.csv
+            Plots/*.png
+        """
+
+        session_path = Path(self.current_session_path)
+        csv_folder = session_path / "CSV"
+        plots_folder = session_path / "Plots"
+        reports_folder = session_path / "Reports"
+
+        lift_summary_path = csv_folder / "lift_summary.csv"
+        phase_biomechanics_path = csv_folder / "phase_biomechanics_summary.csv"
+
+        lift_summary = self.read_first_row_csv(lift_summary_path)
+
+        csv_files = {
+            "joint_angles_2d": self.existing_file_path(csv_folder / "joint_angles_2d.csv"),
+            "depth_data": self.existing_file_path(csv_folder / "depth_data.csv"),
+            "barbell_trajectory": self.existing_file_path(csv_folder / "barbell_trajectory.csv"),
+            "phase_summary": self.existing_file_path(csv_folder / "phase_summary.csv"),
+            "analysis_summary": self.existing_file_path(csv_folder / "analysis_summary.csv"),
+            "lift_summary": self.existing_file_path(lift_summary_path),
+            "phase_biomechanics_summary": self.existing_file_path(phase_biomechanics_path)
+        }
+
+        plot_files = {
+            "hip_knee_angles": self.existing_file_path(plots_folder / "hip_knee_angles_phase_highlighted.png"),
+            "upper_limb_angles": self.existing_file_path(plots_folder / "upper_limb_angles_phase_highlighted.png"),
+            "trunk_lean": self.existing_file_path(plots_folder / "trunk_lean_phase_highlighted.png"),
+            "barbell_velocity": self.existing_file_path(plots_folder / "barbell_velocity_phase_highlighted.png"),
+            "barbell_trajectory_annotated": self.existing_file_path(plots_folder / "barbell_trajectory_annotated.png"),
+            "barbell_trajectory_powerpoint": self.existing_file_path(plots_folder / "barbell_trajectory_powerpoint_style.png"),
+            "barbell_trajectory_phase_highlighted": self.existing_file_path(plots_folder / "barbell_trajectory_phase_highlighted.png")
+        }
+
+        session_info = {
+            "sport": "Weightlifting",
+            "exercise": self.get_exercise(),
+            "camera_view": self.get_camera_view(),
+            "input_mode": self.get_input_mode(),
+            "source_file": self.selected_file,
+            "results_folder": str(session_path),
+            "record_count": output_info.get("record_count", 0),
+
+            "session_path": str(session_path),
+            "csv_folder": str(csv_folder),
+            "plots_folder": str(plots_folder),
+            "reports_folder": str(reports_folder),
+
+            "csv_file": output_info.get("csv_file", ""),
+            "csv_files": csv_files,
+            "plot_files": plot_files,
+            "lift_summary": lift_summary,
+
+            "detected_phases": lift_summary.get("detected_phases", ""),
+            "detected_phase_count": lift_summary.get("detected_phase_count", ""),
+            "total_duration_s": lift_summary.get("total_duration_s", ""),
+            "barbell_detected_samples": lift_summary.get("barbell_detected_samples", ""),
+
+            "max_barbell_height_px": lift_summary.get("max_barbell_height_px", ""),
+            "max_barbell_height_m": lift_summary.get("max_barbell_height_m", ""),
+
+            "max_vertical_velocity_px_s": lift_summary.get("max_vertical_velocity_px_s", ""),
+            "max_vertical_velocity_m_s": lift_summary.get("max_vertical_velocity_m_s", ""),
+
+            "max_horizontal_velocity_px_s": lift_summary.get("max_horizontal_velocity_px_s", ""),
+            "max_horizontal_velocity_m_s": lift_summary.get("max_horizontal_velocity_m_s", "")
+        }
+
+        return session_info
+
     def stop_and_save_analysis(self):
         if not self.is_recording or self.recorder is None:
             QMessageBox.warning(
@@ -681,15 +819,7 @@ class WeightliftingPage(QWidget):
 
         self._stop_preview_internal(reset_metrics=False)
 
-        session_info = {
-            "sport": "Weightlifting",
-            "exercise": self.get_exercise(),
-            "camera_view": self.get_camera_view(),
-            "input_mode": self.get_input_mode(),
-            "source_file": self.selected_file,
-            "results_folder": str(self.current_session_path),
-            "record_count": output_info.get("record_count", 0)
-        }
+        session_info = self.build_enhanced_session_info(output_info)
 
         self.on_start_analysis(session_info)
 
