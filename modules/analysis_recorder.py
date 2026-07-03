@@ -97,6 +97,14 @@ class AnalysisRecorder:
     def record_count(self):
         return len(self.records)
 
+    def is_sprinting(self):
+        text = f"{self.sport} {self.exercise}".lower()
+        return "sprint" in text
+
+    def is_weightlifting(self):
+        text = f"{self.sport} {self.exercise}".lower()
+        return "weight" in text or "snatch" in text or "clean" in text or "jerk" in text
+
     def save_outputs(self):
         csv_folder = self.session_path / "CSV"
         plots_folder = self.session_path / "Plots"
@@ -115,9 +123,11 @@ class AnalysisRecorder:
         self.save_barbell_csv(df, csv_folder)
         self.save_phase_summary_csv(df, csv_folder)
         self.save_lift_summary_csv(df, csv_folder)
+        self.save_sprint_summary_csv(df, csv_folder)
         self.save_phase_biomechanics_summary_csv(df, csv_folder)
         self.save_summary_csv(df, csv_folder)
         self.save_plots(df, plots_folder)
+        self.save_text_report(df, reports_folder)
         self.save_recording_metadata()
 
         return {
@@ -316,6 +326,324 @@ class AnalysisRecorder:
 
         summary_df = pd.DataFrame([lift_summary])
         summary_df.to_csv(csv_folder / "lift_summary.csv", index=False)
+
+    def save_sprint_summary_csv(self, df, csv_folder):
+        """
+        Save sprinting-specific one-row summary.
+
+        Creates:
+            CSV/sprint_summary.csv
+
+        This does not replace lift_summary.csv because the ResultsPage and
+        older code paths still use lift_summary.csv as the generic session
+        summary file.
+        """
+
+        if df.empty or not self.is_sprinting():
+            return
+
+        def numeric_series(column_name):
+            if column_name not in df.columns:
+                return pd.Series(dtype="float64")
+
+            return pd.to_numeric(df[column_name], errors="coerce")
+
+        def safe_mean(column_name):
+            series = numeric_series(column_name)
+
+            if series.notna().sum() == 0:
+                return None
+
+            return round(series.mean(), 4)
+
+        def safe_min(column_name):
+            series = numeric_series(column_name)
+
+            if series.notna().sum() == 0:
+                return None
+
+            return round(series.min(), 4)
+
+        def safe_max(column_name):
+            series = numeric_series(column_name)
+
+            if series.notna().sum() == 0:
+                return None
+
+            return round(series.max(), 4)
+
+        total_duration_s = None
+
+        if "time_s" in df.columns:
+            time_series = numeric_series("time_s")
+
+            if time_series.notna().sum() > 0:
+                total_duration_s = round(time_series.max() - time_series.min(), 3)
+
+        phase_segments = self.build_phase_segments(df)
+
+        def phase_total_duration(phase_name):
+            total = 0.0
+
+            for segment in phase_segments:
+                if segment["phase"] == phase_name and segment["duration_s"] is not None:
+                    total += segment["duration_s"]
+
+            return round(total, 3)
+
+        def phase_segment_count(phase_name):
+            count = 0
+
+            for segment in phase_segments:
+                if segment["phase"] == phase_name:
+                    count += 1
+
+            return count
+
+        detected_phases = []
+
+        if "phase" in df.columns:
+            for phase in df["phase"].dropna().tolist():
+                if phase in EXCLUDED_PLOT_PHASES:
+                    continue
+
+                if phase not in detected_phases:
+                    detected_phases.append(phase)
+
+        sprint_summary = {
+            "sport": self.sport,
+            "exercise": self.exercise,
+            "camera_view": self.camera_view,
+            "input_mode": self.input_mode,
+            "source_file": self.source_file,
+
+            "record_count": len(df),
+            "total_duration_s": total_duration_s,
+
+            "detected_phase_count": len(detected_phases),
+            "detected_phases": " | ".join(detected_phases),
+
+            "initial_contact_events": phase_segment_count("Initial Contact"),
+            "toe_off_events": phase_segment_count("Toe-Off"),
+
+            "support_total_duration_s": phase_total_duration("Support Phase"),
+            "flight_swing_total_duration_s": phase_total_duration("Flight / Swing"),
+            "initial_contact_total_duration_s": phase_total_duration("Initial Contact"),
+            "toe_off_total_duration_s": phase_total_duration("Toe-Off"),
+
+            "mean_left_hip_angle_deg": safe_mean("left_hip_angle_deg"),
+            "mean_right_hip_angle_deg": safe_mean("right_hip_angle_deg"),
+            "mean_left_knee_angle_deg": safe_mean("left_knee_angle_deg"),
+            "mean_right_knee_angle_deg": safe_mean("right_knee_angle_deg"),
+            "mean_left_ankle_angle_deg": safe_mean("left_ankle_angle_deg"),
+            "mean_right_ankle_angle_deg": safe_mean("right_ankle_angle_deg"),
+
+            "min_left_knee_angle_deg": safe_min("left_knee_angle_deg"),
+            "min_right_knee_angle_deg": safe_min("right_knee_angle_deg"),
+            "max_left_knee_angle_deg": safe_max("left_knee_angle_deg"),
+            "max_right_knee_angle_deg": safe_max("right_knee_angle_deg"),
+
+            "mean_trunk_lean_angle_deg": safe_mean("trunk_lean_angle_deg"),
+            "min_trunk_lean_angle_deg": safe_min("trunk_lean_angle_deg"),
+            "max_trunk_lean_angle_deg": safe_max("trunk_lean_angle_deg"),
+
+            "mean_athlete_depth_m": safe_mean("athlete_depth_m"),
+            "mean_center_depth_m": safe_mean("center_depth_m"),
+
+            "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        }
+
+        summary_df = pd.DataFrame([sprint_summary])
+        summary_df.to_csv(csv_folder / "sprint_summary.csv", index=False)
+
+    def build_phase_segments(self, df):
+        """
+        Build contiguous phase segments from the recorded frame-by-frame data.
+
+        Returns list of dictionaries:
+            phase, start_time_s, end_time_s, duration_s, sample_count
+        """
+
+        if df.empty or "phase" not in df.columns or "time_s" not in df.columns:
+            return []
+
+        work_df = df[["time_s", "phase"]].copy()
+        work_df["time_s"] = pd.to_numeric(work_df["time_s"], errors="coerce")
+        work_df = work_df.dropna(subset=["time_s", "phase"])
+
+        if work_df.empty:
+            return []
+
+        segments = []
+
+        current_phase = None
+        start_time = None
+        end_time = None
+        sample_count = 0
+
+        for _, row in work_df.iterrows():
+            phase = row["phase"]
+            time_s = row["time_s"]
+
+            if pd.isna(phase):
+                continue
+
+            phase = str(phase)
+
+            if phase in EXCLUDED_PLOT_PHASES:
+                continue
+
+            if current_phase is None:
+                current_phase = phase
+                start_time = time_s
+                end_time = time_s
+                sample_count = 1
+                continue
+
+            if phase == current_phase:
+                end_time = time_s
+                sample_count += 1
+            else:
+                segments.append({
+                    "phase": current_phase,
+                    "start_time_s": round(float(start_time), 3),
+                    "end_time_s": round(float(end_time), 3),
+                    "duration_s": round(float(end_time - start_time), 3),
+                    "sample_count": sample_count
+                })
+
+                current_phase = phase
+                start_time = time_s
+                end_time = time_s
+                sample_count = 1
+
+        if current_phase is not None:
+            segments.append({
+                "phase": current_phase,
+                "start_time_s": round(float(start_time), 3),
+                "end_time_s": round(float(end_time), 3),
+                "duration_s": round(float(end_time - start_time), 3),
+                "sample_count": sample_count
+            })
+
+        return segments
+
+    def save_text_report(self, df, reports_folder):
+        """
+        Save a readable text report for final demo/thesis checking.
+
+        Creates:
+            Reports/analysis_report.txt
+            Reports/sprinting_summary_report.txt or Reports/weightlifting_summary_report.txt
+        """
+
+        if df.empty:
+            return
+
+        report_lines = []
+
+        report_lines.append("BioMotion Studio - Analysis Report")
+        report_lines.append("=" * 42)
+        report_lines.append("")
+        report_lines.append(f"Sport          : {self.sport}")
+        report_lines.append(f"Exercise       : {self.exercise}")
+        report_lines.append(f"Camera View    : {self.camera_view}")
+        report_lines.append(f"Input Mode     : {self.input_mode}")
+        report_lines.append(f"Source File    : {self.source_file if self.source_file else 'Live Source'}")
+        report_lines.append(f"Record Count   : {len(df)}")
+        report_lines.append(f"Created At     : {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+        report_lines.append("")
+
+        if "time_s" in df.columns:
+            time_series = pd.to_numeric(df["time_s"], errors="coerce")
+
+            if time_series.notna().sum() > 0:
+                duration = round(time_series.max() - time_series.min(), 3)
+                report_lines.append(f"Total Duration : {duration} s")
+                report_lines.append("")
+
+        phase_segments = self.build_phase_segments(df)
+
+        if phase_segments:
+            report_lines.append("Detected Phase Segments")
+            report_lines.append("-" * 42)
+
+            for segment in phase_segments:
+                report_lines.append(
+                    f"{segment['phase']}: "
+                    f"{segment['start_time_s']} s to {segment['end_time_s']} s, "
+                    f"duration {segment['duration_s']} s, "
+                    f"samples {segment['sample_count']}"
+                )
+
+            report_lines.append("")
+
+        def add_numeric_stat(label, column_name, unit=""):
+            if column_name not in df.columns:
+                return
+
+            series = pd.to_numeric(df[column_name], errors="coerce")
+
+            if series.notna().sum() == 0:
+                return
+
+            suffix = f" {unit}" if unit else ""
+
+            report_lines.append(
+                f"{label}: mean={series.mean():.3f}{suffix}, "
+                f"min={series.min():.3f}{suffix}, "
+                f"max={series.max():.3f}{suffix}"
+            )
+
+        if self.is_sprinting():
+            report_lines.append("Sprinting Biomechanics Summary")
+            report_lines.append("-" * 42)
+
+            add_numeric_stat("Left Hip Angle", "left_hip_angle_deg", "deg")
+            add_numeric_stat("Right Hip Angle", "right_hip_angle_deg", "deg")
+            add_numeric_stat("Left Knee Angle", "left_knee_angle_deg", "deg")
+            add_numeric_stat("Right Knee Angle", "right_knee_angle_deg", "deg")
+            add_numeric_stat("Left Ankle Angle", "left_ankle_angle_deg", "deg")
+            add_numeric_stat("Right Ankle Angle", "right_ankle_angle_deg", "deg")
+            add_numeric_stat("Trunk Lean Angle", "trunk_lean_angle_deg", "deg")
+            add_numeric_stat("Athlete Depth", "athlete_depth_m", "m")
+            add_numeric_stat("Center Depth", "center_depth_m", "m")
+
+        else:
+            report_lines.append("Weightlifting Biomechanics Summary")
+            report_lines.append("-" * 42)
+
+            add_numeric_stat("Left Hip Angle", "left_hip_angle_deg", "deg")
+            add_numeric_stat("Right Hip Angle", "right_hip_angle_deg", "deg")
+            add_numeric_stat("Left Knee Angle", "left_knee_angle_deg", "deg")
+            add_numeric_stat("Right Knee Angle", "right_knee_angle_deg", "deg")
+            add_numeric_stat("Trunk Lean Angle", "trunk_lean_angle_deg", "deg")
+            add_numeric_stat("Barbell Vertical Displacement", "barbell_vertical_displacement_m", "m")
+            add_numeric_stat("Barbell Horizontal Displacement", "barbell_horizontal_displacement_m", "m")
+            add_numeric_stat("Barbell Vertical Velocity", "barbell_vertical_velocity_m_s", "m/s")
+            add_numeric_stat("Barbell Horizontal Velocity", "barbell_horizontal_velocity_m_s", "m/s")
+            add_numeric_stat("Barbell Vertical Displacement", "barbell_vertical_displacement_px", "px")
+            add_numeric_stat("Barbell Horizontal Displacement", "barbell_horizontal_displacement_px", "px")
+            add_numeric_stat("Barbell Vertical Velocity", "barbell_vertical_velocity_px_s", "px/s")
+            add_numeric_stat("Barbell Horizontal Velocity", "barbell_horizontal_velocity_px_s", "px/s")
+
+        report_lines.append("")
+        report_lines.append("Generated by BioMotion Studio.")
+
+        report_text = "\n".join(report_lines)
+
+        generic_report_path = reports_folder / "analysis_report.txt"
+
+        with open(generic_report_path, "w", encoding="utf-8") as file:
+            file.write(report_text)
+
+        if self.is_sprinting():
+            named_report_path = reports_folder / "sprinting_summary_report.txt"
+        else:
+            named_report_path = reports_folder / "weightlifting_summary_report.txt"
+
+        with open(named_report_path, "w", encoding="utf-8") as file:
+            file.write(report_text)
 
     def save_phase_biomechanics_summary_csv(self, df, csv_folder):
         """
@@ -570,6 +898,10 @@ class AnalysisRecorder:
         if df.empty or "time_s" not in df.columns:
             return
 
+        if self.is_sprinting():
+            self.save_sprinting_plots(df, plots_folder)
+            return
+
         self.plot_group(
             df=df,
             plots_folder=plots_folder,
@@ -630,6 +962,182 @@ class AnalysisRecorder:
             )
 
         self.save_barbell_trajectory_plot(df, plots_folder)
+
+    def save_sprinting_plots(self, df, plots_folder):
+        """
+        Save sprinting-specific plots.
+
+        Creates:
+            sprinting_phase_timeline.png
+            hip_knee_angles_phase_highlighted.png
+            sprinting_knee_ankle_angles_phase_highlighted.png
+            upper_limb_angles_phase_highlighted.png
+            trunk_lean_phase_highlighted.png
+            sprinting_depth_profile_phase_highlighted.png
+        """
+
+        self.save_phase_timeline_plot(
+            df=df,
+            plots_folder=plots_folder,
+            filename="sprinting_phase_timeline.png"
+        )
+
+        self.plot_group(
+            df=df,
+            plots_folder=plots_folder,
+            columns=[
+                "left_hip_angle_deg",
+                "right_hip_angle_deg",
+                "left_knee_angle_deg",
+                "right_knee_angle_deg"
+            ],
+            title=f"{self.exercise} Hip and Knee Angles ({self.camera_view})",
+            ylabel="Angle (degrees)",
+            filename="hip_knee_angles_phase_highlighted.png",
+            shade_phases=True
+        )
+
+        self.plot_group(
+            df=df,
+            plots_folder=plots_folder,
+            columns=[
+                "left_knee_angle_deg",
+                "right_knee_angle_deg",
+                "left_ankle_angle_deg",
+                "right_ankle_angle_deg"
+            ],
+            title=f"{self.exercise} Knee and Ankle Angles ({self.camera_view})",
+            ylabel="Angle (degrees)",
+            filename="sprinting_knee_ankle_angles_phase_highlighted.png",
+            shade_phases=True
+        )
+
+        self.plot_group(
+            df=df,
+            plots_folder=plots_folder,
+            columns=[
+                "left_elbow_angle_deg",
+                "right_elbow_angle_deg",
+                "left_shoulder_angle_deg",
+                "right_shoulder_angle_deg"
+            ],
+            title=f"{self.exercise} Shoulder and Elbow Angles ({self.camera_view})",
+            ylabel="Angle (degrees)",
+            filename="upper_limb_angles_phase_highlighted.png",
+            shade_phases=True
+        )
+
+        self.plot_group(
+            df=df,
+            plots_folder=plots_folder,
+            columns=["trunk_lean_angle_deg"],
+            title=f"{self.exercise} Trunk Lean Angle ({self.camera_view})",
+            ylabel="Angle (degrees)",
+            filename="trunk_lean_phase_highlighted.png",
+            shade_phases=True
+        )
+
+        self.plot_group(
+            df=df,
+            plots_folder=plots_folder,
+            columns=[
+                "athlete_depth_m",
+                "center_depth_m"
+            ],
+            title=f"{self.exercise} Depth Profile ({self.camera_view})",
+            ylabel="Depth (m)",
+            filename="sprinting_depth_profile_phase_highlighted.png",
+            shade_phases=True
+        )
+
+    def save_phase_timeline_plot(self, df, plots_folder, filename):
+        if df.empty or "time_s" not in df.columns or "phase" not in df.columns:
+            return
+
+        plot_df = df[["time_s", "phase"]].copy()
+        plot_df["time_s"] = pd.to_numeric(plot_df["time_s"], errors="coerce")
+        plot_df = plot_df.dropna(subset=["time_s", "phase"])
+
+        if plot_df.empty:
+            return
+
+        phase_order = []
+
+        for phase in plot_df["phase"].tolist():
+            phase = str(phase)
+
+            if phase in EXCLUDED_PLOT_PHASES:
+                continue
+
+            if phase not in phase_order:
+                phase_order.append(phase)
+
+        if not phase_order:
+            return
+
+        phase_to_y = {}
+
+        for index, phase in enumerate(phase_order):
+            phase_to_y[phase] = index
+
+        plot_df = plot_df[plot_df["phase"].isin(phase_order)].copy()
+
+        if plot_df.empty:
+            return
+
+        plot_df["phase_y"] = plot_df["phase"].map(phase_to_y)
+
+        fig, ax = plt.subplots(figsize=(10.5, 4.8))
+
+        phase_colors = {
+            "Initial Contact": "#1f77b4",
+            "Support Phase": "#ff7f0e",
+            "Toe-Off": "#2ca02c",
+            "Flight / Swing": "#9467bd",
+        }
+
+        segments = self.build_phase_segments(plot_df)
+
+        for segment in segments:
+            phase = segment["phase"]
+
+            if phase not in phase_to_y:
+                continue
+
+            y_value = phase_to_y[phase]
+            color = phase_colors.get(phase, "#444444")
+
+            ax.hlines(
+                y=y_value,
+                xmin=segment["start_time_s"],
+                xmax=segment["end_time_s"],
+                linewidth=7,
+                color=color,
+                alpha=0.85
+            )
+
+            midpoint = (segment["start_time_s"] + segment["end_time_s"]) / 2.0
+
+            if segment["duration_s"] >= 0.20:
+                ax.text(
+                    midpoint,
+                    y_value + 0.12,
+                    phase,
+                    ha="center",
+                    va="bottom",
+                    fontsize=7
+                )
+
+        ax.set_yticks(list(phase_to_y.values()))
+        ax.set_yticklabels(list(phase_to_y.keys()))
+        ax.set_xlabel("Time (s)")
+        ax.set_ylabel("Sprint Phase")
+        ax.set_title(f"{self.exercise} Phase Timeline ({self.camera_view})")
+        ax.grid(True, axis="x", alpha=0.35)
+
+        fig.tight_layout()
+        fig.savefig(plots_folder / filename, dpi=300)
+        plt.close(fig)
 
     def choose_column(self, df, preferred, fallback):
         if preferred in df.columns and pd.to_numeric(df[preferred], errors="coerce").notna().sum() > 0:
