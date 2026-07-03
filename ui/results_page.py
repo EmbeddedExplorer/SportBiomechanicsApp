@@ -96,12 +96,20 @@ class ResultsPage(QWidget):
         button_layout = QHBoxLayout()
         button_layout.setSpacing(10)
 
+        btn_open_html_report = QPushButton("Open HTML Report")
+        btn_open_html_report.clicked.connect(self.open_html_report)
+
+        btn_open_txt_report = QPushButton("Open TXT Report")
+        btn_open_txt_report.clicked.connect(self.open_txt_report)
+
         btn_open_folder = QPushButton("Open Results Folder")
         btn_open_folder.clicked.connect(self.open_results_folder)
 
         btn_back = QPushButton("Back to Home")
         btn_back.clicked.connect(self.on_back_home)
 
+        button_layout.addWidget(btn_open_html_report)
+        button_layout.addWidget(btn_open_txt_report)
         button_layout.addWidget(btn_open_folder)
         button_layout.addWidget(btn_back)
 
@@ -158,14 +166,6 @@ class ResultsPage(QWidget):
     # SUMMARY
     # ==========================================================
     def set_summary(self, data):
-        """
-        Receive session_info and build dashboard summary.
-
-        Important:
-        If enhanced values are not passed through session_info,
-        read them directly from CSV/lift_summary.csv.
-        """
-
         self.last_summary_data = data or {}
 
         results_folder = self.get_data_value(
@@ -265,6 +265,13 @@ class ResultsPage(QWidget):
             output_dict=self.get_data_value(data, ["plot_files"], {}),
             fallback_folder=self.current_session_path / "Plots" if self.current_session_path else None,
             extension="*.png"
+        )
+
+        report_status_html = self.build_output_status_html(
+            title="Generated Report Files",
+            output_dict=self.get_report_files_dict(),
+            fallback_folder=self.current_session_path / "Reports" if self.current_session_path else None,
+            extension="*.*"
         )
 
         source_file_html = ""
@@ -396,6 +403,10 @@ class ResultsPage(QWidget):
 
             <div class="section">
                 {plot_status_html}
+            </div>
+
+            <div class="section">
+                {report_status_html}
             </div>
 
         </body>
@@ -575,6 +586,26 @@ class ResultsPage(QWidget):
         )
 
         return str(sport).lower()
+
+    def get_report_files_dict(self):
+        if not self.current_session_path:
+            return {}
+
+        reports_folder = self.current_session_path / "Reports"
+
+        html_report = reports_folder / "analysis_report.html"
+        txt_report = reports_folder / "analysis_report.txt"
+        sprint_report = reports_folder / "sprinting_summary_report.txt"
+
+        report_files = {
+            "analysis_report_html": str(html_report),
+            "analysis_report_txt": str(txt_report)
+        }
+
+        if sprint_report.exists():
+            report_files["sprinting_summary_report"] = str(sprint_report)
+
+        return report_files
 
     def get_data_value(self, data, keys, default=""):
         if not isinstance(data, dict):
@@ -844,6 +875,55 @@ class ResultsPage(QWidget):
             self.display_plot(self.plot_files[current_row])
 
     # ==========================================================
+    # REPORT OPENING
+    # ==========================================================
+    def open_html_report(self):
+        if not self.current_session_path:
+            QMessageBox.warning(
+                self,
+                "No Report Available",
+                "No valid results folder is available for this session."
+            )
+            return
+
+        report_path = self.current_session_path / "Reports" / "analysis_report.html"
+
+        if not report_path.exists():
+            QMessageBox.warning(
+                self,
+                "HTML Report Missing",
+                "The HTML report was not found for this session."
+            )
+            return
+
+        QDesktopServices.openUrl(
+            QUrl.fromLocalFile(str(report_path.resolve()))
+        )
+
+    def open_txt_report(self):
+        if not self.current_session_path:
+            QMessageBox.warning(
+                self,
+                "No Report Available",
+                "No valid results folder is available for this session."
+            )
+            return
+
+        report_path = self.current_session_path / "Reports" / "analysis_report.txt"
+
+        if not report_path.exists():
+            QMessageBox.warning(
+                self,
+                "TXT Report Missing",
+                "The TXT report was not found for this session."
+            )
+            return
+
+        QDesktopServices.openUrl(
+            QUrl.fromLocalFile(str(report_path.resolve()))
+        )
+
+    # ==========================================================
     # FOLDER OPENING
     # ==========================================================
     def open_results_folder(self):
@@ -957,8 +1037,9 @@ class ResultsPage(QWidget):
                 color: white;
                 border-radius: 8px;
                 padding: 12px;
-                font-size: 16px;
+                font-size: 15px;
                 font-weight: bold;
+                min-width: 150px;
             }
 
             QPushButton:hover {
