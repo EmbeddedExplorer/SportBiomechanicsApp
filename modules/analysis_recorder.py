@@ -97,7 +97,7 @@ class AnalysisRecorder:
 
     def record_count(self):
         return len(self.records)
-
+    
     def save_outputs(self):
         csv_folder = self.session_path / "CSV"
         plots_folder = self.session_path / "Plots"
@@ -115,6 +115,11 @@ class AnalysisRecorder:
         self.save_depth_csv(df, csv_folder)
         self.save_barbell_csv(df, csv_folder)
         self.save_phase_summary_csv(df, csv_folder)
+
+        # New Step 2 output:
+        # Creates CSV/lift_summary.csv without changing old dashboard behavior.
+        self.save_lift_summary_csv(df, csv_folder)
+
         self.save_summary_csv(df, csv_folder)
         self.save_plots(df, plots_folder)
         self.save_recording_metadata()
@@ -124,7 +129,7 @@ class AnalysisRecorder:
             "record_count": len(df),
             "session_path": str(self.session_path)
         }
-
+    
     def save_depth_csv(self, df, csv_folder):
         depth_columns = ["time_s", "athlete_depth_m", "center_depth_m"]
 
@@ -186,6 +191,136 @@ class AnalysisRecorder:
 
         phase_df = pd.DataFrame(phase_rows)
         phase_df.to_csv(csv_folder / "phase_summary.csv", index=False)
+
+    def save_lift_summary_csv(self, df, csv_folder):
+       
+        if df.empty:
+            return
+
+        def numeric_series(column_name):
+            if column_name not in df.columns:
+                return pd.Series(dtype="float64")
+
+            return pd.to_numeric(df[column_name], errors="coerce")
+
+        def safe_max(column_name):
+            series = numeric_series(column_name)
+
+            if series.notna().sum() == 0:
+                return None
+
+            return round(series.max(), 4)
+
+        def safe_min(column_name):
+            series = numeric_series(column_name)
+
+            if series.notna().sum() == 0:
+                return None
+
+            return round(series.min(), 4)
+
+        def safe_abs_max(column_name):
+            series = numeric_series(column_name)
+
+            if series.notna().sum() == 0:
+                return None
+
+            return round(series.abs().max(), 4)
+
+        def safe_range(column_name):
+            series = numeric_series(column_name)
+
+            if series.notna().sum() == 0:
+                return None
+
+            return round(series.max() - series.min(), 4)
+
+        total_duration_s = None
+
+        if "time_s" in df.columns:
+            time_series = numeric_series("time_s")
+
+            if time_series.notna().sum() > 0:
+                total_duration_s = round(time_series.max() - time_series.min(), 3)
+
+        detected_phases = []
+
+        if "phase" in df.columns:
+            for phase in df["phase"].dropna().tolist():
+                if phase in EXCLUDED_PLOT_PHASES:
+                    continue
+
+                if phase not in detected_phases:
+                    detected_phases.append(phase)
+
+        barbell_detected_samples = 0
+
+        if "barbell_detected" in df.columns:
+            barbell_detected_samples = int(
+                df["barbell_detected"]
+                .fillna(False)
+                .astype(bool)
+                .sum()
+            )
+
+        lift_summary = {
+            "sport": self.sport,
+            "exercise": self.exercise,
+            "camera_view": self.camera_view,
+            "input_mode": self.input_mode,
+            "source_file": self.source_file,
+
+            "record_count": len(df),
+            "total_duration_s": total_duration_s,
+
+            "detected_phase_count": len(detected_phases),
+            "detected_phases": " | ".join(detected_phases),
+
+            "barbell_detected_samples": barbell_detected_samples,
+
+            "max_barbell_height_px": safe_max("barbell_max_height_px"),
+            "max_barbell_height_m": safe_max("barbell_max_height_m"),
+
+            "max_vertical_displacement_px": safe_max("barbell_vertical_displacement_px"),
+            "max_vertical_displacement_m": safe_max("barbell_vertical_displacement_m"),
+
+            "min_vertical_displacement_px": safe_min("barbell_vertical_displacement_px"),
+            "min_vertical_displacement_m": safe_min("barbell_vertical_displacement_m"),
+
+            "vertical_displacement_range_px": safe_range("barbell_vertical_displacement_px"),
+            "vertical_displacement_range_m": safe_range("barbell_vertical_displacement_m"),
+
+            "max_horizontal_displacement_px": safe_max("barbell_horizontal_displacement_px"),
+            "max_horizontal_displacement_m": safe_max("barbell_horizontal_displacement_m"),
+
+            "min_horizontal_displacement_px": safe_min("barbell_horizontal_displacement_px"),
+            "min_horizontal_displacement_m": safe_min("barbell_horizontal_displacement_m"),
+
+            "horizontal_displacement_range_px": safe_range("barbell_horizontal_displacement_px"),
+            "horizontal_displacement_range_m": safe_range("barbell_horizontal_displacement_m"),
+
+            "max_vertical_velocity_px_s": safe_abs_max("barbell_vertical_velocity_px_s"),
+            "max_vertical_velocity_m_s": safe_abs_max("barbell_vertical_velocity_m_s"),
+
+            "max_horizontal_velocity_px_s": safe_abs_max("barbell_horizontal_velocity_px_s"),
+            "max_horizontal_velocity_m_s": safe_abs_max("barbell_horizontal_velocity_m_s"),
+
+            "mean_athlete_depth_m": None,
+            "mean_center_depth_m": None,
+
+            "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        }
+
+        athlete_depth = numeric_series("athlete_depth_m")
+        if athlete_depth.notna().sum() > 0:
+            lift_summary["mean_athlete_depth_m"] = round(athlete_depth.mean(), 4)
+
+        center_depth = numeric_series("center_depth_m")
+        if center_depth.notna().sum() > 0:
+            lift_summary["mean_center_depth_m"] = round(center_depth.mean(), 4)
+
+        summary_df = pd.DataFrame([lift_summary])
+        summary_df.to_csv(csv_folder / "lift_summary.csv", index=False)
 
     def save_summary_csv(self, df, csv_folder):
         numeric_columns = [
