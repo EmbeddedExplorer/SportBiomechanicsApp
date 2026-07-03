@@ -1,0 +1,16 @@
+PyQt6==6.11.0
+opencv-python==4.13.0.92
+opencv-contrib-python==4.13.0.92
+numpy==2.4.6
+pandas==3.0.3
+matplotlib==3.10.9
+mediapipe==0.10.14
+Pillow==12.2.0
+pyqtgraph==0.14.0
+scipy==1.17.1
+reportlab==4.5.1
+
+# Note:
+# pyrealsense2 is not included here by default because Intel RealSense support
+# on macOS can be difficult depending on Python version and chip architecture.
+# For macOS, video-file testing is recommended first.
