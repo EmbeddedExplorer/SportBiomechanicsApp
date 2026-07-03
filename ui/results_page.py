@@ -88,10 +88,12 @@ class ResultsPage(QWidget):
 
         plots_tab.setLayout(plots_layout)
 
+        # ================= TABS =================
         self.tabs.addTab(self.summary_box, "Summary")
         self.tabs.addTab(csv_tab, "CSV Viewer")
         self.tabs.addTab(plots_tab, "Plots")
 
+        # ================= BUTTONS =================
         button_layout = QHBoxLayout()
         button_layout.setSpacing(10)
 
@@ -160,7 +162,7 @@ class ResultsPage(QWidget):
         """
         Receive session_info and build dashboard summary.
 
-        Fallback:
+        Important:
         If enhanced values are not passed through session_info,
         read them directly from CSV/lift_summary.csv.
         """
@@ -178,18 +180,23 @@ class ResultsPage(QWidget):
         else:
             self.current_session_path = None
 
+        # ------------------------------------------------------
+        # Read summary CSV directly if available.
+        # The same file is currently used by both weightlifting
+        # and sprinting because AnalysisRecorder saves lift_summary.csv.
+        # ------------------------------------------------------
         if self.current_session_path and self.current_session_path.exists():
-            lift_summary_path = self.current_session_path / "CSV" / "lift_summary.csv"
+            summary_path = self.current_session_path / "CSV" / "lift_summary.csv"
 
-            lift_summary = self.read_first_row_csv(lift_summary_path)
+            summary_row = self.read_first_row_csv(summary_path)
 
-            if lift_summary:
-                self.last_summary_data["lift_summary"] = lift_summary
+            if summary_row:
+                self.last_summary_data["lift_summary"] = summary_row
 
-                for key, value in lift_summary.items():
+                for key, value in summary_row.items():
                     if (
                         key not in self.last_summary_data
-                        or self.last_summary_data.get(key) in [None, "", "N/A"]
+                        or self.is_empty_value(self.last_summary_data.get(key))
                     ):
                         self.last_summary_data[key] = value
 
@@ -214,10 +221,10 @@ class ResultsPage(QWidget):
 
         def get_value(keys, default="N/A"):
             for key in keys:
-                if key in data and data.get(key) not in [None, "", "nan", "N/A"]:
+                if key in data and not self.is_empty_value(data.get(key)):
                     return data.get(key)
 
-                if key in lift_summary and lift_summary.get(key) not in [None, "", "nan", "N/A"]:
+                if key in lift_summary and not self.is_empty_value(lift_summary.get(key)):
                     return lift_summary.get(key)
 
             return default
@@ -226,7 +233,7 @@ class ResultsPage(QWidget):
         exercise = get_value(["exercise", "Exercise"])
         camera_view = get_value(["camera_view", "Camera View"])
         input_mode = get_value(["input_mode", "Input Mode"])
-        source_file = get_value(["source_file", "Source File"], "")
+        source_file = get_value(["source_file", "Source File", "File"], "")
 
         results_folder = self.get_data_value(
             data,
@@ -234,32 +241,23 @@ class ResultsPage(QWidget):
             "N/A"
         )
 
-        record_count = get_value(["record_count", "Record Count", "Recorded Samples"])
-        duration = get_value(["total_duration_s"])
-        detected_phase_count = get_value(["detected_phase_count"])
-        detected_phases = get_value(["detected_phases"])
-        barbell_detected_samples = get_value(["barbell_detected_samples"])
+        sport_lower = str(sport).lower()
 
-        max_height = self.best_unit_value(
-            value_m=get_value(["max_barbell_height_m"], ""),
-            value_px=get_value(["max_barbell_height_px"], ""),
-            label_m="m",
-            label_px="px"
-        )
+        if "sprint" in sport_lower:
+            key_results_html = self.build_sprinting_key_results_html(
+                get_value=get_value
+            )
+            dashboard_title = "Sprinting Analysis Session Summary"
+        else:
+            key_results_html = self.build_weightlifting_key_results_html(
+                get_value=get_value
+            )
+            dashboard_title = "Weightlifting Analysis Session Summary"
 
-        max_vertical_velocity = self.best_unit_value(
-            value_m=get_value(["max_vertical_velocity_m_s"], ""),
-            value_px=get_value(["max_vertical_velocity_px_s"], ""),
-            label_m="m/s",
-            label_px="px/s"
-        )
+        detected_phases = get_value(["detected_phases"], "")
 
-        max_horizontal_velocity = self.best_unit_value(
-            value_m=get_value(["max_horizontal_velocity_m_s"], ""),
-            value_px=get_value(["max_horizontal_velocity_px_s"], ""),
-            label_m="m/s",
-            label_px="px/s"
-        )
+        if not detected_phases:
+            detected_phases = "N/A"
 
         csv_status_html = self.build_output_status_html(
             title="Generated CSV Files",
@@ -277,20 +275,13 @@ class ResultsPage(QWidget):
 
         source_file_html = ""
 
-        if source_file and source_file != "N/A":
+        if source_file and source_file != "N/A" and source_file != "Live Source":
             source_file_html = f"""
                 <tr>
                     <td class="key">Source File</td>
                     <td class="value">{self.html_escape(source_file)}</td>
                 </tr>
             """
-
-        duration_html = self.format_optional_metric(duration, "s")
-        phase_count_html = self.format_optional_metric(detected_phase_count, "")
-        barbell_samples_html = self.format_optional_metric(barbell_detected_samples, "")
-
-        if not detected_phases:
-            detected_phases = "N/A"
 
         html_text = f"""
         <html>
@@ -369,7 +360,7 @@ class ResultsPage(QWidget):
         </head>
 
         <body>
-            <h1>Analysis Session Summary</h1>
+            <h1>{self.html_escape(dashboard_title)}</h1>
 
             <div class="section">
                 <h2>Session Information</h2>
@@ -398,8 +389,61 @@ class ResultsPage(QWidget):
                 </table>
             </div>
 
+            {key_results_html}
+
             <div class="section">
-                <h2>Key Results</h2>
+                <h2>Detected Phases</h2>
+                <div class="phasebox">{self.html_escape(detected_phases)}</div>
+            </div>
+
+            <div class="section">
+                {csv_status_html}
+            </div>
+
+            <div class="section">
+                {plot_status_html}
+            </div>
+
+        </body>
+        </html>
+        """
+
+        return html_text
+
+    def build_weightlifting_key_results_html(self, get_value):
+        record_count = get_value(["record_count", "Record Count", "Recorded Samples"])
+        duration = get_value(["total_duration_s"])
+        detected_phase_count = get_value(["detected_phase_count"])
+        barbell_detected_samples = get_value(["barbell_detected_samples"])
+
+        max_height = self.best_unit_value(
+            value_m=get_value(["max_barbell_height_m"], ""),
+            value_px=get_value(["max_barbell_height_px"], ""),
+            label_m="m",
+            label_px="px"
+        )
+
+        max_vertical_velocity = self.best_unit_value(
+            value_m=get_value(["max_vertical_velocity_m_s"], ""),
+            value_px=get_value(["max_vertical_velocity_px_s"], ""),
+            label_m="m/s",
+            label_px="px/s"
+        )
+
+        max_horizontal_velocity = self.best_unit_value(
+            value_m=get_value(["max_horizontal_velocity_m_s"], ""),
+            value_px=get_value(["max_horizontal_velocity_px_s"], ""),
+            label_m="m/s",
+            label_px="px/s"
+        )
+
+        duration_html = self.format_optional_metric(duration, "s")
+        phase_count_html = self.format_optional_metric(detected_phase_count, "")
+        barbell_samples_html = self.format_optional_metric(barbell_detected_samples, "")
+
+        return f"""
+            <div class="section">
+                <h2>Key Weightlifting Results</h2>
                 <table>
                     <tr>
                         <td class="key">Total Samples</td>
@@ -431,25 +475,48 @@ class ResultsPage(QWidget):
                     </tr>
                 </table>
             </div>
-
-            <div class="section">
-                <h2>Detected Phases</h2>
-                <div class="phasebox">{self.html_escape(detected_phases)}</div>
-            </div>
-
-            <div class="section">
-                {csv_status_html}
-            </div>
-
-            <div class="section">
-                {plot_status_html}
-            </div>
-
-        </body>
-        </html>
         """
 
-        return html_text
+    def build_sprinting_key_results_html(self, get_value):
+        record_count = get_value(["record_count", "Record Count", "Recorded Samples"])
+        duration = get_value(["total_duration_s"])
+        detected_phase_count = get_value(["detected_phase_count"])
+
+        mean_athlete_depth = get_value(["mean_athlete_depth_m"], "")
+        mean_center_depth = get_value(["mean_center_depth_m"], "")
+
+        duration_html = self.format_optional_metric(duration, "s")
+        phase_count_html = self.format_optional_metric(detected_phase_count, "")
+        mean_athlete_depth_html = self.format_optional_metric(mean_athlete_depth, "m")
+        mean_center_depth_html = self.format_optional_metric(mean_center_depth, "m")
+
+        return f"""
+            <div class="section">
+                <h2>Key Sprinting Results</h2>
+                <table>
+                    <tr>
+                        <td class="key">Total Samples</td>
+                        <td class="value">{self.html_escape(record_count)}</td>
+                    </tr>
+                    <tr>
+                        <td class="key">Total Duration</td>
+                        <td class="value">{duration_html}</td>
+                    </tr>
+                    <tr>
+                        <td class="key">Detected Phase Count</td>
+                        <td class="value">{phase_count_html}</td>
+                    </tr>
+                    <tr>
+                        <td class="key">Mean Athlete Depth</td>
+                        <td class="value">{mean_athlete_depth_html}</td>
+                    </tr>
+                    <tr>
+                        <td class="key">Mean Center Depth</td>
+                        <td class="value">{mean_center_depth_html}</td>
+                    </tr>
+                </table>
+            </div>
+        """
 
     def build_output_status_html(self, title, output_dict, fallback_folder=None, extension="*"):
         rows = []
@@ -510,6 +577,23 @@ class ResultsPage(QWidget):
 
         return default
 
+    def is_empty_value(self, value):
+        if value is None:
+            return True
+
+        try:
+            if pd.isna(value):
+                return True
+        except Exception:
+            pass
+
+        text = str(value).strip()
+
+        if text in ["", "nan", "NaN", "N/A", "None"]:
+            return True
+
+        return False
+
     def html_escape(self, value):
         if value is None:
             return ""
@@ -524,7 +608,7 @@ class ResultsPage(QWidget):
         return text.title()
 
     def format_optional_metric(self, value, unit=""):
-        if value is None or value == "":
+        if self.is_empty_value(value):
             return "N/A"
 
         try:
@@ -542,13 +626,13 @@ class ResultsPage(QWidget):
             return self.html_escape(value)
 
     def best_unit_value(self, value_m, value_px, label_m="m", label_px="px"):
-        if value_m not in [None, ""]:
+        if not self.is_empty_value(value_m):
             try:
                 return f"{float(value_m):.4f} {label_m}"
             except Exception:
                 return f"{value_m} {label_m}"
 
-        if value_px not in [None, ""]:
+        if not self.is_empty_value(value_px):
             try:
                 return f"{float(value_px):.2f} {label_px}"
             except Exception:

@@ -1,4 +1,7 @@
 import time
+from pathlib import Path
+
+import pandas as pd
 
 from PyQt6.QtWidgets import (
     QApplication,
@@ -149,6 +152,9 @@ class SprintingPage(QWidget):
 
         self.apply_styles()
 
+    # ==========================================================
+    # FILE DIALOG
+    # ==========================================================
     def open_file_dialog_non_native(self, title, file_filter):
         dialog = QFileDialog(self)
         dialog.setWindowTitle(title)
@@ -164,6 +170,9 @@ class SprintingPage(QWidget):
 
         return ""
 
+    # ==========================================================
+    # METRICS UI
+    # ==========================================================
     def create_metrics_group(self):
         metrics_group = QGroupBox("Live Biomechanics Metrics")
         metrics_group.setSizePolicy(
@@ -213,6 +222,9 @@ class SprintingPage(QWidget):
 
         return metrics_group
 
+    # ==========================================================
+    # INPUT SOURCE
+    # ==========================================================
     def select_input_file(self):
         if self.is_recording:
             QMessageBox.warning(
@@ -278,6 +290,9 @@ class SprintingPage(QWidget):
 
         return "Side-view Video File"
 
+    # ==========================================================
+    # PREVIEW CONTROL
+    # ==========================================================
     def start_preview(self):
         if self.is_recording:
             QMessageBox.warning(
@@ -344,7 +359,9 @@ class SprintingPage(QWidget):
                 thread.wait(100)
 
             if thread.isRunning():
-                self.status_label.setText("Status: Previous preview is still closing. Please wait.")
+                self.status_label.setText(
+                    "Status: Previous preview is still closing. Please wait."
+                )
                 return False
 
             self.video_thread = None
@@ -359,6 +376,9 @@ class SprintingPage(QWidget):
 
         return True
 
+    # ==========================================================
+    # LIVE DISPLAY
+    # ==========================================================
     def update_video_frame(self, q_img):
         pixmap = QPixmap.fromImage(q_img)
 
@@ -415,6 +435,9 @@ class SprintingPage(QWidget):
         except Exception:
             return str(value)
 
+    # ==========================================================
+    # ANALYSIS RECORDING
+    # ==========================================================
     def start_analysis_recording(self):
         source_type = self.get_source_type()
 
@@ -487,17 +510,204 @@ class SprintingPage(QWidget):
 
         self._stop_preview_internal(reset_metrics=False)
 
-        session_info = {
-            "sport": "Sprinting",
-            "exercise": "Sprinting",
-            "input_mode": self.get_input_mode(),
-            "source_file": self.selected_file,
-            "results_folder": str(self.current_session_path),
-            "record_count": output_info.get("record_count", 0)
-        }
+        session_info = self.build_enhanced_session_info(output_info)
 
         self.on_start_analysis(session_info)
 
+    # ==========================================================
+    # ENHANCED SESSION INFO FOR RESULTS DASHBOARD
+    # ==========================================================
+    def safe_csv_value(self, value):
+        try:
+            if pd.isna(value):
+                return ""
+        except Exception:
+            pass
+
+        try:
+            if hasattr(value, "item"):
+                return value.item()
+        except Exception:
+            pass
+
+        return value
+
+    def read_first_row_csv(self, csv_path):
+        csv_path = Path(csv_path)
+
+        if not csv_path.exists():
+            return {}
+
+        try:
+            df = pd.read_csv(csv_path)
+
+            if df.empty:
+                return {}
+
+            row = df.iloc[0].to_dict()
+            clean_row = {}
+
+            for key, value in row.items():
+                clean_row[key] = self.safe_csv_value(value)
+
+            return clean_row
+
+        except Exception:
+            return {}
+
+    def existing_file_path(self, *path_parts):
+        if self.current_session_path is None:
+            return ""
+
+        file_path = Path(self.current_session_path)
+
+        for part in path_parts:
+            file_path = file_path / part
+
+        if file_path.exists():
+            return str(file_path)
+
+        return ""
+
+    def build_phase_list_from_csv(self, csv_path):
+        csv_path = Path(csv_path)
+
+        if not csv_path.exists():
+            return ""
+
+        try:
+            df = pd.read_csv(csv_path)
+
+            if df.empty:
+                return ""
+
+            possible_phase_columns = [
+                "phase",
+                "Phase",
+                "phase_name",
+                "Phase Name"
+            ]
+
+            phase_column = None
+
+            for column in possible_phase_columns:
+                if column in df.columns:
+                    phase_column = column
+                    break
+
+            if phase_column is None:
+                return ""
+
+            phases = []
+
+            for value in df[phase_column].dropna().tolist():
+                value = str(value).strip()
+
+                if value and value not in phases and value != "Not Detected":
+                    phases.append(value)
+
+            return ", ".join(phases)
+
+        except Exception:
+            return ""
+
+    def build_enhanced_session_info(self, output_info):
+        if output_info is None:
+            output_info = {}
+
+        session_path = Path(
+            output_info.get("session_path")
+            or self.current_session_path
+            or ""
+        )
+
+        self.current_session_path = session_path
+
+        csv_folder = session_path / "CSV"
+        plots_folder = session_path / "Plots"
+        reports_folder = session_path / "Reports"
+
+        lift_summary_path = csv_folder / "lift_summary.csv"
+        phase_summary_path = csv_folder / "phase_summary.csv"
+        phase_biomechanics_path = csv_folder / "phase_biomechanics_summary.csv"
+        analysis_summary_path = csv_folder / "analysis_summary.csv"
+        joint_angles_path = csv_folder / "joint_angles_2d.csv"
+        depth_data_path = csv_folder / "depth_data.csv"
+        barbell_trajectory_path = csv_folder / "barbell_trajectory.csv"
+
+        lift_summary = self.read_first_row_csv(lift_summary_path)
+
+        detected_phases = lift_summary.get("detected_phases", "")
+
+        if not detected_phases:
+            detected_phases = self.build_phase_list_from_csv(phase_summary_path)
+
+        csv_files = {
+            "sprint_summary": str(lift_summary_path) if lift_summary_path.exists() else "",
+            "phase_biomechanics_summary": str(phase_biomechanics_path) if phase_biomechanics_path.exists() else "",
+            "phase_summary": str(phase_summary_path) if phase_summary_path.exists() else "",
+            "analysis_summary": str(analysis_summary_path) if analysis_summary_path.exists() else "",
+            "joint_angles_2d": str(joint_angles_path) if joint_angles_path.exists() else "",
+            "depth_data": str(depth_data_path) if depth_data_path.exists() else "",
+            "trajectory_data": str(barbell_trajectory_path) if barbell_trajectory_path.exists() else ""
+        }
+
+        plot_files = {}
+
+        if plots_folder.exists():
+            for plot_path in sorted(plots_folder.glob("*.png")):
+                plot_files[plot_path.stem] = str(plot_path)
+
+        record_count = (
+            output_info.get("record_count")
+            or lift_summary.get("record_count")
+            or 0
+        )
+
+        session_info = {
+            "sport": "Sprinting",
+            "exercise": "Sprinting",
+            "camera_view": "Side View",
+            "input_mode": self.get_input_mode(),
+            "source_file": self.selected_file,
+            "results_folder": str(session_path),
+            "session_path": str(session_path),
+            "csv_folder": str(csv_folder),
+            "plots_folder": str(plots_folder),
+            "reports_folder": str(reports_folder),
+            "record_count": record_count,
+            "csv_file": output_info.get("csv_file", str(joint_angles_path)),
+            "csv_files": csv_files,
+            "plot_files": plot_files,
+
+            # Keep this key because ResultsPage already reads lift_summary.csv.
+            "lift_summary": lift_summary,
+
+            # Sprinting-specific dashboard values.
+            "total_duration_s": lift_summary.get("total_duration_s", ""),
+            "detected_phase_count": lift_summary.get("detected_phase_count", ""),
+            "detected_phases": detected_phases,
+
+            # Depth-related values are useful for RealSense sprinting analysis.
+            "mean_athlete_depth_m": lift_summary.get("mean_athlete_depth_m", ""),
+            "mean_center_depth_m": lift_summary.get("mean_center_depth_m", ""),
+
+            # Barbell fields are intentionally left empty for sprinting.
+            # ResultsPage will show N/A for these unless later customized for sprinting.
+            "barbell_detected_samples": lift_summary.get("barbell_detected_samples", ""),
+            "max_barbell_height_px": lift_summary.get("max_barbell_height_px", ""),
+            "max_barbell_height_m": lift_summary.get("max_barbell_height_m", ""),
+            "max_vertical_velocity_px_s": lift_summary.get("max_vertical_velocity_px_s", ""),
+            "max_vertical_velocity_m_s": lift_summary.get("max_vertical_velocity_m_s", ""),
+            "max_horizontal_velocity_px_s": lift_summary.get("max_horizontal_velocity_px_s", ""),
+            "max_horizontal_velocity_m_s": lift_summary.get("max_horizontal_velocity_m_s", "")
+        }
+
+        return session_info
+
+    # ==========================================================
+    # NAVIGATION
+    # ==========================================================
     def go_back(self):
         if self.is_recording:
             QMessageBox.warning(
@@ -514,6 +724,9 @@ class SprintingPage(QWidget):
         self._stop_preview_internal(reset_metrics=True)
         event.accept()
 
+    # ==========================================================
+    # STYLES
+    # ==========================================================
     def apply_styles(self):
         self.setStyleSheet("""
             QWidget {

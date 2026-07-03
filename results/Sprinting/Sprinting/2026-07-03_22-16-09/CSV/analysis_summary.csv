@@ -1,0 +1,12 @@
+metric,mean,min,max,valid_samples
+left_hip_angle_deg,107.753,49.9,178.91,134
+right_hip_angle_deg,115.348,64.1,177.63,134
+left_knee_angle_deg,132.243,10.01,179.73,134
+right_knee_angle_deg,124.098,12.53,178.18,134
+left_ankle_angle_deg,141.274,14.35,179.79,134
+right_ankle_angle_deg,145.659,10.44,179.81,134
+left_shoulder_angle_deg,60.98,34.7,86.79,23
+right_shoulder_angle_deg,60.71,2.17,114.1,134
+left_elbow_angle_deg,152.176,129.13,179.1,14
+right_elbow_angle_deg,152.986,17.46,179.82,131
+trunk_lean_angle_deg,23.604,1.93,40.77,134
