@@ -1,3 +1,4 @@
+from importlib.metadata import metadata
 from pathlib import Path
 from datetime import datetime
 import time
@@ -307,6 +308,15 @@ class AnalysisRecorder:
         return None
 
     def plot_group(self, df, plots_folder, columns, title, ylabel, filename, shade_phases=False):
+        """
+        Plot angle/velocity groups with display-only smoothing.
+
+        Important:
+        - CSV data is NOT changed.
+        - Only the plotted curves are smoothed.
+        - This improves noisy MediaPipe/velocity plots without affecting raw exported data.
+        """
+
         valid_columns = []
 
         for col in columns:
@@ -319,10 +329,57 @@ class AnalysisRecorder:
         if not valid_columns:
             return
 
-        fig, ax = plt.subplots(figsize=(9, 5))
+        fig, ax = plt.subplots(figsize=(10.5, 5.6))
+
+        def smooth_for_display(series, column_name):
+            """
+            Smooth only for plotting.
+
+            Velocity signals are usually noisier because they are calculated from
+            frame-to-frame displacement, so we use a slightly stronger smoothing
+            window for velocity columns.
+            """
+
+            series = pd.to_numeric(series, errors="coerce")
+
+            valid_count = series.notna().sum()
+
+            if valid_count < 5:
+                return series
+
+            column_name_lower = column_name.lower()
+
+            if "velocity" in column_name_lower:
+                window = 11
+            else:
+                window = 7
+
+            # First pass: rolling median reduces sudden MediaPipe/tracking spikes.
+            median_series = series.rolling(
+                window=window,
+                center=True,
+                min_periods=1
+            ).median()
+
+            # Second pass: rolling mean gives smoother curve shape.
+            smooth_series = median_series.rolling(
+                window=window,
+                center=True,
+                min_periods=1
+            ).mean()
+
+            return smooth_series
 
         for col in valid_columns:
-            ax.plot(df["time_s"], pd.to_numeric(df[col], errors="coerce"), label=col)
+            raw_series = pd.to_numeric(df[col], errors="coerce")
+            plot_series = smooth_for_display(raw_series, col)
+
+            ax.plot(
+                df["time_s"],
+                plot_series,
+                linewidth=1.8,
+                label=col
+            )
 
         if shade_phases:
             self.add_phase_shading(ax, df)
@@ -330,15 +387,65 @@ class AnalysisRecorder:
         ax.set_xlabel("Time (s)")
         ax.set_ylabel(ylabel)
         ax.set_title(title)
-        ax.grid(True)
-        ax.legend()
+        ax.grid(True, alpha=0.35)
+
+        # Keep the legend readable and away from the crowded phase labels.
+        ax.legend(
+            loc="best",
+            fontsize=8,
+            framealpha=0.85
+        )
+
         fig.tight_layout()
         fig.savefig(plots_folder / filename, dpi=300)
         plt.close(fig)
-
     def add_phase_shading(self, ax, df):
+        """
+        Add phase shading with cleaner, shorter, staggered labels.
+
+        Fixes:
+        - Overlapping phase labels at the top of plots
+        - Long labels such as "Overhead Squat Phase"
+        - Crowded labels in angle and velocity plots
+        """
+
         if "phase" not in df.columns or df.empty:
             return
+
+        phase_label_map = {
+            "Setup": "Setup",
+            "Deadlift Phase": "Deadlift",
+            "Jump Phase": "Jump",
+            "Catch Phase": "Catch",
+            "Overhead Squat Phase": "OHS",
+            "Squat Phase": "Squat",
+            "Jerk Phase": "Jerk",
+
+            "Initial Contact": "Contact",
+            "Support Phase": "Support",
+            "Toe-Off": "Toe-Off",
+            "Flight / Swing": "Swing",
+
+            "Not Detected": "N/D",
+            "Unknown": "Unknown"
+        }
+
+        phase_colors = {
+            "Deadlift Phase": "#1f77b4",
+            "Jump Phase": "#ff7f0e",
+            "Catch Phase": "#2ca02c",
+            "Overhead Squat Phase": "#9467bd",
+            "Squat Phase": "#d62728",
+            "Jerk Phase": "#17becf",
+
+            "Initial Contact": "#1f77b4",
+            "Support Phase": "#ff7f0e",
+            "Toe-Off": "#2ca02c",
+            "Flight / Swing": "#9467bd",
+
+            "Setup": "#808080",
+            "Unknown": "#aaaaaa"
+        }
 
         phase_segments = []
         current_phase = None
@@ -348,6 +455,9 @@ class AnalysisRecorder:
         for _, row in df.iterrows():
             phase = row["phase"]
             time_s = row["time_s"]
+
+            if pd.isna(phase) or pd.isna(time_s):
+                continue
 
             if phase != current_phase:
                 if current_phase is not None:
@@ -361,32 +471,76 @@ class AnalysisRecorder:
         if current_phase is not None:
             phase_segments.append((current_phase, start_time, last_time))
 
-        _, y_max = ax.get_ylim()
+        if not phase_segments:
+            return
+
+        # Use x-axis/data coordinates and y-axis fractional coordinates.
+        # This keeps labels at the top without changing y-axis limits.
+        xaxis_transform = ax.get_xaxis_transform()
+
+        label_levels = [0.98, 0.90, 0.82]
+        label_index = 0
 
         for phase, start, end in phase_segments:
             if phase in EXCLUDED_PLOT_PHASES:
                 continue
 
-            ax.axvspan(start, end, alpha=0.08)
+            if start is None or end is None:
+                continue
 
-            midpoint = (start + end) / 2
+            duration = end - start
+
+            if duration <= 0:
+                continue
+
+            color = phase_colors.get(phase, "#808080")
+
+            ax.axvspan(
+                start,
+                end,
+                alpha=0.08,
+                color=color
+            )
+
+            # Skip labels for very short segments to avoid clutter.
+            # The shading is still shown.
+            if duration < 0.35:
+                continue
+
+            short_label = phase_label_map.get(phase, phase)
+            midpoint = (start + end) / 2.0
+            y_level = label_levels[label_index % len(label_levels)]
 
             ax.text(
                 midpoint,
-                y_max,
-                phase,
-                rotation=90,
+                y_level,
+                short_label,
+                transform=xaxis_transform,
+                rotation=0,
                 verticalalignment="top",
                 horizontalalignment="center",
-                fontsize=7
+                fontsize=7,
+                color="black",
+                bbox=dict(
+                    boxstyle="round,pad=0.18",
+                    facecolor="white",
+                    edgecolor="none",
+                    alpha=0.65
+                )
             )
 
+            label_index += 1
+
     def save_barbell_trajectory_plot(self, df, plots_folder):
+        
         use_meters = False
 
         x_col = None
         y_col = None
 
+        # ------------------------------------------------------
+        # Prefer meter-based displacement if available
+        # ------------------------------------------------------
         if (
             "barbell_horizontal_displacement_m" in df.columns
             and "barbell_vertical_displacement_m" in df.columns
@@ -417,29 +571,162 @@ class AnalysisRecorder:
 
         plot_df = plot_df.dropna(subset=[x_col, y_col])
 
-        if plot_df.empty:
+        if len(plot_df) < 2:
             return
+
+        # ------------------------------------------------------
+        # Remove phases that should not appear in trajectory plot
+        # only if this still leaves enough valid points.
+        # ------------------------------------------------------
+        if "phase" in plot_df.columns:
+            filtered_df = plot_df[~plot_df["phase"].isin(EXCLUDED_PLOT_PHASES)].copy()
+
+            if len(filtered_df) >= 2:
+                plot_df = filtered_df
+
+        # ------------------------------------------------------
+        # Smooth trajectory for cleaner research-style output
+        # ------------------------------------------------------
+        smooth_window = 7
+
+        if len(plot_df) >= smooth_window:
+            plot_df["trajectory_x_smooth"] = (
+                plot_df[x_col]
+                .rolling(window=smooth_window, center=True, min_periods=1)
+                .mean()
+            )
+
+            plot_df["trajectory_y_smooth"] = (
+                plot_df[y_col]
+                .rolling(window=smooth_window, center=True, min_periods=1)
+                .mean()
+            )
+        else:
+            plot_df["trajectory_x_smooth"] = plot_df[x_col]
+            plot_df["trajectory_y_smooth"] = plot_df[y_col]
 
         unit = "m" if use_meters else "px"
 
-        fig, ax = plt.subplots(figsize=(3.6, 7.2))
+        # ------------------------------------------------------
+        # Axis scaling helper
+        # ------------------------------------------------------
+        def apply_trajectory_axis_scaling(ax, data):
+            """
+            Make trajectory plots less vertically stretched by expanding
+            the x-axis range while keeping vertical displacement readable.
+            """
 
-        ax.plot(
-            plot_df[x_col],
-            plot_df[y_col],
-            linewidth=2,
-            label="Barbell path"
-        )
+            x_values = pd.to_numeric(
+                data["trajectory_x_smooth"],
+                errors="coerce"
+            ).dropna()
 
+            y_values = pd.to_numeric(
+                data["trajectory_y_smooth"],
+                errors="coerce"
+            ).dropna()
+
+            if x_values.empty or y_values.empty:
+                return
+
+            x_min = float(x_values.min())
+            x_max = float(x_values.max())
+            y_min = float(y_values.min())
+            y_max = float(y_values.max())
+
+            x_range = max(x_max - x_min, 1e-6)
+            y_range = max(y_max - y_min, 1e-6)
+
+            # Include the start reference line at x = 0.
+            visible_x_min = min(x_min, 0.0)
+            visible_x_max = max(x_max, 0.0)
+
+            visible_x_range = max(visible_x_max - visible_x_min, 1e-6)
+
+            # Main correction:
+            # Expand x-axis relative to y-axis so the trajectory does not
+            # look like an overly tall/narrow curve.
+            desired_x_range = max(
+                visible_x_range * 1.35,
+                y_range * 0.35
+            )
+
+            x_center = (visible_x_min + visible_x_max) / 2.0
+
+            x_margin_min = x_center - desired_x_range / 2.0
+            x_margin_max = x_center + desired_x_range / 2.0
+
+            if use_meters:
+                y_margin = max(y_range * 0.05, 0.02)
+            else:
+                y_margin = max(y_range * 0.05, 5.0)
+
+            ax.set_xlim(x_margin_min, x_margin_max)
+            ax.set_ylim(y_min - y_margin, y_max + y_margin)
+
+        # ------------------------------------------------------
+        # Important trajectory points
+        # ------------------------------------------------------
         start = plot_df.iloc[0]
         end = plot_df.iloc[-1]
 
-        max_idx = plot_df[y_col].idxmax()
+        max_idx = plot_df["trajectory_y_smooth"].idxmax()
         max_point = plot_df.loc[max_idx]
 
-        ax.scatter(start[x_col], start[y_col], s=35, label="Start")
-        ax.scatter(max_point[x_col], max_point[y_col], s=35, label="Max height")
-        ax.scatter(end[x_col], end[y_col], s=35, label="End")
+        # ------------------------------------------------------
+        # Phase colors
+        # ------------------------------------------------------
+        phase_colors = {
+            "Deadlift Phase": "#1f77b4",
+            "Jump Phase": "#ff7f0e",
+            "Catch Phase": "#2ca02c",
+            "Overhead Squat Phase": "#9467bd",
+
+            "Squat Phase": "#d62728",
+            "Jerk Phase": "#17becf",
+
+            "Initial Contact": "#1f77b4",
+            "Support Phase": "#ff7f0e",
+            "Toe-Off": "#2ca02c",
+            "Flight / Swing": "#9467bd",
+
+            "Unknown": "#444444",
+        }
+
+        # ======================================================
+        # Plot 1: Annotated trajectory
+        # ======================================================
+        fig, ax = plt.subplots(figsize=(6.2, 6.8))
+
+        ax.plot(
+            plot_df["trajectory_x_smooth"],
+            plot_df["trajectory_y_smooth"],
+            linewidth=2.5,
+            label="Smoothed barbell path"
+        )
+
+        ax.scatter(
+            start["trajectory_x_smooth"],
+            start["trajectory_y_smooth"],
+            s=45,
+            label="Start"
+        )
+
+        ax.scatter(
+            max_point["trajectory_x_smooth"],
+            max_point["trajectory_y_smooth"],
+            s=55,
+            marker="^",
+            label="Max height"
+        )
+
+        ax.scatter(
+            end["trajectory_x_smooth"],
+            end["trajectory_y_smooth"],
+            s=45,
+            marker="X",
+            label="End"
+        )
 
         ax.axvline(
             0,
@@ -451,29 +738,34 @@ class AnalysisRecorder:
 
         ax.annotate(
             "Start",
-            (start[x_col], start[y_col]),
+            (start["trajectory_x_smooth"], start["trajectory_y_smooth"]),
             textcoords="offset points",
-            xytext=(5, 5),
+            xytext=(6, 6),
             fontsize=8
         )
 
         ax.annotate(
             "Max Height",
-            (max_point[x_col], max_point[y_col]),
+            (max_point["trajectory_x_smooth"], max_point["trajectory_y_smooth"]),
             textcoords="offset points",
-            xytext=(5, 5),
+            xytext=(6, 6),
             fontsize=8
         )
 
         ax.annotate(
             "End",
-            (end[x_col], end[y_col]),
+            (end["trajectory_x_smooth"], end["trajectory_y_smooth"]),
             textcoords="offset points",
-            xytext=(5, 5),
+            xytext=(6, 6),
             fontsize=8
         )
 
-        self.annotate_phase_points(ax, plot_df, x_col, y_col)
+        self.annotate_phase_points(
+            ax=ax,
+            plot_df=plot_df,
+            x_col="trajectory_x_smooth",
+            y_col="trajectory_y_smooth"
+        )
 
         ax.set_xlabel(f"Horizontal Displacement ({unit})")
         ax.set_ylabel(f"Vertical Displacement ({unit})")
@@ -483,12 +775,390 @@ class AnalysisRecorder:
         else:
             ax.set_title("Barbell Trajectory Plot (in pixels)")
 
-        ax.grid(True)
+        apply_trajectory_axis_scaling(ax, plot_df)
+
+        ax.grid(True, alpha=0.3)
+        ax.legend(fontsize=7)
+
+        fig.tight_layout()
+
+        fig.savefig(plots_folder / "barbell_trajectory_annotated.png", dpi=300)
+        fig.savefig(plots_folder / "barbell_trajectory_powerpoint_style.png", dpi=300)
+
+        plt.close(fig)
+
+        # ======================================================
+        # Plot 2: Phase-highlighted trajectory
+        # ======================================================
+        if "phase" not in plot_df.columns:
+            return
+
+        phase_df = plot_df.copy()
+        phase_df["phase"] = phase_df["phase"].fillna("Unknown")
+
+        fig, ax = plt.subplots(figsize=(6.4, 6.8))
+
+        start_index = 0
+        phases = phase_df["phase"].tolist()
+        used_labels = set()
+
+        for i in range(1, len(phase_df)):
+            current_phase = phases[i]
+            previous_phase = phases[i - 1]
+
+            if current_phase != previous_phase:
+                segment = phase_df.iloc[start_index:i]
+                phase_name = previous_phase
+
+                if len(segment) >= 2:
+                    color = phase_colors.get(phase_name, "#444444")
+                    label = phase_name if phase_name not in used_labels else None
+
+                    ax.plot(
+                        segment["trajectory_x_smooth"],
+                        segment["trajectory_y_smooth"],
+                        linewidth=2.7,
+                        color=color,
+                        label=label
+                    )
+
+                    used_labels.add(phase_name)
+
+                start_index = i
+
+        # Last phase segment
+        segment = phase_df.iloc[start_index:]
+        phase_name = phases[-1]
+
+        if len(segment) >= 2:
+            color = phase_colors.get(phase_name, "#444444")
+            label = phase_name if phase_name not in used_labels else None
+
+            ax.plot(
+                segment["trajectory_x_smooth"],
+                segment["trajectory_y_smooth"],
+                linewidth=2.7,
+                color=color,
+                label=label
+            )
+
+            used_labels.add(phase_name)
+
+        ax.scatter(
+            start["trajectory_x_smooth"],
+            start["trajectory_y_smooth"],
+            s=45,
+            color="black",
+            label="Start"
+        )
+
+        ax.scatter(
+            max_point["trajectory_x_smooth"],
+            max_point["trajectory_y_smooth"],
+            s=60,
+            color="black",
+            marker="^",
+            label="Max height"
+        )
+
+        ax.scatter(
+            end["trajectory_x_smooth"],
+            end["trajectory_y_smooth"],
+            s=45,
+            color="black",
+            marker="X",
+            label="End"
+        )
+
+        ax.axvline(
+            0,
+            linestyle="--",
+            linewidth=1.5,
+            color="red",
+            label="Start reference"
+        )
+
+        ax.annotate(
+            "Max Height",
+            (max_point["trajectory_x_smooth"], max_point["trajectory_y_smooth"]),
+            textcoords="offset points",
+            xytext=(6, 6),
+            fontsize=8
+        )
+
+        ax.set_xlabel(f"Horizontal Displacement ({unit})")
+        ax.set_ylabel(f"Vertical Displacement ({unit})")
+        ax.set_title("Phase-Highlighted Barbell Trajectory")
+
+        apply_trajectory_axis_scaling(ax, phase_df)
+
+        ax.grid(True, alpha=0.3)
+        ax.legend(fontsize=7)
+
+        fig.tight_layout()
+        fig.savefig(plots_folder / "barbell_trajectory_phase_highlighted.png", dpi=300)
+
+        plt.close(fig)
+
+        # ------------------------------------------------------
+        # Remove phases that should not appear in trajectory plot
+        # only if this still leaves enough valid points.
+        # ------------------------------------------------------
+        if "phase" in plot_df.columns:
+            filtered_df = plot_df[~plot_df["phase"].isin(EXCLUDED_PLOT_PHASES)].copy()
+
+            if len(filtered_df) >= 2:
+                plot_df = filtered_df
+
+        # ------------------------------------------------------
+        # Smooth trajectory for cleaner research-style output
+        # ------------------------------------------------------
+        smooth_window = 7
+
+        if len(plot_df) >= smooth_window:
+            plot_df["trajectory_x_smooth"] = (
+                plot_df[x_col]
+                .rolling(window=smooth_window, center=True, min_periods=1)
+                .mean()
+            )
+
+            plot_df["trajectory_y_smooth"] = (
+                plot_df[y_col]
+                .rolling(window=smooth_window, center=True, min_periods=1)
+                .mean()
+            )
+        else:
+            plot_df["trajectory_x_smooth"] = plot_df[x_col]
+            plot_df["trajectory_y_smooth"] = plot_df[y_col]
+
+        unit = "m" if use_meters else "px"
+
+        # ------------------------------------------------------
+        # Important points
+        # ------------------------------------------------------
+        start = plot_df.iloc[0]
+        end = plot_df.iloc[-1]
+
+        max_idx = plot_df["trajectory_y_smooth"].idxmax()
+        max_point = plot_df.loc[max_idx]
+
+        # ------------------------------------------------------
+        # Phase color map
+        # ------------------------------------------------------
+        phase_colors = {
+            "Deadlift Phase": "#1f77b4",
+            "Jump Phase": "#ff7f0e",
+            "Catch Phase": "#2ca02c",
+            "Overhead Squat Phase": "#9467bd",
+            "Squat Phase": "#d62728",
+            "Jerk Phase": "#17becf",
+            "Initial Contact": "#1f77b4",
+            "Support Phase": "#ff7f0e",
+            "Toe-Off": "#2ca02c",
+            "Flight / Swing": "#9467bd",
+            "Unknown": "#444444",
+        }
+
+        # ======================================================
+        # Plot 1: Annotated research-style trajectory
+        # ======================================================
+        fig, ax = plt.subplots(figsize=(4.2, 7.2))
+
+        ax.plot(
+            plot_df["trajectory_x_smooth"],
+            plot_df["trajectory_y_smooth"],
+            linewidth=2.5,
+            label="Smoothed barbell path"
+        )
+
+        ax.scatter(
+            start["trajectory_x_smooth"],
+            start["trajectory_y_smooth"],
+            s=45,
+            label="Start"
+        )
+
+        ax.scatter(
+            max_point["trajectory_x_smooth"],
+            max_point["trajectory_y_smooth"],
+            s=55,
+            marker="^",
+            label="Max height"
+        )
+
+        ax.scatter(
+            end["trajectory_x_smooth"],
+            end["trajectory_y_smooth"],
+            s=45,
+            marker="X",
+            label="End"
+        )
+
+        ax.axvline(
+            0,
+            linestyle="--",
+            linewidth=1.5,
+            color="red",
+            label="Start reference"
+        )
+
+        ax.annotate(
+            "Start",
+            (start["trajectory_x_smooth"], start["trajectory_y_smooth"]),
+            textcoords="offset points",
+            xytext=(6, 6),
+            fontsize=8
+        )
+
+        ax.annotate(
+            "Max Height",
+            (max_point["trajectory_x_smooth"], max_point["trajectory_y_smooth"]),
+            textcoords="offset points",
+            xytext=(6, 6),
+            fontsize=8
+        )
+
+        ax.annotate(
+            "End",
+            (end["trajectory_x_smooth"], end["trajectory_y_smooth"]),
+            textcoords="offset points",
+            xytext=(6, 6),
+            fontsize=8
+        )
+
+        self.annotate_phase_points(
+            ax=ax,
+            plot_df=plot_df,
+            x_col="trajectory_x_smooth",
+            y_col="trajectory_y_smooth"
+        )
+
+        ax.set_xlabel(f"Horizontal Displacement ({unit})")
+        ax.set_ylabel(f"Vertical Displacement ({unit})")
+
+        if use_meters:
+            ax.set_title("Barbell Trajectory Plot (in meters)")
+        else:
+            ax.set_title("Barbell Trajectory Plot (in pixels)")
+
+        ax.grid(True, alpha=0.3)
         ax.legend(fontsize=7)
         fig.tight_layout()
 
         fig.savefig(plots_folder / "barbell_trajectory_annotated.png", dpi=300)
         fig.savefig(plots_folder / "barbell_trajectory_powerpoint_style.png", dpi=300)
+
+        plt.close(fig)
+
+        # ======================================================
+        # Plot 2: Phase-highlighted trajectory
+        # ======================================================
+        if "phase" not in plot_df.columns:
+            return
+
+        phase_df = plot_df.copy()
+        phase_df["phase"] = phase_df["phase"].fillna("Unknown")
+
+        fig, ax = plt.subplots(figsize=(4.6, 7.2))
+
+        previous_phase = None
+        start_index = 0
+        phases = phase_df["phase"].tolist()
+
+        used_labels = set()
+
+        for i in range(1, len(phase_df)):
+            current_phase = phases[i]
+            previous = phases[i - 1]
+
+            if current_phase != previous:
+                segment = phase_df.iloc[start_index:i]
+                phase_name = previous
+
+                if len(segment) >= 2:
+                    color = phase_colors.get(phase_name, "#444444")
+                    label = phase_name if phase_name not in used_labels else None
+
+                    ax.plot(
+                        segment["trajectory_x_smooth"],
+                        segment["trajectory_y_smooth"],
+                        linewidth=2.7,
+                        color=color,
+                        label=label
+                    )
+
+                    used_labels.add(phase_name)
+
+                start_index = i
+
+        # Last phase segment
+        segment = phase_df.iloc[start_index:]
+        phase_name = phases[-1]
+
+        if len(segment) >= 2:
+            color = phase_colors.get(phase_name, "#444444")
+            label = phase_name if phase_name not in used_labels else None
+
+            ax.plot(
+                segment["trajectory_x_smooth"],
+                segment["trajectory_y_smooth"],
+                linewidth=2.7,
+                color=color,
+                label=label
+            )
+
+            used_labels.add(phase_name)
+
+        ax.scatter(
+            start["trajectory_x_smooth"],
+            start["trajectory_y_smooth"],
+            s=45,
+            color="black",
+            label="Start"
+        )
+
+        ax.scatter(
+            max_point["trajectory_x_smooth"],
+            max_point["trajectory_y_smooth"],
+            s=60,
+            color="black",
+            marker="^",
+            label="Max height"
+        )
+
+        ax.scatter(
+            end["trajectory_x_smooth"],
+            end["trajectory_y_smooth"],
+            s=45,
+            color="black",
+            marker="X",
+            label="End"
+        )
+
+        ax.axvline(
+            0,
+            linestyle="--",
+            linewidth=1.5,
+            color="red",
+            label="Start reference"
+        )
+
+        ax.annotate(
+            "Max Height",
+            (max_point["trajectory_x_smooth"], max_point["trajectory_y_smooth"]),
+            textcoords="offset points",
+            xytext=(6, 6),
+            fontsize=8
+        )
+
+        ax.set_xlabel(f"Horizontal Displacement ({unit})")
+        ax.set_ylabel(f"Vertical Displacement ({unit})")
+        ax.set_title("Phase-Highlighted Barbell Trajectory")
+        ax.grid(True, alpha=0.3)
+        ax.legend(fontsize=7)
+
+        fig.tight_layout()
+        fig.savefig(plots_folder / "barbell_trajectory_phase_highlighted.png", dpi=300)
 
         plt.close(fig)
 
