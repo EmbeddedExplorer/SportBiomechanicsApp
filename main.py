@@ -89,6 +89,9 @@ class MainWindow(QMainWindow):
         self.refresh_status_bar()
         self.show_home_page()
 
+    # ==========================================================
+    # SYSTEM STATUS
+    # ==========================================================
     def get_system_status(self):
         status_parts = []
 
@@ -127,6 +130,9 @@ class MainWindow(QMainWindow):
     def refresh_status_bar(self):
         self.statusBar().showMessage(self.get_system_status())
 
+    # ==========================================================
+    # PAGE NAVIGATION
+    # ==========================================================
     def show_home_page(self):
         self.home_page.set_recent_sessions(
             get_recent_sessions(limit=5)
@@ -149,12 +155,22 @@ class MainWindow(QMainWindow):
 
     def show_results_page(self):
         self.results_page.set_summary({
+            "sport": "Previous Analysis",
+            "exercise": "Not selected",
+            "camera_view": "N/A",
+            "input_mode": "Not selected",
+            "source_file": "",
+            "results_folder": "",
+            "record_count": 0,
+
+            # Legacy display keys
             "Sport": "Previous Analysis",
             "Exercise": "Not selected",
             "Camera View": "N/A",
             "Input Mode": "Not selected",
             "File": "No file selected",
-            "Results Folder": "No folder created yet"
+            "Results Folder": "No folder created yet",
+            "Recorded Samples": "0"
         })
 
         self.refresh_status_bar()
@@ -169,25 +185,72 @@ class MainWindow(QMainWindow):
         self.refresh_status_bar()
         self.stack.setCurrentWidget(self.about_page)
 
+    # ==========================================================
+    # ANALYSIS COMPLETE
+    # ==========================================================
     def complete_analysis_session(self, session_info):
+        """
+        Called after weightlifting or sprinting analysis is completed.
+
+        Important:
+        - Keep enhanced session_info from weightlifting_page.py / sprinting_page.py.
+        - Do not shrink it into only old display keys.
+        - Add old display keys only for compatibility.
+        """
+
+        if session_info is None:
+            session_info = {}
+
+        sport = session_info.get("sport", session_info.get("Sport", ""))
+        exercise = session_info.get("exercise", session_info.get("Exercise", ""))
+        camera_view = session_info.get("camera_view", session_info.get("Camera View", "N/A"))
+        input_mode = session_info.get("input_mode", session_info.get("Input Mode", ""))
+        source_file = session_info.get("source_file", session_info.get("File", ""))
+
+        results_folder = (
+            session_info.get("results_folder")
+            or session_info.get("session_path")
+            or session_info.get("Results Folder")
+            or ""
+        )
+
+        record_count = (
+            session_info.get("record_count")
+            or session_info.get("Recorded Samples")
+            or 0
+        )
+
         add_session({
-            "sport": session_info.get("sport", ""),
-            "exercise": session_info.get("exercise", ""),
-            "camera_view": session_info.get("camera_view", "N/A"),
-            "input_mode": session_info.get("input_mode", ""),
-            "source_file": session_info.get("source_file", ""),
-            "results_folder": session_info.get("results_folder", "")
+            "sport": sport,
+            "exercise": exercise,
+            "camera_view": camera_view,
+            "input_mode": input_mode,
+            "source_file": source_file,
+            "results_folder": results_folder
         })
 
-        self.results_page.set_summary({
-            "Sport": session_info.get("sport", ""),
-            "Exercise": session_info.get("exercise", ""),
-            "Camera View": session_info.get("camera_view", "N/A"),
-            "Input Mode": session_info.get("input_mode", ""),
-            "File": session_info.get("source_file", "") if session_info.get("source_file", "") else "Live Source",
-            "Results Folder": session_info.get("results_folder", ""),
-            "Recorded Samples": str(session_info.get("record_count", 0))
-        })
+        dashboard_info = dict(session_info)
+
+        # Normalized keys
+        dashboard_info["sport"] = sport
+        dashboard_info["exercise"] = exercise
+        dashboard_info["camera_view"] = camera_view
+        dashboard_info["input_mode"] = input_mode
+        dashboard_info["source_file"] = source_file
+        dashboard_info["results_folder"] = results_folder
+        dashboard_info["record_count"] = record_count
+        dashboard_info["session_path"] = dashboard_info.get("session_path", results_folder)
+
+        # Legacy compatibility keys
+        dashboard_info["Sport"] = sport
+        dashboard_info["Exercise"] = exercise
+        dashboard_info["Camera View"] = camera_view
+        dashboard_info["Input Mode"] = input_mode
+        dashboard_info["File"] = source_file if source_file else "Live Source"
+        dashboard_info["Results Folder"] = results_folder
+        dashboard_info["Recorded Samples"] = str(record_count)
+
+        self.results_page.set_summary(dashboard_info)
 
         self.refresh_status_bar()
         self.stack.setCurrentWidget(self.results_page)

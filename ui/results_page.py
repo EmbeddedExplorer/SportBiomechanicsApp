@@ -57,7 +57,9 @@ class ResultsPage(QWidget):
         self.csv_table = QTableWidget()
         self.csv_table.setAlternatingRowColors(True)
         self.csv_table.horizontalHeader().setStretchLastSection(False)
-        self.csv_table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Interactive)
+        self.csv_table.horizontalHeader().setSectionResizeMode(
+            QHeaderView.ResizeMode.Interactive
+        )
 
         csv_layout.addWidget(QLabel("Select CSV File:"))
         csv_layout.addWidget(self.csv_selector)
@@ -86,12 +88,10 @@ class ResultsPage(QWidget):
 
         plots_tab.setLayout(plots_layout)
 
-        # ================= TABS =================
         self.tabs.addTab(self.summary_box, "Summary")
         self.tabs.addTab(csv_tab, "CSV Viewer")
         self.tabs.addTab(plots_tab, "Plots")
 
-        # ================= BUTTONS =================
         button_layout = QHBoxLayout()
         button_layout.setSpacing(10)
 
@@ -113,22 +113,56 @@ class ResultsPage(QWidget):
         self.apply_styles()
 
     # ==========================================================
+    # CSV SAFE HELPERS
+    # ==========================================================
+    def safe_csv_value(self, value):
+        try:
+            if pd.isna(value):
+                return ""
+        except Exception:
+            pass
+
+        try:
+            if hasattr(value, "item"):
+                return value.item()
+        except Exception:
+            pass
+
+        return value
+
+    def read_first_row_csv(self, csv_path):
+        csv_path = Path(csv_path)
+
+        if not csv_path.exists():
+            return {}
+
+        try:
+            df = pd.read_csv(csv_path)
+
+            if df.empty:
+                return {}
+
+            row = df.iloc[0].to_dict()
+            clean_row = {}
+
+            for key, value in row.items():
+                clean_row[key] = self.safe_csv_value(value)
+
+            return clean_row
+
+        except Exception:
+            return {}
+
+    # ==========================================================
     # SUMMARY
     # ==========================================================
     def set_summary(self, data):
         """
-        Receive session_info from weightlifting_page.py / sprinting_page.py
-        and build a richer dashboard summary.
+        Receive session_info and build dashboard summary.
 
-        Supports both old keys:
-            Results Folder
-        and new keys:
-            results_folder
-            lift_summary
-            detected_phases
-            max_barbell_height_m
-            csv_files
-            plot_files
+        Fallback:
+        If enhanced values are not passed through session_info,
+        read them directly from CSV/lift_summary.csv.
         """
 
         self.last_summary_data = data or {}
@@ -144,7 +178,24 @@ class ResultsPage(QWidget):
         else:
             self.current_session_path = None
 
-        self.summary_box.setHtml(self.build_summary_html(self.last_summary_data))
+        if self.current_session_path and self.current_session_path.exists():
+            lift_summary_path = self.current_session_path / "CSV" / "lift_summary.csv"
+
+            lift_summary = self.read_first_row_csv(lift_summary_path)
+
+            if lift_summary:
+                self.last_summary_data["lift_summary"] = lift_summary
+
+                for key, value in lift_summary.items():
+                    if (
+                        key not in self.last_summary_data
+                        or self.last_summary_data.get(key) in [None, "", "N/A"]
+                    ):
+                        self.last_summary_data[key] = value
+
+        self.summary_box.setHtml(
+            self.build_summary_html(self.last_summary_data)
+        )
 
         if self.current_session_path and self.current_session_path.exists():
             self.load_session_outputs()
@@ -156,11 +207,26 @@ class ResultsPage(QWidget):
             self.plot_label.setText("No plots available yet.")
 
     def build_summary_html(self, data):
-        sport = self.get_data_value(data, ["sport", "Sport"], "N/A")
-        exercise = self.get_data_value(data, ["exercise", "Exercise"], "N/A")
-        camera_view = self.get_data_value(data, ["camera_view", "Camera View"], "N/A")
-        input_mode = self.get_data_value(data, ["input_mode", "Input Mode"], "N/A")
-        source_file = self.get_data_value(data, ["source_file", "Source File"], "")
+        lift_summary = data.get("lift_summary", {})
+
+        if not isinstance(lift_summary, dict):
+            lift_summary = {}
+
+        def get_value(keys, default="N/A"):
+            for key in keys:
+                if key in data and data.get(key) not in [None, "", "nan", "N/A"]:
+                    return data.get(key)
+
+                if key in lift_summary and lift_summary.get(key) not in [None, "", "nan", "N/A"]:
+                    return lift_summary.get(key)
+
+            return default
+
+        sport = get_value(["sport", "Sport"])
+        exercise = get_value(["exercise", "Exercise"])
+        camera_view = get_value(["camera_view", "Camera View"])
+        input_mode = get_value(["input_mode", "Input Mode"])
+        source_file = get_value(["source_file", "Source File"], "")
 
         results_folder = self.get_data_value(
             data,
@@ -168,30 +234,29 @@ class ResultsPage(QWidget):
             "N/A"
         )
 
-        record_count = self.get_data_value(data, ["record_count", "Record Count"], "N/A")
-        duration = self.get_data_value(data, ["total_duration_s", "Total Duration"], "")
-        detected_phase_count = self.get_data_value(data, ["detected_phase_count"], "")
-        detected_phases = self.get_data_value(data, ["detected_phases"], "")
-
-        barbell_detected_samples = self.get_data_value(data, ["barbell_detected_samples"], "")
+        record_count = get_value(["record_count", "Record Count", "Recorded Samples"])
+        duration = get_value(["total_duration_s"])
+        detected_phase_count = get_value(["detected_phase_count"])
+        detected_phases = get_value(["detected_phases"])
+        barbell_detected_samples = get_value(["barbell_detected_samples"])
 
         max_height = self.best_unit_value(
-            value_m=self.get_data_value(data, ["max_barbell_height_m"], ""),
-            value_px=self.get_data_value(data, ["max_barbell_height_px"], ""),
+            value_m=get_value(["max_barbell_height_m"], ""),
+            value_px=get_value(["max_barbell_height_px"], ""),
             label_m="m",
             label_px="px"
         )
 
         max_vertical_velocity = self.best_unit_value(
-            value_m=self.get_data_value(data, ["max_vertical_velocity_m_s"], ""),
-            value_px=self.get_data_value(data, ["max_vertical_velocity_px_s"], ""),
+            value_m=get_value(["max_vertical_velocity_m_s"], ""),
+            value_px=get_value(["max_vertical_velocity_px_s"], ""),
             label_m="m/s",
             label_px="px/s"
         )
 
         max_horizontal_velocity = self.best_unit_value(
-            value_m=self.get_data_value(data, ["max_horizontal_velocity_m_s"], ""),
-            value_px=self.get_data_value(data, ["max_horizontal_velocity_px_s"], ""),
+            value_m=get_value(["max_horizontal_velocity_m_s"], ""),
+            value_px=get_value(["max_horizontal_velocity_px_s"], ""),
             label_m="m/s",
             label_px="px/s"
         )
@@ -211,7 +276,8 @@ class ResultsPage(QWidget):
         )
 
         source_file_html = ""
-        if source_file:
+
+        if source_file and source_file != "N/A":
             source_file_html = f"""
                 <tr>
                     <td class="key">Source File</td>
