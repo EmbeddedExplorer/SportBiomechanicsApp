@@ -1,7 +1,0 @@
-phase,start_time_s,end_time_s,sample_count
-Catch Phase,17.76,18.958,24
-Deadlift Phase,15.567,16.765,24
-Jerk Phase,46.878,65.144,350
-Jump Phase,16.818,17.708,18
-Setup,0.002,15.515,298
-Squat Phase,19.01,46.826,533

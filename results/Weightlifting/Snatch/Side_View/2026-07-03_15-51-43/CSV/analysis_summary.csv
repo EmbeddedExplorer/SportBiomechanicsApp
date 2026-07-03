@@ -1,9 +1,0 @@
-metric,mean,min,max,valid_samples
-right_hip_angle_deg,34.709,33.46,35.82,24
-right_knee_angle_deg,108.338,105.23,112.91,24
-right_ankle_angle_deg,116.539,110.46,122.47,24
-right_shoulder_angle_deg,63.444,57.54,68.34,24
-right_elbow_angle_deg,133.503,123.1,147.03,24
-trunk_lean_angle_deg,100.522,98.81,101.23,24
-athlete_depth_m,3.756,3.733,3.802,24
-center_depth_m,7.645,7.202,8.055,24
