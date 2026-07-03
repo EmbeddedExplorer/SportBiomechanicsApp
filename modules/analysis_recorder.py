@@ -10,6 +10,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
 from modules.phase_definitions import EXCLUDED_PLOT_PHASES
+from modules.report_generator import generate_analysis_reports
 
 
 class AnalysisRecorder:
@@ -129,7 +130,8 @@ class AnalysisRecorder:
         self.save_plots(df, plots_folder)
         self.save_text_report(df, reports_folder)
         self.save_recording_metadata()
-
+        self.save_final_reports()
+        
         return {
             "csv_file": str(csv_file),
             "record_count": len(df),
@@ -1715,6 +1717,34 @@ class AnalysisRecorder:
                 )
 
                 previous_phase = phase
+
+    def save_final_reports(self):
+        """
+        Generate final text and HTML reports.
+
+        This is intentionally wrapped in try/except so that report generation
+        cannot break CSV or plot saving.
+        """
+
+        reports_folder = self.session_path / "Reports"
+        reports_folder.mkdir(parents=True, exist_ok=True)
+
+        try:
+            generate_analysis_reports(
+                session_path=self.session_path,
+                sport=self.sport,
+                exercise=self.exercise,
+                input_mode=self.input_mode,
+                source_file=self.source_file,
+                camera_view=self.camera_view
+            )
+
+        except Exception as e:
+            error_file = reports_folder / "report_generation_error.txt"
+
+            with open(error_file, "w", encoding="utf-8") as file:
+                file.write("Report generation failed.\n\n")
+                file.write(f"Error: {e}\n")
 
     def save_recording_metadata(self):
         metadata = {

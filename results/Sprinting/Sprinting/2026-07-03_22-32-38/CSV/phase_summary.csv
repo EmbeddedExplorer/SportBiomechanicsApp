@@ -1,0 +1,5 @@
+phase,start_time_s,end_time_s,sample_count
+Flight / Swing,0.004,7.897,73
+Initial Contact,0.664,6.692,23
+Support Phase,1.072,6.895,30
+Toe-Off,0.766,7.428,28

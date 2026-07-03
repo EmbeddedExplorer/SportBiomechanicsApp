@@ -72,7 +72,8 @@ class MainWindow(QMainWindow):
         )
 
         self.history_page = HistoryPage(
-            on_back=self.show_home_page
+            on_back=self.show_home_page,
+            on_open_results=self.open_history_session_results
         )
 
         self.about_page = AboutPage(
@@ -242,6 +243,57 @@ class MainWindow(QMainWindow):
         dashboard_info["session_path"] = dashboard_info.get("session_path", results_folder)
 
         # Legacy compatibility keys
+        dashboard_info["Sport"] = sport
+        dashboard_info["Exercise"] = exercise
+        dashboard_info["Camera View"] = camera_view
+        dashboard_info["Input Mode"] = input_mode
+        dashboard_info["File"] = source_file if source_file else "Live Source"
+        dashboard_info["Results Folder"] = results_folder
+        dashboard_info["Recorded Samples"] = str(record_count)
+
+        self.results_page.set_summary(dashboard_info)
+
+        self.refresh_status_bar()
+        self.stack.setCurrentWidget(self.results_page)
+
+    # ==========================================================
+    # OPEN PREVIOUS HISTORY SESSION
+    # ==========================================================
+    def open_history_session_results(self, session_info):
+        """
+        Called from HistoryPage when the user wants to reopen
+        a previous analysis session in the Results Dashboard.
+        """
+
+        if session_info is None:
+            return
+
+        results_folder = (
+            session_info.get("results_folder")
+            or session_info.get("session_path")
+            or session_info.get("path")
+            or session_info.get("Results Folder")
+            or ""
+        )
+
+        sport = session_info.get("sport", session_info.get("Sport", "Previous Analysis"))
+        exercise = session_info.get("exercise", session_info.get("Exercise", "N/A"))
+        camera_view = session_info.get("camera_view", session_info.get("Camera View", "N/A"))
+        input_mode = session_info.get("input_mode", session_info.get("Input Mode", "N/A"))
+        source_file = session_info.get("source_file", session_info.get("File", ""))
+        record_count = session_info.get("record_count", session_info.get("Recorded Samples", 0))
+
+        dashboard_info = dict(session_info)
+
+        dashboard_info["sport"] = sport
+        dashboard_info["exercise"] = exercise
+        dashboard_info["camera_view"] = camera_view
+        dashboard_info["input_mode"] = input_mode
+        dashboard_info["source_file"] = source_file
+        dashboard_info["results_folder"] = results_folder
+        dashboard_info["session_path"] = results_folder
+        dashboard_info["record_count"] = record_count
+
         dashboard_info["Sport"] = sport
         dashboard_info["Exercise"] = exercise
         dashboard_info["Camera View"] = camera_view

@@ -88,7 +88,6 @@ class ResultsPage(QWidget):
 
         plots_tab.setLayout(plots_layout)
 
-        # ================= TABS =================
         self.tabs.addTab(self.summary_box, "Summary")
         self.tabs.addTab(csv_tab, "CSV Viewer")
         self.tabs.addTab(plots_tab, "Plots")
@@ -180,11 +179,6 @@ class ResultsPage(QWidget):
         else:
             self.current_session_path = None
 
-        # ------------------------------------------------------
-        # Read summary CSV directly if available.
-        # The same file is currently used by both weightlifting
-        # and sprinting because AnalysisRecorder saves lift_summary.csv.
-        # ------------------------------------------------------
         if self.current_session_path and self.current_session_path.exists():
             summary_path = self.current_session_path / "CSV" / "lift_summary.csv"
 
@@ -562,6 +556,26 @@ class ResultsPage(QWidget):
             </table>
         """
 
+    # ==========================================================
+    # GENERAL HELPERS
+    # ==========================================================
+    def get_current_sport_lower(self):
+        data = self.last_summary_data or {}
+        lift_summary = data.get("lift_summary", {})
+
+        if not isinstance(lift_summary, dict):
+            lift_summary = {}
+
+        sport = (
+            data.get("sport")
+            or data.get("Sport")
+            or lift_summary.get("sport")
+            or lift_summary.get("Sport")
+            or ""
+        )
+
+        return str(sport).lower()
+
     def get_data_value(self, data, keys, default=""):
         if not isinstance(data, dict):
             return default
@@ -657,15 +671,29 @@ class ResultsPage(QWidget):
         self.csv_selector.blockSignals(True)
         self.csv_selector.clear()
 
-        preferred_order = [
-            "lift_summary.csv",
-            "phase_biomechanics_summary.csv",
-            "phase_summary.csv",
-            "analysis_summary.csv",
-            "barbell_trajectory.csv",
-            "depth_data.csv",
-            "joint_angles_2d.csv"
-        ]
+        sport_lower = self.get_current_sport_lower()
+
+        if "sprint" in sport_lower:
+            preferred_order = [
+                "sprint_summary.csv",
+                "lift_summary.csv",
+                "phase_biomechanics_summary.csv",
+                "phase_summary.csv",
+                "analysis_summary.csv",
+                "depth_data.csv",
+                "joint_angles_2d.csv",
+                "barbell_trajectory.csv"
+            ]
+        else:
+            preferred_order = [
+                "lift_summary.csv",
+                "phase_biomechanics_summary.csv",
+                "phase_summary.csv",
+                "analysis_summary.csv",
+                "barbell_trajectory.csv",
+                "depth_data.csv",
+                "joint_angles_2d.csv"
+            ]
 
         csv_files = []
 
@@ -698,15 +726,34 @@ class ResultsPage(QWidget):
         self.plot_list.clear()
         self.plot_files = []
 
-        preferred_order = [
-            "barbell_trajectory_phase_highlighted.png",
-            "barbell_trajectory_annotated.png",
-            "barbell_trajectory_powerpoint_style.png",
-            "barbell_velocity_phase_highlighted.png",
-            "hip_knee_angles_phase_highlighted.png",
-            "upper_limb_angles_phase_highlighted.png",
-            "trunk_lean_phase_highlighted.png"
-        ]
+        sport_lower = self.get_current_sport_lower()
+
+        if "sprint" in sport_lower:
+            preferred_order = [
+                "sprinting_phase_timeline.png",
+                "sprinting_knee_ankle_angles_phase_highlighted.png",
+                "hip_knee_angles_phase_highlighted.png",
+                "trunk_lean_phase_highlighted.png",
+                "sprinting_depth_profile_phase_highlighted.png",
+                "upper_limb_angles_phase_highlighted.png",
+                "barbell_trajectory_phase_highlighted.png",
+                "barbell_trajectory_annotated.png",
+                "barbell_trajectory_powerpoint_style.png",
+                "barbell_velocity_phase_highlighted.png"
+            ]
+        else:
+            preferred_order = [
+                "barbell_trajectory_phase_highlighted.png",
+                "barbell_trajectory_annotated.png",
+                "barbell_trajectory_powerpoint_style.png",
+                "barbell_velocity_phase_highlighted.png",
+                "hip_knee_angles_phase_highlighted.png",
+                "upper_limb_angles_phase_highlighted.png",
+                "trunk_lean_phase_highlighted.png",
+                "sprinting_phase_timeline.png",
+                "sprinting_knee_ankle_angles_phase_highlighted.png",
+                "sprinting_depth_profile_phase_highlighted.png"
+            ]
 
         if plots_folder.exists():
             all_files = list(plots_folder.glob("*.png"))

@@ -1,0 +1,267 @@
+
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <title>BioMotion Studio Analysis Report</title>
+
+        <style>
+            body {
+                font-family: Segoe UI, Arial, sans-serif;
+                background-color: #F4F7FA;
+                color: #1B1F23;
+                margin: 30px;
+            }
+
+            .container {
+                max-width: 1200px;
+                margin: auto;
+                background-color: white;
+                border-radius: 12px;
+                padding: 28px;
+                box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+            }
+
+            h1 {
+                color: #005B96;
+                border-bottom: 3px solid #0078D7;
+                padding-bottom: 10px;
+            }
+
+            h2 {
+                color: #0078D7;
+                margin-top: 28px;
+            }
+
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 10px;
+            }
+
+            td, th {
+                border: 1px solid #D8E1E8;
+                padding: 8px;
+                text-align: left;
+                font-size: 14px;
+            }
+
+            th {
+                background-color: #EAF4FF;
+                color: #003B5C;
+            }
+
+            .key {
+                font-weight: bold;
+                width: 30%;
+                background-color: #F1F7FC;
+            }
+
+            .path {
+                font-family: Consolas, monospace;
+                color: #444444;
+                word-break: break-all;
+            }
+
+            ul {
+                line-height: 1.8;
+            }
+
+            .note {
+                background-color: #FFF8E5;
+                border-left: 5px solid #FFCC66;
+                padding: 12px;
+                margin-top: 10px;
+            }
+
+            .data-table {
+                font-size: 12px;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class="container">
+            <h1>BioMotion Studio Analysis Report</h1>
+
+            <h2>1. Session Information</h2>
+            <table>
+                <tr>
+                    <td class="key">Sport</td>
+                    <td>Sprinting</td>
+                </tr>
+                <tr>
+                    <td class="key">Exercise</td>
+                    <td>Sprinting</td>
+                </tr>
+                <tr>
+                    <td class="key">Camera View</td>
+                    <td>Side View</td>
+                </tr>
+                <tr>
+                    <td class="key">Input Mode</td>
+                    <td>Side-view Video File</td>
+                </tr>
+                <tr>
+                    <td class="key">Source File</td>
+                    <td class="path">/Users/kknugawela/Projects/Bag_files/Usain Bolt/bolt_sideview.mp4</td>
+                </tr>
+                <tr>
+                    <td class="key">Results Path</td>
+                    <td class="path">results/Sprinting/Sprinting/2026-07-04_02-36-29</td>
+                </tr>
+                <tr>
+                    <td class="key">Created At</td>
+                    <td>2026-07-04 02:36:39</td>
+                </tr>
+            </table>
+
+            <h2>2. Key Results</h2>
+            <table>
+                
+            <tr>
+                <td class="key">Total Samples</td>
+                <td>168</td>
+            </tr>
+        
+            <tr>
+                <td class="key">Total Duration</td>
+                <td>8.577 s</td>
+            </tr>
+        
+            <tr>
+                <td class="key">Detected Phase Count</td>
+                <td>4</td>
+            </tr>
+        
+            <tr>
+                <td class="key">Detected Phases</td>
+                <td>Flight / Swing | Initial Contact | Toe-Off | Support Phase</td>
+            </tr>
+        
+            <tr>
+                <td class="key">Mean Athlete Depth</td>
+                <td>N/A</td>
+            </tr>
+        
+            <tr>
+                <td class="key">Mean Center Depth</td>
+                <td>N/A</td>
+            </tr>
+        
+            </table>
+
+            <h2>3. Phase-wise Biomechanics Summary</h2>
+            <table class="dataframe data-table">
+  <thead>
+    <tr style="text-align: right;">
+      <th>phase</th>
+      <th>start_time_s</th>
+      <th>end_time_s</th>
+      <th>duration_s</th>
+      <th>sample_count</th>
+      <th>left_hip_angle_mean_deg</th>
+      <th>right_hip_angle_mean_deg</th>
+      <th>left_knee_angle_mean_deg</th>
+      <th>right_knee_angle_mean_deg</th>
+      <th>left_ankle_angle_mean_deg</th>
+      <th>right_ankle_angle_mean_deg</th>
+      <th>trunk_lean_angle_mean_deg</th>
+      <th>athlete_depth_mean_m</th>
+      <th>center_depth_mean_m</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Flight / Swing</td>
+      <td>0.019</td>
+      <td>8.596</td>
+      <td>8.577</td>
+      <td>87</td>
+      <td>95.8521</td>
+      <td>118.6899</td>
+      <td>147.4629</td>
+      <td>145.5834</td>
+      <td>144.9231</td>
+      <td>158.3230</td>
+      <td>21.2745</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <td>Initial Contact</td>
+      <td>0.732</td>
+      <td>6.740</td>
+      <td>6.008</td>
+      <td>23</td>
+      <td>115.2741</td>
+      <td>94.9964</td>
+      <td>121.1177</td>
+      <td>86.0095</td>
+      <td>129.3036</td>
+      <td>117.6236</td>
+      <td>21.0209</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <td>Toe-Off</td>
+      <td>0.834</td>
+      <td>7.479</td>
+      <td>6.645</td>
+      <td>28</td>
+      <td>105.7943</td>
+      <td>129.3114</td>
+      <td>120.0562</td>
+      <td>131.3986</td>
+      <td>144.3362</td>
+      <td>152.2871</td>
+      <td>24.6762</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <td>Support Phase</td>
+      <td>1.131</td>
+      <td>6.943</td>
+      <td>5.812</td>
+      <td>30</td>
+      <td>129.5867</td>
+      <td>104.4207</td>
+      <td>115.0911</td>
+      <td>102.1581</td>
+      <td>139.9956</td>
+      <td>134.9404</td>
+      <td>24.3885</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+  </tbody>
+</table>
+
+            <h2>4. Generated CSV Files</h2>
+            <ul>
+                <li>analysis_summary.csv</li><li>joint_angles_2d.csv</li><li>lift_summary.csv</li><li>phase_biomechanics_summary.csv</li><li>phase_summary.csv</li><li>sprint_summary.csv</li>
+            </ul>
+
+            <h2>5. Generated Plot Files</h2>
+            <ul>
+                <li>hip_knee_angles_phase_highlighted.png</li><li>sprinting_knee_ankle_angles_phase_highlighted.png</li><li>sprinting_phase_timeline.png</li><li>trunk_lean_phase_highlighted.png</li><li>upper_limb_angles_phase_highlighted.png</li>
+            </ul>
+
+            <h2>6. Interpretation Notes</h2>
+            <div class="note">
+                <p>
+                    This report summarizes biomechanical metrics extracted from pose landmarks,
+                    depth data, phase detection, and movement tracking signals.
+                    Numerical values should be interpreted together with the saved plots and CSV files.
+                </p>
+                <p>
+                    For research use, verify phase labels visually and confirm that pose tracking
+                    was stable during the recording.
+                </p>
+            </div>
+        </div>
+    </body>
+    </html>
+    
