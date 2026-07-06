@@ -79,7 +79,6 @@ a = Analysis(
     runtime_hooks=[],
     excludes=[
         "pytest",
-        "unittest",
         "tkinter",
     ],
     noarchive=False,
