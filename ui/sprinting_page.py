@@ -17,12 +17,89 @@ from PyQt6.QtWidgets import (
     QGridLayout,
     QSizePolicy
 )
-from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QPixmap
+from PyQt6.QtCore import Qt, QRect
+from PyQt6.QtGui import QPixmap, QPainter, QColor, QPen, QFont
 
 from modules.video_thread import VideoThread
 from modules.result_manager import create_session_folder
 from modules.analysis_recorder import AnalysisRecorder
+
+
+
+class TickRadioButton(QRadioButton):
+    """
+    Custom radio button that behaves like a normal QRadioButton
+    but displays a clear green tick when selected.
+
+    This keeps the existing .isChecked() logic unchanged.
+    """
+
+    def __init__(self, text="", parent=None):
+        super().__init__(text, parent)
+        self.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.setMinimumHeight(28)
+
+    def paintEvent(self, event):
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+
+        indicator_size = 22
+        indicator_x = 2
+        indicator_y = (self.height() - indicator_size) // 2
+
+        indicator_rect = QRect(
+            indicator_x,
+            indicator_y,
+            indicator_size,
+            indicator_size
+        )
+
+        if self.isChecked():
+            painter.setBrush(QColor("#00E676"))
+            painter.setPen(QPen(QColor("#80FFB0"), 2))
+            painter.drawRoundedRect(indicator_rect, 5, 5)
+
+            tick_pen = QPen(QColor("#FFFFFF"), 3)
+            tick_pen.setCapStyle(Qt.PenCapStyle.RoundCap)
+            tick_pen.setJoinStyle(Qt.PenJoinStyle.RoundJoin)
+            painter.setPen(tick_pen)
+
+            painter.drawLine(
+                indicator_x + 6,
+                indicator_y + 12,
+                indicator_x + 10,
+                indicator_y + 17
+            )
+            painter.drawLine(
+                indicator_x + 10,
+                indicator_y + 17,
+                indicator_x + 18,
+                indicator_y + 7
+            )
+
+            text_color = QColor("#00E676")
+            font = QFont(self.font())
+            font.setBold(True)
+
+        else:
+            painter.setBrush(QColor("#101820"))
+            painter.setPen(QPen(QColor("#00D4FF"), 2))
+            painter.drawRoundedRect(indicator_rect, 5, 5)
+
+            text_color = QColor("#EAF2F8")
+            font = QFont(self.font())
+            font.setBold(False)
+
+        painter.setFont(font)
+        painter.setPen(text_color)
+
+        text_rect = self.rect().adjusted(indicator_size + 12, 0, 0, 0)
+
+        painter.drawText(
+            text_rect,
+            Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignLeft,
+            self.text()
+        )
 
 
 class SprintingPage(QWidget):
@@ -53,9 +130,9 @@ class SprintingPage(QWidget):
         input_layout = QVBoxLayout()
         input_layout.setSpacing(4)
 
-        self.radio_realsense_live = QRadioButton("Live RealSense RGB-D Camera")
-        self.radio_bag = QRadioButton("Pre-recorded RealSense .bag File")
-        self.radio_video = QRadioButton("Side-view Video File")
+        self.radio_realsense_live = TickRadioButton("Live RealSense RGB-D Camera")
+        self.radio_bag = TickRadioButton("Pre-recorded RealSense .bag File")
+        self.radio_video = TickRadioButton("Side-view Video File")
 
         self.radio_realsense_live.setChecked(True)
 
@@ -806,8 +883,9 @@ class SprintingPage(QWidget):
             }
 
             QRadioButton {
+                background-color: transparent;
                 font-size: 14px;
-                padding: 3px;
+                padding: 4px;
             }
 
             QLabel#VideoLabel {
