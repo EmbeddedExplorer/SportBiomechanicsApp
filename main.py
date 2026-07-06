@@ -8,6 +8,7 @@ from PyQt6.QtWidgets import (
     QFrame
 )
 from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QIcon
 
 from ui.home_page import HomePage
 from ui.weightlifting_page import WeightliftingPage
@@ -15,6 +16,8 @@ from ui.sprinting_page import SprintingPage
 from ui.results_page import ResultsPage
 from ui.history_page import HistoryPage
 from ui.about_page import AboutPage
+
+from pathlib import Path
 
 from modules.database_manager import (
     init_database,
@@ -24,6 +27,29 @@ from modules.database_manager import (
 )
 
 
+
+def resource_path(relative_path):
+    """
+    Return a resource path that works in both source mode and PyInstaller mode.
+    """
+
+    try:
+        base_path = Path(sys._MEIPASS)
+    except Exception:
+        base_path = Path(__file__).resolve().parent
+
+    return base_path / relative_path
+
+
+def get_app_icon():
+    icon_path = resource_path("assets/app_icon.ico")
+
+    if icon_path.exists():
+        return QIcon(str(icon_path))
+
+    return QIcon()
+
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -31,6 +57,7 @@ class MainWindow(QMainWindow):
         init_database()
 
         self.setWindowTitle("BioMotion Studio")
+        self.setWindowIcon(get_app_icon())
         self.setMinimumSize(1100, 650)
 
         self.stack = QStackedWidget()
@@ -310,6 +337,7 @@ class MainWindow(QMainWindow):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
+    app.setWindowIcon(get_app_icon())
 
     window = MainWindow()
     window.showMaximized()

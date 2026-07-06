@@ -68,22 +68,126 @@ database/
 *.txt
 
 # ==========================================================
-# Do not ignore documentation files
+# Keep project documentation and assets
 # ==========================================================
 !README.md
-!docs/**/*.md
+!README_FIRST.txt
+!release_notes.md
+!docs/
+!docs/**
+!assets/
+!assets/**
 !requirements.txt
 !requirements_windows.txt
 !requirements_macos.txt
+!BioMotionStudio.spec
 
 # ==========================================================
 # PyInstaller / build outputs
 # ==========================================================
 build/
 dist/
-*.spec
+*.spec.bak
+
+# ==========================================================
+# Logs
+# ==========================================================
+*.log
+logs/
+
+
+
+
+# ==========================================================
+# Python cache files
+# ==========================================================
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
+
+# ==========================================================
+# Virtual environments
+# ==========================================================
+.venv/
+venv/
+env/
+.biomec/
+
+# ==========================================================
+# IDE / editor files
+# ==========================================================
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ==========================================================
+# macOS / Windows system files
+# ==========================================================
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ==========================================================
+# Generated analysis outputs
+# ==========================================================
+results/
+Results/
+output/
+outputs/
+
+# ==========================================================
+# Local database files
+# ==========================================================
+database/
+*.db
+*.sqlite
+*.sqlite3
+
+# ==========================================================
+# Large input video / RealSense files
+# ==========================================================
+*.bag
+*.mp4
+*.avi
+*.mov
+*.mkv
+*.wmv
+
+# ==========================================================
+# Generated CSV / report / plot files
+# Keep source code only in GitHub
+# ==========================================================
+*.csv
+*.xlsx
+*.xls
+*.png
+*.jpg
+*.jpeg
+*.html
+*.txt
+
+# ==========================================================
+# Keep project documentation and assets
+# ==========================================================
+!README.md
+!README_FIRST.txt
+!release_notes.md
+!docs/
+!docs/**
+!assets/
+!assets/**
+!requirements.txt
+!requirements_windows.txt
+!requirements_macos.txt
+!BioMotionStudio.spec
+
+# ==========================================================
+# PyInstaller / build outputs
+# ==========================================================
+build/
+dist/
+*.spec.bak
 
 # ==========================================================
 # Logs
