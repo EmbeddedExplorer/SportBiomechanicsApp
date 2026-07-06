@@ -25,6 +25,90 @@ def column_exists(conn, table_name, column_name):
     return False
 
 
+def session_folder_exists(results_folder):
+    """
+    Check whether a saved session folder still exists.
+
+    This prevents Home page from showing old database records
+    after the actual result folder was deleted from History.
+    """
+
+    if not results_folder:
+        return False
+
+    try:
+        return Path(results_folder).exists()
+    except Exception:
+        return False
+
+
+def cleanup_missing_sessions():
+    """
+    Remove database rows whose result folders no longer exist.
+
+    This keeps:
+        - Home page recent sessions
+        - status bar session count
+        - database records
+
+    synchronized with the actual results/ folder.
+    """
+
+    removed_count = 0
+
+    with get_connection() as conn:
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            SELECT id, results_folder
+            FROM analysis_sessions
+        """)
+
+        rows = cursor.fetchall()
+
+        missing_ids = []
+
+        for row in rows:
+            results_folder = row["results_folder"]
+
+            if not session_folder_exists(results_folder):
+                missing_ids.append(row["id"])
+
+        for session_id in missing_ids:
+            cursor.execute("""
+                DELETE FROM analysis_sessions
+                WHERE id = ?
+            """, (session_id,))
+            removed_count += 1
+
+        conn.commit()
+
+    return removed_count
+
+
+def delete_session_by_results_folder(results_folder):
+    """
+    Delete a database record by its result folder path.
+
+    This can be used later by HistoryPage after deleting a session folder.
+    The cleanup_missing_sessions() function already handles this safely,
+    but this helper is useful for direct synchronization.
+    """
+
+    if not results_folder:
+        return
+
+    with get_connection() as conn:
+        cursor = conn.cursor()
+
+        cursor.execute("""
+            DELETE FROM analysis_sessions
+            WHERE results_folder = ?
+        """, (str(results_folder),))
+
+        conn.commit()
+
+
 def init_database():
     with get_connection() as conn:
         cursor = conn.cursor()
@@ -51,6 +135,8 @@ def init_database():
             """)
 
         conn.commit()
+
+    cleanup_missing_sessions()
 
 
 def add_session(session_data):
@@ -84,6 +170,13 @@ def add_session(session_data):
 
 
 def get_recent_sessions(limit=5):
+    """
+    Return only recent sessions whose result folders still exist.
+    Old deleted sessions are automatically removed from the database.
+    """
+
+    cleanup_missing_sessions()
+
     with get_connection() as conn:
         cursor = conn.cursor()
 
@@ -100,6 +193,13 @@ def get_recent_sessions(limit=5):
 
 
 def get_session_count():
+    """
+    Return count of valid sessions only.
+    Deleted/missing result folders are cleaned before counting.
+    """
+
+    cleanup_missing_sessions()
+
     with get_connection() as conn:
         cursor = conn.cursor()
 

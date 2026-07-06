@@ -52,6 +52,13 @@ class VideoThread(QThread):
 
         self.auto_barbell_detection_reported = False
 
+        # Live RealSense safety:
+        # In live mode, automatic barbell ROI can falsely lock onto background objects.
+        # Therefore, live RealSense side-view barbell tracking uses manual ROI only.
+        # Recorded .bag analysis keeps the existing automatic detection workflow unchanged.
+        self.manual_barbell_roi_selected = barbell_roi is not None
+        self.barbell_status_text = "Barbell: Not Detected"
+
         # Used for selecting / correcting ROI from current preview frame.
         self.latest_frame_for_roi = None
 
@@ -260,12 +267,19 @@ class VideoThread(QThread):
                     if center_depth is not None:
                         self.status_ready.emit(
                             f"RealSense RGB-D running | Center depth: {center_depth:.2f} m"
+                            f"{self.get_live_barbell_status_suffix()}"
                         )
                     else:
-                        self.status_ready.emit("RealSense RGB-D running | Center depth: N/A")
+                        self.status_ready.emit(
+                            "RealSense RGB-D running | Center depth: N/A"
+                            f"{self.get_live_barbell_status_suffix()}"
+                        )
 
                 else:
-                    self.status_ready.emit("RealSense color running | Depth frame not available.")
+                    self.status_ready.emit(
+                        "RealSense color running | Depth frame not available."
+                        f"{self.get_live_barbell_status_suffix()}"
+                    )
 
                 self.msleep(30)
 
@@ -371,6 +385,23 @@ class VideoThread(QThread):
 
         return color_image
 
+    def get_live_barbell_status_suffix(self):
+        """
+        Adds a clear barbell status to live RealSense status messages.
+
+        This is intentionally limited to live RealSense side-view weightlifting.
+        Recorded .bag behavior is not changed.
+        """
+
+        if (
+            self.source_type == "realsense_live"
+            and self.sport == "Weightlifting"
+            and self.camera_view == "Side View"
+        ):
+            return f" | {self.barbell_status_text}"
+
+        return ""
+
     # ==========================================================
     # ROI SUPPORT
     # ==========================================================
@@ -389,6 +420,9 @@ class VideoThread(QThread):
             return
 
         self.barbell_roi = roi
+        self.manual_barbell_roi_selected = True
+        self.barbell_status_text = "Barbell: Manual ROI Active"
+
         self.barbell_tracker.reset()
         self.barbell_auto_detector.reset()
         self.auto_barbell_detection_reported = True
@@ -422,26 +456,13 @@ class VideoThread(QThread):
 
             cv2.circle(display_frame, (center_x, center_y), 6, (255, 255, 0), -1)
 
-            cv2.putText(
-                display_frame,
-                f"Center Depth: {center_depth:.2f} m" if center_depth else "Center Depth: N/A",
-                (20, 115),
-                cv2.FONT_HERSHEY_SIMPLEX,
-                0.65,
-                (0, 255, 255),
-                2
-            )
+            # Center depth value is shown in the metrics panel.
+            # Keep the video preview clean by not drawing this text on the frame.
 
         else:
-            cv2.putText(
-                display_frame,
-                "Depth: Not available",
-                (20, 115),
-                cv2.FONT_HERSHEY_SIMPLEX,
-                0.65,
-                (0, 255, 255),
-                2
-            )
+            # Depth availability is shown in the status/metrics panel.
+            # Keep the video preview clean by not drawing this text on the frame.
+            pass
 
         rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
@@ -492,73 +513,136 @@ class VideoThread(QThread):
 
             if self.camera_view == "Side View":
 
-                if self.barbell_roi is None:
-                    auto_roi = self.barbell_auto_detector.detect(
-                        frame=clean_frame_for_tracking,
-                        landmarks=landmarks,
-                        pose_landmark_enum=self.mp_pose.PoseLandmark
-                    )
+                # --------------------------------------------------
+                # LIVE REALSENSE SAFETY RULE
+                # --------------------------------------------------
+                # For live RealSense, do not automatically lock a barbell ROI.
+                # Without an actual barbell, the old automatic logic could lock
+                # onto a random circular/background object and then record false
+                # barbell trajectory values.
+                #
+                # Recorded .bag analysis is kept unchanged below.
+                #
+                # Live RealSense side view:
+                #     - No manual ROI  -> Barbell Not Detected
+                #     - Manual ROI     -> Track selected ROI
+                #
+                # RealSense .bag side view:
+                #     - Existing automatic detection remains active
+                # --------------------------------------------------
+                live_manual_roi_required = (
+                    self.source_type == "realsense_live"
+                    and not self.manual_barbell_roi_selected
+                    and self.barbell_roi is None
+                )
 
-                    if auto_roi is not None:
-                        self.barbell_roi = auto_roi
-
-                        if not self.auto_barbell_detection_reported:
-                            self.status_ready.emit(
-                                f"Auto barbell disk detected: {auto_roi}"
-                            )
-                            self.auto_barbell_detection_reported = True
-
-                if self.barbell_roi is not None:
-                    barbell_metrics = self.barbell_tracker.update(
-                        frame=clean_frame_for_tracking,
-                        depth_frame=depth_frame if depth_available else None,
-                        depth_intrinsics=depth_intrinsics,
-                        initial_bbox=self.barbell_roi
-                    )
-
-                    # Important for Clean & Jerk:
-                    # Jerk Phase starts only when barbell is clearly above athlete's head.
-                    barbell_metrics = self.add_barbell_pose_reference_metrics(
-                        barbell_metrics=barbell_metrics,
-                        landmarks=landmarks,
-                        image_width=w,
-                        image_height=h
-                    )
-
-                    self.current_phase = self.phase_detector.update(
-                        exercise=self.exercise,
-                        barbell_metrics=barbell_metrics
-                    )
-
-                    trajectory_metrics = self.barbell_tracker.update_trajectory_state(
-                        phase=self.current_phase,
-                        exercise=self.exercise,
-                        barbell_metrics=barbell_metrics
-                    )
-
-                    barbell_metrics.update(trajectory_metrics)
-                    metrics.update(barbell_metrics)
-
-                    self.barbell_tracker.draw_overlay(
-                        display_frame,
-                        camera_view=self.camera_view,
-                        phase=self.current_phase
-                    )
-
-                else:
+                if live_manual_roi_required:
                     barbell_metrics = self.barbell_tracker.empty_metrics()
                     metrics.update(barbell_metrics)
                     self.current_phase = "Setup"
+                    self.barbell_status_text = "Barbell: Not Detected"
+
+                    warning_y_1 = max(235, display_frame.shape[0] - 48)
+                    warning_y_2 = max(260, display_frame.shape[0] - 24)
 
                     cv2.putText(
                         display_frame,
-                        "Auto detecting barbell disk...",
-                        (20, 175),
+                        "Barbell Not Detected",
+                        (20, warning_y_1),
                         cv2.FONT_HERSHEY_SIMPLEX,
-                        0.65,
-                        (0, 255, 255),
-                        2
+                        0.48,
+                        (0, 80, 255),
+                        1
                     )
+
+                    cv2.putText(
+                        display_frame,
+                        "Manual ROI required for live barbell tracking",
+                        (20, warning_y_2),
+                        cv2.FONT_HERSHEY_SIMPLEX,
+                        0.45,
+                        (0, 220, 255),
+                        1
+                    )
+
+                else:
+                    if self.barbell_roi is None:
+                        auto_roi = self.barbell_auto_detector.detect(
+                            frame=clean_frame_for_tracking,
+                            landmarks=landmarks,
+                            pose_landmark_enum=self.mp_pose.PoseLandmark
+                        )
+
+                        if auto_roi is not None:
+                            self.barbell_roi = auto_roi
+                            self.barbell_status_text = "Barbell: Auto Detected"
+
+                            if not self.auto_barbell_detection_reported:
+                                self.status_ready.emit(
+                                    f"Auto barbell disk detected: {auto_roi}"
+                                )
+                                self.auto_barbell_detection_reported = True
+
+                    if self.barbell_roi is not None:
+                        if self.manual_barbell_roi_selected:
+                            self.barbell_status_text = "Barbell: Manual ROI Active"
+                        else:
+                            self.barbell_status_text = "Barbell: Auto Detected"
+
+                        barbell_metrics = self.barbell_tracker.update(
+                            frame=clean_frame_for_tracking,
+                            depth_frame=depth_frame if depth_available else None,
+                            depth_intrinsics=depth_intrinsics,
+                            initial_bbox=self.barbell_roi
+                        )
+
+                        if not barbell_metrics.get("Barbell Detected", False):
+                            self.barbell_status_text = "Barbell: Tracking Lost"
+
+                        # Important for Clean & Jerk:
+                        # Jerk Phase starts only when barbell is clearly above athlete's head.
+                        barbell_metrics = self.add_barbell_pose_reference_metrics(
+                            barbell_metrics=barbell_metrics,
+                            landmarks=landmarks,
+                            image_width=w,
+                            image_height=h
+                        )
+
+                        self.current_phase = self.phase_detector.update(
+                            exercise=self.exercise,
+                            barbell_metrics=barbell_metrics
+                        )
+
+                        trajectory_metrics = self.barbell_tracker.update_trajectory_state(
+                            phase=self.current_phase,
+                            exercise=self.exercise,
+                            barbell_metrics=barbell_metrics
+                        )
+
+                        barbell_metrics.update(trajectory_metrics)
+                        metrics.update(barbell_metrics)
+
+                        self.barbell_tracker.draw_overlay(
+                            display_frame,
+                            camera_view=self.camera_view,
+                            phase=self.current_phase
+                        )
+
+                    else:
+                        barbell_metrics = self.barbell_tracker.empty_metrics()
+                        metrics.update(barbell_metrics)
+                        self.current_phase = "Setup"
+                        self.barbell_status_text = "Barbell: Not Detected"
+
+                        cv2.putText(
+                            display_frame,
+                            "Auto detecting barbell disk...",
+                            (20, 210),
+                            cv2.FONT_HERSHEY_SIMPLEX,
+                            0.48,
+                            (0, 220, 255),
+                            1
+                        )
 
             elif self.camera_view == "Front View":
                 barbell_metrics = self.barbell_tracker.empty_metrics()
@@ -759,19 +843,19 @@ class VideoThread(QThread):
         cv2.circle(
             display_frame,
             (athlete_x, athlete_y),
-            8,
-            (0, 165, 255),
+            5,
+            (0, 200, 255),
             -1
         )
 
         cv2.putText(
             display_frame,
-            "Athlete COM",
-            (athlete_x + 10, athlete_y),
+            "COM",
+            (athlete_x + 8, athlete_y - 8),
             cv2.FONT_HERSHEY_SIMPLEX,
-            0.55,
-            (0, 165, 255),
-            2
+            0.42,
+            (0, 200, 255),
+            1
         )
 
         athlete_depth = None
@@ -784,15 +868,9 @@ class VideoThread(QThread):
             )
 
             if athlete_depth is not None:
-                cv2.putText(
-                    display_frame,
-                    f"Athlete Depth: {athlete_depth:.2f} m",
-                    (20, 145),
-                    cv2.FONT_HERSHEY_SIMPLEX,
-                    0.65,
-                    (0, 165, 255),
-                    2
-                )
+                # Athlete depth value is shown in the metrics panel.
+                # Keep the video preview clean by not drawing this text on the frame.
+                pass
 
         return athlete_depth
 
@@ -800,25 +878,57 @@ class VideoThread(QThread):
         if self.sport != "Weightlifting":
             return
 
-        overlay_lines = [
-            f"Exercise: {self.exercise if self.exercise else 'N/A'}",
-            f"View: {self.camera_view if self.camera_view else 'N/A'}",
-            f"Phase: {self.current_phase}"
+        overlay_items = [
+            (f"Exercise: {self.exercise if self.exercise else 'N/A'}", (0, 255, 255)),
+            (f"View: {self.camera_view if self.camera_view else 'N/A'}", (0, 255, 255)),
+            (f"Phase: {self.current_phase}", (0, 220, 255))
         ]
 
-        y = 30
+        if self.camera_view == "Side View":
+            barbell_color = (0, 255, 0)
 
-        for line in overlay_lines:
+            if "Not Detected" in self.barbell_status_text:
+                barbell_color = (0, 80, 255)
+            elif "Lost" in self.barbell_status_text:
+                barbell_color = (0, 165, 255)
+
+            overlay_items.append((self.barbell_status_text, barbell_color))
+
+        x = 16
+        y = 24
+        font_scale = 0.48
+        thickness = 1
+        line_gap = 22
+
+        for line, color in overlay_items:
+            text_size, _ = cv2.getTextSize(
+                line,
+                cv2.FONT_HERSHEY_SIMPLEX,
+                font_scale,
+                thickness
+            )
+
+            text_w, text_h = text_size
+
+            cv2.rectangle(
+                frame,
+                (x - 5, y - text_h - 5),
+                (x + text_w + 8, y + 5),
+                (0, 0, 0),
+                -1
+            )
+
             cv2.putText(
                 frame,
                 line,
-                (20, y),
+                (x, y),
                 cv2.FONT_HERSHEY_SIMPLEX,
-                0.65,
-                (0, 255, 255),
-                2
+                font_scale,
+                color,
+                thickness
             )
-            y += 28
+
+            y += line_gap
 
     def draw_sprinting_overlay(self, frame):
         if self.sport != "Sprinting":
@@ -829,19 +939,36 @@ class VideoThread(QThread):
             f"Phase: {self.current_phase}"
         ]
 
-        y = 30
+        y = 24
 
         for line in overlay_lines:
+            text_size, _ = cv2.getTextSize(
+                line,
+                cv2.FONT_HERSHEY_SIMPLEX,
+                0.48,
+                1
+            )
+
+            text_w, text_h = text_size
+
+            cv2.rectangle(
+                frame,
+                (11, y - text_h - 5),
+                (28 + text_w, y + 5),
+                (0, 0, 0),
+                -1
+            )
+
             cv2.putText(
                 frame,
                 line,
-                (20, y),
+                (16, y),
                 cv2.FONT_HERSHEY_SIMPLEX,
-                0.65,
+                0.48,
                 (0, 255, 255),
-                2
+                1
             )
-            y += 28
+            y += 22
 
     # ==========================================================
     # DEPTH

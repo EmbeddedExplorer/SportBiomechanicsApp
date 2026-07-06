@@ -2,6 +2,7 @@ from pathlib import Path
 from datetime import datetime
 import html
 import json
+from urllib.parse import quote
 
 import pandas as pd
 
@@ -382,6 +383,257 @@ def build_txt_report(
     return "\n".join(lines)
 
 
+
+def make_report_relative_path(folder_name, file_path):
+    '''
+    Build a browser-safe relative path from Reports/analysis_report.html
+    to a file in ../Plots or ../CSV.
+    '''
+
+    file_name = Path(file_path).name
+    return f"../{folder_name}/{quote(file_name)}"
+
+
+def title_from_filename(filename):
+    stem = Path(filename).stem
+    words = stem.replace("_", " ").replace("-", " ").split()
+    return " ".join(word.capitalize() for word in words)
+
+
+def get_plot_display_info(file_path):
+    '''
+    Return display title, description, and priority for known BioMotion plots.
+    Unknown plots are still shown at the end of the report.
+    '''
+
+    filename = Path(file_path).name
+
+    plot_info = {
+        "barbell_trajectory_phase_highlighted.png": (
+            1,
+            "Phase-Highlighted Barbell Trajectory",
+            "Shows the barbell path with each detected lifting phase highlighted separately."
+        ),
+        "barbell_trajectory_annotated.png": (
+            2,
+            "Annotated Barbell Trajectory",
+            "Shows the smoothed barbell path with start, maximum height, end point, and phase transition annotations."
+        ),
+        "barbell_trajectory_powerpoint_style.png": (
+            3,
+            "Presentation-Style Barbell Trajectory",
+            "A clean trajectory figure suitable for presentation slides and report discussion."
+        ),
+        "barbell_velocity_phase_highlighted.png": (
+            4,
+            "Barbell Vertical Velocity",
+            "Shows barbell vertical velocity over time with phase highlighting."
+        ),
+        "hip_knee_angles_phase_highlighted.png": (
+            5,
+            "Hip and Knee Angles",
+            "Shows left and right hip/knee joint angle changes over time."
+        ),
+        "upper_limb_angles_phase_highlighted.png": (
+            6,
+            "Shoulder and Elbow Angles",
+            "Shows upper-limb joint angle changes over time."
+        ),
+        "trunk_lean_phase_highlighted.png": (
+            7,
+            "Trunk Lean Angle",
+            "Shows trunk lean angle changes over time."
+        ),
+        "sprinting_phase_timeline.png": (
+            1,
+            "Sprinting Phase Timeline",
+            "Shows detected sprinting phase segments across the recording."
+        ),
+        "sprinting_knee_ankle_angles_phase_highlighted.png": (
+            5,
+            "Sprinting Knee and Ankle Angles",
+            "Shows knee and ankle angle changes during sprinting."
+        ),
+        "sprinting_depth_profile_phase_highlighted.png": (
+            8,
+            "Sprinting Depth Profile",
+            "Shows athlete and center depth measurements over time."
+        ),
+        "interlimb_lower_limb_coordination_time_series.png": (
+            9,
+            "Lower-Limb Interlimb Coordination",
+            "Shows left and right hip, knee, and ankle angle timing relationships across sprinting phases."
+        ),
+        "interlimb_knee_phase_relationship.png": (
+            10,
+            "Left-Right Knee Phase Relationship",
+            "Shows the phase-colored relationship between left knee and right knee angles."
+        ),
+        "interlimb_hip_phase_relationship.png": (
+            11,
+            "Left-Right Hip Phase Relationship",
+            "Shows the phase-colored relationship between left hip and right hip angles."
+        ),
+        "interlimb_contralateral_arm_leg_coordination.png": (
+            12,
+            "Contralateral Arm-Leg Coordination",
+            "Shows coordination relationships between opposite arm and leg movements."
+        ),
+        "interlimb_coordination_phase_summary.png": (
+            13,
+            "Phase-wise Interlimb Coordination Summary",
+            "Compares mean left-right coordination differences across sprinting phases."
+        )
+    }
+
+    if filename in plot_info:
+        return plot_info[filename]
+
+    return (
+        99,
+        title_from_filename(filename),
+        "Additional generated plot from the analysis session."
+    )
+
+
+def sort_plot_files_for_report(plot_files):
+    return sorted(
+        plot_files,
+        key=lambda file_path: (
+            get_plot_display_info(file_path)[0],
+            Path(file_path).name.lower()
+        )
+    )
+
+
+def build_file_links_html(file_paths, folder_name, empty_message):
+    if not file_paths:
+        return f"<li>{html.escape(empty_message)}</li>"
+
+    rows = []
+
+    for file_path in file_paths:
+        relative_path = make_report_relative_path(folder_name, file_path)
+        file_name = Path(file_path).name
+
+        rows.append(
+            f'''
+            <li>
+                <a href="{html.escape(relative_path)}" target="_blank">
+                    {html.escape(file_name)}
+                </a>
+            </li>
+            '''
+        )
+
+    return "\n".join(rows)
+
+
+def build_plot_gallery_html(plot_files):
+    if not plot_files:
+        return '''
+        <div class="empty-state">
+            No plot images were found for this session.
+        </div>
+        '''
+
+    sorted_plots = sort_plot_files_for_report(plot_files)
+    cards = []
+
+    for index, file_path in enumerate(sorted_plots, start=1):
+        _, title, description = get_plot_display_info(file_path)
+        relative_path = make_report_relative_path("Plots", file_path)
+        plot_id = f"plot-review-{index}"
+
+        cards.append(
+            f'''
+            <article class="plot-card">
+                <a href="#{plot_id}" class="plot-thumb-link">
+                    <img
+                        src="{html.escape(relative_path)}"
+                        alt="{html.escape(title)}"
+                        class="plot-thumb"
+                        loading="lazy"
+                    >
+                </a>
+
+                <div class="plot-card-body">
+                    <h3>{html.escape(title)}</h3>
+                    <p>{html.escape(description)}</p>
+
+                    <div class="plot-actions">
+                        <a href="#{plot_id}">Review in report</a>
+                        <a href="{html.escape(relative_path)}" target="_blank">Open full-size plot</a>
+                    </div>
+                </div>
+            </article>
+            '''
+        )
+
+    return "\n".join(cards)
+
+
+def build_individual_plot_review_html(plot_files):
+    if not plot_files:
+        return '''
+        <div class="empty-state">
+            No individual plots are available for review.
+        </div>
+        '''
+
+    sorted_plots = sort_plot_files_for_report(plot_files)
+    sections = []
+
+    for index, file_path in enumerate(sorted_plots, start=1):
+        _, title, description = get_plot_display_info(file_path)
+        relative_path = make_report_relative_path("Plots", file_path)
+        plot_id = f"plot-review-{index}"
+
+        sections.append(
+            f'''
+            <section class="plot-review-card" id="{plot_id}">
+                <div class="plot-review-header">
+                    <div>
+                        <h3>{html.escape(title)}</h3>
+                        <p>{html.escape(description)}</p>
+                    </div>
+
+                    <a href="{html.escape(relative_path)}" target="_blank" class="button-link">
+                        Open image file
+                    </a>
+                </div>
+
+                <a href="{html.escape(relative_path)}" target="_blank">
+                    <img
+                        src="{html.escape(relative_path)}"
+                        alt="{html.escape(title)}"
+                        class="plot-large"
+                        loading="lazy"
+                    >
+                </a>
+            </section>
+            '''
+        )
+
+    return "\n".join(sections)
+
+
+def build_metric_cards_html(key_metrics):
+    cards = []
+
+    for label, value in key_metrics:
+        cards.append(
+            f'''
+            <div class="metric-card">
+                <div class="label">{html.escape(str(label))}</div>
+                <div class="value">{html.escape(str(value))}</div>
+            </div>
+            '''
+        )
+
+    return "\n".join(cards)
+
+
 def build_html_report(
     session_path,
     session_info,
@@ -390,35 +642,28 @@ def build_html_report(
     csv_files,
     plot_files
 ):
-    metric_rows = ""
+    csv_rows = build_file_links_html(
+        file_paths=csv_files,
+        folder_name="CSV",
+        empty_message="No CSV files found."
+    )
 
-    for label, value in key_metrics:
-        metric_rows += f"""
-            <tr>
-                <td class="key">{html.escape(str(label))}</td>
-                <td>{html.escape(str(value))}</td>
-            </tr>
-        """
-
-    csv_rows = ""
-
-    if csv_files:
-        for file_path in csv_files:
-            csv_rows += f"<li>{html.escape(file_path.name)}</li>"
-    else:
-        csv_rows = "<li>No CSV files found.</li>"
-
-    plot_rows = ""
-
-    if plot_files:
-        for file_path in plot_files:
-            plot_rows += f"<li>{html.escape(file_path.name)}</li>"
-    else:
-        plot_rows = "<li>No plot files found.</li>"
+    plot_rows = build_file_links_html(
+        file_paths=sort_plot_files_for_report(plot_files),
+        folder_name="Plots",
+        empty_message="No plot files found."
+    )
 
     phase_table_html = dataframe_to_html_table(phase_summary_df)
+    phase_table_html = f'<div class="table-scroll">{phase_table_html}</div>'
 
-    html_text = f"""
+    metric_cards_html = build_metric_cards_html(key_metrics)
+    plot_gallery_html = build_plot_gallery_html(plot_files)
+    individual_plot_review_html = build_individual_plot_review_html(plot_files)
+
+    report_generated_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    html_text = f'''
     <!DOCTYPE html>
     <html>
     <head>
@@ -426,55 +671,137 @@ def build_html_report(
         <title>BioMotion Studio Analysis Report</title>
 
         <style>
+            :root {{
+                --bg-main: #eef3f8;
+                --bg-card: #ffffff;
+                --bg-soft: #f6f9fc;
+                --primary: #005b96;
+                --primary-light: #0078d7;
+                --text-main: #1b1f23;
+                --text-muted: #5d6975;
+                --border: #d8e1e8;
+                --shadow: 0 8px 24px rgba(15, 40, 70, 0.12);
+            }}
+
+            * {{
+                box-sizing: border-box;
+            }}
+
             body {{
                 font-family: Segoe UI, Arial, sans-serif;
-                background-color: #F4F7FA;
-                color: #1B1F23;
-                margin: 30px;
+                background: linear-gradient(180deg, #eaf3fb 0%, var(--bg-main) 100%);
+                color: var(--text-main);
+                margin: 0;
+                padding: 28px;
             }}
 
             .container {{
-                max-width: 1200px;
+                max-width: 1280px;
                 margin: auto;
-                background-color: white;
-                border-radius: 12px;
-                padding: 28px;
-                box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+                overflow: hidden;
             }}
 
-            h1 {{
-                color: #005B96;
-                border-bottom: 3px solid #0078D7;
-                padding-bottom: 10px;
+            .hero {{
+                background: linear-gradient(135deg, #003b5c 0%, #0078d7 100%);
+                color: white;
+                border-radius: 18px;
+                padding: 30px;
+                box-shadow: var(--shadow);
+                margin-bottom: 22px;
+            }}
+
+            .hero h1 {{
+                margin: 0;
+                font-size: 32px;
+                letter-spacing: 0.2px;
+            }}
+
+            .hero p {{
+                margin: 10px 0 0 0;
+                color: #d9ecff;
+                font-size: 15px;
+            }}
+
+            .hero-grid {{
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+                gap: 12px;
+                margin-top: 22px;
+            }}
+
+            .hero-item {{
+                background: rgba(255, 255, 255, 0.13);
+                border: 1px solid rgba(255, 255, 255, 0.20);
+                border-radius: 12px;
+                padding: 12px;
+            }}
+
+            .hero-item span {{
+                display: block;
+                font-size: 12px;
+                color: #bfe0ff;
+                text-transform: uppercase;
+                letter-spacing: 0.6px;
+                margin-bottom: 5px;
+            }}
+
+            .hero-item strong {{
+                display: block;
+                font-size: 15px;
+                word-break: break-word;
+            }}
+
+            .section {{
+                background-color: var(--bg-card);
+                border-radius: 16px;
+                padding: 24px;
+                margin-bottom: 22px;
+                box-shadow: var(--shadow);
             }}
 
             h2 {{
-                color: #0078D7;
-                margin-top: 28px;
+                color: var(--primary);
+                margin: 0 0 16px 0;
+                font-size: 22px;
+            }}
+
+            h3 {{
+                color: #003b5c;
+                margin: 0 0 8px 0;
+                font-size: 17px;
+            }}
+
+            p {{
+                color: var(--text-muted);
+                line-height: 1.55;
             }}
 
             table {{
                 width: 100%;
                 border-collapse: collapse;
                 margin-top: 10px;
+                overflow: hidden;
+                border-radius: 10px;
             }}
 
             td, th {{
-                border: 1px solid #D8E1E8;
-                padding: 8px;
+                border: 1px solid var(--border);
+                padding: 9px;
                 text-align: left;
                 font-size: 14px;
+                vertical-align: top;
             }}
 
             th {{
-                background-color: #EAF4FF;
-                color: #003B5C;
+                background-color: #eaf4ff;
+                color: #003b5c;
+                font-weight: 700;
             }}
 
             .key {{
                 font-weight: bold;
                 width: 30%;
-                background-color: #F1F7FC;
+                background-color: #f1f7fc;
             }}
 
             .path {{
@@ -483,93 +810,388 @@ def build_html_report(
                 word-break: break-all;
             }}
 
+            .metrics-grid {{
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+                gap: 14px;
+                margin-top: 14px;
+            }}
+
+            .metric-card {{
+                background: var(--bg-soft);
+                border: 1px solid var(--border);
+                border-radius: 12px;
+                padding: 14px;
+            }}
+
+            .metric-card .label {{
+                color: var(--text-muted);
+                font-size: 13px;
+                margin-bottom: 6px;
+            }}
+
+            .metric-card .value {{
+                color: #003b5c;
+                font-size: 18px;
+                font-weight: 700;
+                word-break: break-word;
+            }}
+
+            .plot-gallery {{
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+                gap: 18px;
+            }}
+
+            .plot-card {{
+                background-color: var(--bg-soft);
+                border: 1px solid var(--border);
+                border-radius: 14px;
+                overflow: hidden;
+                display: flex;
+                flex-direction: column;
+                min-height: 100%;
+            }}
+
+            .plot-thumb-link {{
+                display: block;
+                background: #ffffff;
+                border-bottom: 1px solid var(--border);
+            }}
+
+            .plot-thumb {{
+                display: block;
+                width: 100%;
+                height: 220px;
+                object-fit: contain;
+                padding: 10px;
+                background: white;
+            }}
+
+            .plot-card-body {{
+                padding: 14px;
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+            }}
+
+            .plot-card-body p {{
+                margin: 0 0 12px 0;
+                font-size: 13px;
+                flex: 1;
+            }}
+
+            .plot-actions {{
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
+            }}
+
+            a {{
+                color: var(--primary-light);
+                text-decoration: none;
+                font-weight: 600;
+            }}
+
+            a:hover {{
+                text-decoration: underline;
+            }}
+
+            .plot-actions a,
+            .button-link {{
+                display: inline-block;
+                background: #eaf4ff;
+                border: 1px solid #c8e4ff;
+                color: #005b96;
+                border-radius: 999px;
+                padding: 7px 11px;
+                font-size: 12px;
+                text-decoration: none;
+            }}
+
+            .plot-actions a:hover,
+            .button-link:hover {{
+                background: #d8ecff;
+                text-decoration: none;
+            }}
+
+            .plot-review-card {{
+                border: 1px solid var(--border);
+                background-color: var(--bg-soft);
+                border-radius: 16px;
+                padding: 18px;
+                margin-bottom: 22px;
+                scroll-margin-top: 20px;
+            }}
+
+            .plot-review-header {{
+                display: flex;
+                justify-content: space-between;
+                gap: 14px;
+                align-items: flex-start;
+                margin-bottom: 14px;
+            }}
+
+            .plot-review-header p {{
+                margin: 0;
+            }}
+
+            .plot-large {{
+                width: 100%;
+                max-height: 900px;
+                object-fit: contain;
+                background: white;
+                border: 1px solid var(--border);
+                border-radius: 12px;
+                padding: 10px;
+            }}
+
             ul {{
                 line-height: 1.8;
+                margin-top: 8px;
+            }}
+
+            .file-grid {{
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+                gap: 18px;
             }}
 
             .note {{
-                background-color: #FFF8E5;
-                border-left: 5px solid #FFCC66;
-                padding: 12px;
+                background-color: #fff8e5;
+                border-left: 5px solid #ffcc66;
+                padding: 14px;
+                border-radius: 8px;
                 margin-top: 10px;
             }}
 
             .data-table {{
                 font-size: 12px;
             }}
+
+            .table-scroll {{
+                width: 100%;
+                overflow-x: auto;
+                overflow-y: hidden;
+                border: 1px solid var(--border);
+                border-radius: 12px;
+                background: white;
+                margin-top: 12px;
+            }}
+
+            .table-scroll table {{
+                min-width: 1200px;
+                margin-top: 0;
+                border: 0;
+                border-radius: 0;
+            }}
+
+            .table-scroll th,
+            .table-scroll td {{
+                white-space: nowrap;
+            }}
+
+            .table-scroll td:first-child,
+            .table-scroll th:first-child {{
+                position: sticky;
+                left: 0;
+                z-index: 2;
+                background: #f1f7fc;
+                box-shadow: 2px 0 4px rgba(0, 0, 0, 0.06);
+            }}
+
+            .table-scroll th:first-child {{
+                z-index: 3;
+                background: #eaf4ff;
+            }}
+
+            .empty-state {{
+                background: #f6f9fc;
+                border: 1px dashed #b9c7d3;
+                border-radius: 12px;
+                padding: 18px;
+                color: var(--text-muted);
+            }}
+
+            .footer {{
+                text-align: center;
+                color: var(--text-muted);
+                font-size: 12px;
+                padding: 18px;
+            }}
+
+            @media print {{
+                body {{
+                    background: white;
+                    padding: 0;
+                }}
+
+                .hero,
+                .section {{
+                    box-shadow: none;
+                    break-inside: avoid;
+                }}
+
+                .plot-card {{
+                    break-inside: avoid;
+                }}
+
+                .plot-review-card {{
+                    break-inside: avoid;
+                }}
+
+                .button-link,
+                .plot-actions {{
+                    display: none;
+                }}
+            }}
         </style>
     </head>
 
     <body>
         <div class="container">
-            <h1>BioMotion Studio Analysis Report</h1>
-
-            <h2>1. Session Information</h2>
-            <table>
-                <tr>
-                    <td class="key">Sport</td>
-                    <td>{html.escape(safe_text(session_info.get("sport")))}</td>
-                </tr>
-                <tr>
-                    <td class="key">Exercise</td>
-                    <td>{html.escape(safe_text(session_info.get("exercise")))}</td>
-                </tr>
-                <tr>
-                    <td class="key">Camera View</td>
-                    <td>{html.escape(safe_text(session_info.get("camera_view")))}</td>
-                </tr>
-                <tr>
-                    <td class="key">Input Mode</td>
-                    <td>{html.escape(safe_text(session_info.get("input_mode")))}</td>
-                </tr>
-                <tr>
-                    <td class="key">Source File</td>
-                    <td class="path">{html.escape(safe_text(session_info.get("source_file"), "Live Source / Not recorded"))}</td>
-                </tr>
-                <tr>
-                    <td class="key">Results Path</td>
-                    <td class="path">{html.escape(str(session_path))}</td>
-                </tr>
-                <tr>
-                    <td class="key">Created At</td>
-                    <td>{html.escape(safe_text(session_info.get("created_at")))}</td>
-                </tr>
-            </table>
-
-            <h2>2. Key Results</h2>
-            <table>
-                {metric_rows}
-            </table>
-
-            <h2>3. Phase-wise Biomechanics Summary</h2>
-            {phase_table_html}
-
-            <h2>4. Generated CSV Files</h2>
-            <ul>
-                {csv_rows}
-            </ul>
-
-            <h2>5. Generated Plot Files</h2>
-            <ul>
-                {plot_rows}
-            </ul>
-
-            <h2>6. Interpretation Notes</h2>
-            <div class="note">
+            <header class="hero">
+                <h1>BioMotion Studio Analysis Report</h1>
                 <p>
-                    This report summarizes biomechanical metrics extracted from pose landmarks,
-                    depth data, phase detection, and movement tracking signals.
-                    Numerical values should be interpreted together with the saved plots and CSV files.
+                    Review summary metrics, phase-wise biomechanics, generated files,
+                    and all plots directly inside this report.
                 </p>
+
+                <div class="hero-grid">
+                    <div class="hero-item">
+                        <span>Sport</span>
+                        <strong>{html.escape(safe_text(session_info.get("sport")))}</strong>
+                    </div>
+                    <div class="hero-item">
+                        <span>Exercise</span>
+                        <strong>{html.escape(safe_text(session_info.get("exercise")))}</strong>
+                    </div>
+                    <div class="hero-item">
+                        <span>Camera view</span>
+                        <strong>{html.escape(safe_text(session_info.get("camera_view")))}</strong>
+                    </div>
+                    <div class="hero-item">
+                        <span>Input mode</span>
+                        <strong>{html.escape(safe_text(session_info.get("input_mode")))}</strong>
+                    </div>
+                    <div class="hero-item">
+                        <span>Created at</span>
+                        <strong>{html.escape(safe_text(session_info.get("created_at")))}</strong>
+                    </div>
+                    <div class="hero-item">
+                        <span>Report generated</span>
+                        <strong>{html.escape(report_generated_at)}</strong>
+                    </div>
+                </div>
+            </header>
+
+            <section class="section">
+                <h2>1. Session Information</h2>
+                <table>
+                    <tr>
+                        <td class="key">Sport</td>
+                        <td>{html.escape(safe_text(session_info.get("sport")))}</td>
+                    </tr>
+                    <tr>
+                        <td class="key">Exercise</td>
+                        <td>{html.escape(safe_text(session_info.get("exercise")))}</td>
+                    </tr>
+                    <tr>
+                        <td class="key">Camera View</td>
+                        <td>{html.escape(safe_text(session_info.get("camera_view")))}</td>
+                    </tr>
+                    <tr>
+                        <td class="key">Input Mode</td>
+                        <td>{html.escape(safe_text(session_info.get("input_mode")))}</td>
+                    </tr>
+                    <tr>
+                        <td class="key">Source File</td>
+                        <td class="path">{html.escape(safe_text(session_info.get("source_file"), "Live Source / Not recorded"))}</td>
+                    </tr>
+                    <tr>
+                        <td class="key">Results Path</td>
+                        <td class="path">{html.escape(str(session_path))}</td>
+                    </tr>
+                    <tr>
+                        <td class="key">Created At</td>
+                        <td>{html.escape(safe_text(session_info.get("created_at")))}</td>
+                    </tr>
+                </table>
+            </section>
+
+            <section class="section">
+                <h2>2. Key Results</h2>
+
+                <div class="metrics-grid">
+                    {metric_cards_html}
+                </div>
+            </section>
+
+            <section class="section">
+                <h2>3. Phase-wise Biomechanics Summary</h2>
+                {phase_table_html}
+            </section>
+
+            <section class="section">
+                <h2>4. Plot Gallery</h2>
                 <p>
-                    For research use, verify phase labels visually and confirm that pose tracking
-                    was stable during the recording.
+                    Each plot is embedded for quick review. Use
+                    <strong>Review in report</strong> to jump to the larger version,
+                    or <strong>Open full-size plot</strong> to view the original PNG file.
                 </p>
+
+                <div class="plot-gallery">
+                    {plot_gallery_html}
+                </div>
+            </section>
+
+            <section class="section">
+                <h2>5. Individual Plot Review</h2>
+                {individual_plot_review_html}
+            </section>
+
+            <section class="section">
+                <h2>6. Generated Files</h2>
+
+                <div class="file-grid">
+                    <div>
+                        <h3>CSV Files</h3>
+                        <ul>
+                            {csv_rows}
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h3>Plot Files</h3>
+                        <ul>
+                            {plot_rows}
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section">
+                <h2>7. Interpretation Notes</h2>
+                <div class="note">
+                    <p>
+                        This report summarizes biomechanical metrics extracted from pose landmarks,
+                        depth data, phase detection, and movement tracking signals.
+                        Numerical values should be interpreted together with the saved plots and CSV files.
+                    </p>
+                    <p>
+                        For research use, verify phase labels visually and confirm that pose tracking
+                        was stable during the recording.
+                    </p>
+                </div>
+            </section>
+
+            <div class="footer">
+                Generated by BioMotion Studio.
             </div>
         </div>
     </body>
     </html>
-    """
+    '''
 
     return html_text
 

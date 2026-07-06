@@ -739,16 +739,16 @@ class BarbellTracker:
         if self.current_center_px is not None:
             x, y = self.current_center_px
 
-            cv2.circle(frame, (x, y), 8, (0, 0, 255), -1)
+            cv2.circle(frame, (x, y), 6, (0, 255, 0), -1)
 
             cv2.putText(
                 frame,
                 "Barbell",
-                (x + 10, y - 10),
+                (x + 8, y - 8),
                 cv2.FONT_HERSHEY_SIMPLEX,
-                0.55,
-                (0, 0, 255),
-                2
+                0.42,
+                (0, 255, 0),
+                1
             )
 
         if self.bbox is not None:
@@ -758,7 +758,7 @@ class BarbellTracker:
                 frame,
                 (bx, by),
                 (bx + bw, by + bh),
-                (0, 0, 255),
+                (0, 255, 0),
                 2
             )
 
@@ -775,7 +775,7 @@ class BarbellTracker:
                 frame,
                 [pts],
                 False,
-                (0, 255, 255),
+                (0, 255, 0),
                 2
             )
 
@@ -807,7 +807,7 @@ class BarbellTracker:
                 (20, frame.shape[0] - 25),
                 cv2.FONT_HERSHEY_SIMPLEX,
                 0.6,
-                (0, 255, 255),
+                (0, 255, 0),
                 2
             )
 

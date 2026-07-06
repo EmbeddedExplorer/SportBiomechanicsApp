@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 
 from modules.phase_definitions import EXCLUDED_PLOT_PHASES
 from modules.report_generator import generate_analysis_reports
+from modules.interlimb_coordination_analyzer import save_interlimb_coordination_outputs
 
 
 class AnalysisRecorder:
@@ -126,6 +127,7 @@ class AnalysisRecorder:
         self.save_lift_summary_csv(df, csv_folder)
         self.save_sprint_summary_csv(df, csv_folder)
         self.save_phase_biomechanics_summary_csv(df, csv_folder)
+        self.save_interlimb_coordination_csv_and_plots(df, csv_folder, plots_folder)
         self.save_summary_csv(df, csv_folder)
         self.save_plots(df, plots_folder)
         self.save_text_report(df, reports_folder)
@@ -850,6 +852,45 @@ class AnalysisRecorder:
         summary_df = pd.DataFrame(summary_rows)
         summary_df.to_csv(csv_folder / "phase_biomechanics_summary.csv", index=False)
 
+    def save_interlimb_coordination_csv_and_plots(self, df, csv_folder, plots_folder):
+        """
+        Save sprinting interlimb coordination analysis outputs.
+
+        This is only applied to sprinting sessions. Weightlifting outputs are
+        not affected.
+
+        Creates:
+            CSV/interlimb_coordination_summary.csv
+
+            Plots/interlimb_lower_limb_coordination_time_series.png
+            Plots/interlimb_knee_phase_relationship.png
+            Plots/interlimb_hip_phase_relationship.png
+            Plots/interlimb_contralateral_arm_leg_coordination.png
+            Plots/interlimb_coordination_phase_summary.png
+        """
+
+        if df.empty or not self.is_sprinting():
+            return
+
+        try:
+            save_interlimb_coordination_outputs(
+                df=df,
+                csv_folder=csv_folder,
+                plots_folder=plots_folder,
+                exercise=self.exercise,
+                camera_view=self.camera_view
+            )
+
+        except Exception as e:
+            reports_folder = self.session_path / "Reports"
+            reports_folder.mkdir(parents=True, exist_ok=True)
+
+            error_file = reports_folder / "interlimb_coordination_error.txt"
+
+            with open(error_file, "w", encoding="utf-8") as file:
+                file.write("Interlimb coordination analysis failed.\n\n")
+                file.write(f"Error: {e}\n")
+
     def save_summary_csv(self, df, csv_folder):
         numeric_columns = [
             "left_hip_angle_deg",
@@ -1407,7 +1448,15 @@ class AnalysisRecorder:
 
         unit = "m" if use_meters else "px"
 
+
         def apply_trajectory_axis_scaling(ax, data):
+            """
+            Fix barbell trajectory plot scaling.
+
+            This keeps horizontal and vertical displacement in equal scale,
+            so the trajectory shape is not stretched horizontally.
+            """
+
             x_values = pd.to_numeric(
                 data["trajectory_x_smooth"],
                 errors="coerce"
@@ -1426,31 +1475,51 @@ class AnalysisRecorder:
             y_min = float(y_values.min())
             y_max = float(y_values.max())
 
-            y_range = max(y_max - y_min, 1e-6)
-
+            # Always include start reference line at x = 0.
             visible_x_min = min(x_min, 0.0)
             visible_x_max = max(x_max, 0.0)
 
-            visible_x_range = max(visible_x_max - visible_x_min, 1e-6)
-
-            desired_x_range = max(
-                visible_x_range * 1.35,
-                y_range * 0.35
-            )
-
-            x_center = (visible_x_min + visible_x_max) / 2.0
-
-            x_margin_min = x_center - desired_x_range / 2.0
-            x_margin_max = x_center + desired_x_range / 2.0
+            x_range = max(visible_x_max - visible_x_min, 1e-6)
+            y_range = max(y_max - y_min, 1e-6)
 
             if use_meters:
-                y_margin = max(y_range * 0.05, 0.02)
+                x_margin = max(x_range * 0.18, 0.03)
+                y_margin = max(y_range * 0.08, 0.04)
             else:
-                y_margin = max(y_range * 0.05, 5.0)
+                x_margin = max(x_range * 0.18, 8.0)
+                y_margin = max(y_range * 0.08, 8.0)
 
-            ax.set_xlim(x_margin_min, x_margin_max)
-            ax.set_ylim(y_min - y_margin, y_max + y_margin)
+            ax.set_xlim(
+                visible_x_min - x_margin,
+                visible_x_max + x_margin
+            )
 
+            ax.set_ylim(
+                y_min - y_margin,
+                y_max + y_margin
+            )
+
+            # Important fix:
+            # Same scale for horizontal and vertical displacement.
+            ax.set_aspect("equal", adjustable="box")
+
+        def place_trajectory_legend(ax):
+            """
+            Place the trajectory legend outside the graph area.
+
+            This prevents the legend from covering the barbell path after
+            equal-axis scaling makes the graph area narrower.
+            """
+
+            ax.legend(
+                loc="center left",
+                bbox_to_anchor=(1.03, 0.5),
+                fontsize=7,
+                frameon=True,
+                framealpha=0.90,
+                borderaxespad=0.0
+            )
+        
         start = plot_df.iloc[0]
         end = plot_df.iloc[-1]
 
@@ -1477,7 +1546,7 @@ class AnalysisRecorder:
         # ======================================================
         # Plot 1: Annotated trajectory
         # ======================================================
-        fig, ax = plt.subplots(figsize=(6.2, 6.8))
+        fig, ax = plt.subplots(figsize=(9.0, 7.2))
 
         ax.plot(
             plot_df["trajectory_x_smooth"],
@@ -1559,12 +1628,20 @@ class AnalysisRecorder:
         apply_trajectory_axis_scaling(ax, plot_df)
 
         ax.grid(True, alpha=0.3)
-        ax.legend(fontsize=7)
+        place_trajectory_legend(ax)
 
-        fig.tight_layout()
+        fig.tight_layout(rect=[0.0, 0.0, 0.78, 1.0])
 
-        fig.savefig(plots_folder / "barbell_trajectory_annotated.png", dpi=300)
-        fig.savefig(plots_folder / "barbell_trajectory_powerpoint_style.png", dpi=300)
+        fig.savefig(
+            plots_folder / "barbell_trajectory_annotated.png",
+            dpi=300,
+            bbox_inches="tight"
+        )
+        fig.savefig(
+            plots_folder / "barbell_trajectory_powerpoint_style.png",
+            dpi=300,
+            bbox_inches="tight"
+        )
 
         plt.close(fig)
 
@@ -1577,7 +1654,7 @@ class AnalysisRecorder:
         phase_df = plot_df.copy()
         phase_df["phase"] = phase_df["phase"].fillna("Unknown")
 
-        fig, ax = plt.subplots(figsize=(6.4, 6.8))
+        fig, ax = plt.subplots(figsize=(9.2, 7.2))
 
         start_index = 0
         phases = phase_df["phase"].tolist()
@@ -1673,10 +1750,14 @@ class AnalysisRecorder:
         apply_trajectory_axis_scaling(ax, phase_df)
 
         ax.grid(True, alpha=0.3)
-        ax.legend(fontsize=7)
+        place_trajectory_legend(ax)
 
-        fig.tight_layout()
-        fig.savefig(plots_folder / "barbell_trajectory_phase_highlighted.png", dpi=300)
+        fig.tight_layout(rect=[0.0, 0.0, 0.78, 1.0])
+        fig.savefig(
+            plots_folder / "barbell_trajectory_phase_highlighted.png",
+            dpi=300,
+            bbox_inches="tight"
+        )
 
         plt.close(fig)
 
