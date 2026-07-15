@@ -60,8 +60,6 @@ hiddenimports += [
     "reportlab",
     "PIL",
     "modules.interlimb_coordination_analyzer",
-    "modules.live_tracking_thread",
-    "ui.live_tracking_page",
     "modules.report_generator",
     "modules.database_manager",
     "modules.phase_definitions",

@@ -1,4 +1,5 @@
 from pathlib import Path
+import sys
 
 from PyQt6.QtWidgets import (
     QWidget,
@@ -15,11 +16,23 @@ from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QPixmap
 
 
+def resource_path(relative_path):
+    """Return an asset path for source and PyInstaller builds."""
+
+    try:
+        base_path = Path(sys._MEIPASS)
+    except Exception:
+        base_path = Path(__file__).resolve().parent.parent
+
+    return base_path / relative_path
+
+
 class HomePage(QWidget):
     def __init__(
         self,
         on_weightlifting,
         on_sprinting,
+        on_live_tracking,
         on_results,
         on_history,
         on_about,
@@ -51,7 +64,7 @@ class HomePage(QWidget):
         logo_label = QLabel()
         logo_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        logo_path = Path("assets") / "logo.png"
+        logo_path = resource_path("assets/logo.png")
 
         if logo_path.exists():
             pixmap = QPixmap(str(logo_path))
@@ -71,12 +84,13 @@ class HomePage(QWidget):
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         title.setObjectName("SideTitle")
 
-        version = QLabel("v0.90 Beta")
+        version = QLabel("v0.93 Beta")
         version.setAlignment(Qt.AlignmentFlag.AlignCenter)
         version.setObjectName("VersionLabel")
 
         btn_weightlifting = QPushButton("Weightlifting Analysis")
         btn_sprinting = QPushButton("Sprinting Analysis")
+        btn_live_tracking = QPushButton("Live Tracking")
         btn_results = QPushButton("Results Dashboard")
         btn_history = QPushButton("Analysis History")
         btn_about = QPushButton("About")
@@ -85,6 +99,7 @@ class HomePage(QWidget):
         buttons = [
             btn_weightlifting,
             btn_sprinting,
+            btn_live_tracking,
             btn_results,
             btn_history,
             btn_about,
@@ -99,6 +114,7 @@ class HomePage(QWidget):
 
         btn_weightlifting.clicked.connect(on_weightlifting)
         btn_sprinting.clicked.connect(on_sprinting)
+        btn_live_tracking.clicked.connect(on_live_tracking)
         btn_results.clicked.connect(on_results)
         btn_history.clicked.connect(on_history)
         btn_about.clicked.connect(on_about)
@@ -111,6 +127,7 @@ class HomePage(QWidget):
 
         nav_layout.addWidget(btn_weightlifting)
         nav_layout.addWidget(btn_sprinting)
+        nav_layout.addWidget(btn_live_tracking)
         nav_layout.addWidget(btn_results)
         nav_layout.addWidget(btn_history)
         nav_layout.addWidget(btn_about)
@@ -134,7 +151,7 @@ class HomePage(QWidget):
         heading.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         subtitle = QLabel(
-            "Biomechanics Analysis Platform for Weightlifting and Sprinting"
+            "Biomechanics Analysis Platform for Weightlifting, Sprinting, and Live Pose Tracking"
         )
         subtitle.setObjectName("DashboardSubtitle")
         subtitle.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -172,8 +189,8 @@ class HomePage(QWidget):
         outputs_card = self.create_info_card(
             title="Outputs",
             body=(
-                "CSV exports, phase summaries, plot viewer, HTML/TXT reports, "
-                "and analysis history reload."
+                "Live RealSense RGB/depth review, CSV exports, plot viewer, "
+                "HTML/TXT reports, and analysis history reload."
             )
         )
 
@@ -214,8 +231,8 @@ class HomePage(QWidget):
         quick_layout = QVBoxLayout()
 
         quick_text = QLabel(
-            "Select an analysis module → verify preview/tracking → record analysis → "
-            "review dashboard, CSV files, plots, reports, and history."
+            "Select an analysis module or Live Tracking → verify the camera and pose → "
+            "track selected angles → review outputs, reports, and history."
         )
         quick_text.setObjectName("InfoText")
         quick_text.setWordWrap(True)

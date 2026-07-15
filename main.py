@@ -13,6 +13,7 @@ from PyQt6.QtGui import QIcon
 from ui.home_page import HomePage
 from ui.weightlifting_page import WeightliftingPage
 from ui.sprinting_page import SprintingPage
+from ui.live_tracking_page import LiveTrackingPage
 from ui.results_page import ResultsPage
 from ui.history_page import HistoryPage
 from ui.about_page import AboutPage
@@ -78,6 +79,7 @@ class MainWindow(QMainWindow):
         self.home_page = HomePage(
             on_weightlifting=self.show_weightlifting_page,
             on_sprinting=self.show_sprinting_page,
+            on_live_tracking=self.show_live_tracking_page,
             on_results=self.show_results_page,
             on_history=self.show_history_page,
             on_about=self.show_about_page,
@@ -92,6 +94,10 @@ class MainWindow(QMainWindow):
         self.sprinting_page = SprintingPage(
             on_back=self.show_home_page,
             on_start_analysis=self.complete_analysis_session
+        )
+
+        self.live_tracking_page = LiveTrackingPage(
+            on_back=self.show_home_page
         )
 
         self.results_page = ResultsPage(
@@ -110,6 +116,7 @@ class MainWindow(QMainWindow):
         self.stack.addWidget(self.home_page)
         self.stack.addWidget(self.weightlifting_page)
         self.stack.addWidget(self.sprinting_page)
+        self.stack.addWidget(self.live_tracking_page)
         self.stack.addWidget(self.results_page)
         self.stack.addWidget(self.history_page)
         self.stack.addWidget(self.about_page)
@@ -162,6 +169,9 @@ class MainWindow(QMainWindow):
     # PAGE NAVIGATION
     # ==========================================================
     def show_home_page(self):
+        if hasattr(self, "live_tracking_page"):
+            self.live_tracking_page.stop_camera()
+
         self.home_page.set_recent_sessions(
             get_recent_sessions(limit=5)
         )
@@ -180,6 +190,10 @@ class MainWindow(QMainWindow):
     def show_sprinting_page(self):
         self.refresh_status_bar()
         self.stack.setCurrentWidget(self.sprinting_page)
+
+    def show_live_tracking_page(self):
+        self.refresh_status_bar()
+        self.stack.setCurrentWidget(self.live_tracking_page)
 
     def show_results_page(self):
         self.results_page.set_summary({
@@ -333,6 +347,15 @@ class MainWindow(QMainWindow):
 
         self.refresh_status_bar()
         self.stack.setCurrentWidget(self.results_page)
+
+    # ==========================================================
+    # APPLICATION SHUTDOWN
+    # ==========================================================
+    def closeEvent(self, event):
+        if hasattr(self, "live_tracking_page"):
+            self.live_tracking_page.shutdown()
+
+        event.accept()
 
 
 if __name__ == "__main__":
